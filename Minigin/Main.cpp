@@ -1,9 +1,19 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#if _DEBUG && __has_include(<vld.h>)
+#if _DEBUG && __has_include(<vld.h>) //If we're in debug mode and leak detector is available(File vlh.h exist), include it
 #include <vld.h>
 #endif
+
+#if _DEBUG
+	#if __has_include(<vld.h>)
+	#pragma message(">>> VLD HEADER FOUND - including vld.h")
+	#include <vld.h>
+	#else
+	#pragma message(">>> VLD HEADER NOT FOUND")
+	#endif
+#endif
+
 
 #include "Minigin.h"
 #include "SceneManager.h"
@@ -35,6 +45,10 @@ static void load()
 }
 
 int main(int, char*[]) {
+	int* leak = new int[100];
+	leak[0] = 123;   
+	// leak on purpose to check if vld is working
+
 #if __EMSCRIPTEN__
 	fs::path data_location = "";
 #else

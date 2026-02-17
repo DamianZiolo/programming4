@@ -91,14 +91,14 @@ void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
 #ifndef __EMSCRIPTEN__
-	while (!m_quit)
+	while (!m_quit) //Until we don't quit the game, run one frame
 		RunOneFrame();
 #else
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
 #endif
 }
 
-void dae::Minigin::RunOneFrame()
+void dae::Minigin::RunOneFrame() //Actuall ,,u[date" in which we update scene manager and render the scene and take care about inputs
 {
 	m_quit = !InputManager::GetInstance().ProcessInput();
 	SceneManager::GetInstance().Update();

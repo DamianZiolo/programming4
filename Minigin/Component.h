@@ -1,4 +1,6 @@
 #pragma once
+#include <cassert>
+
 namespace dae
 {
 	class GameObject;
@@ -9,6 +11,7 @@ namespace dae
 		virtual ~Component() = default;
 
 		virtual void Update() = 0; //pure virtual function;
+		virtual void Render() const {}
 		GameObject* GetOwner() const { return m_Owner; }
 		bool IsActive() const { return m_IsActive; }
 		void SetActive(bool active) { m_IsActive = active; }
@@ -18,8 +21,13 @@ namespace dae
 		Component(Component&&) = delete;
 		Component& operator=(const Component&) = delete;
 		Component& operator=(Component&&) = delete;
+
 	protected:
-		explicit Component(GameObject* owner) : m_Owner(owner) {}
+		explicit Component(GameObject* owner) : m_Owner(owner)
+		{
+			assert(owner && "Component must have an owner GameObject");
+		}
+
 	private:
 		GameObject* m_Owner{};
 		bool m_markedForRemoval{ false };

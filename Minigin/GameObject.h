@@ -19,6 +19,13 @@ namespace dae
 		virtual void Update();
 		virtual void Render() const;
 
+		//This is to be able to change position of GO
+		Transform& GetTransform() { return m_transform; }
+		//this is to be able to read position of GO from const methods for example in Render 
+		const Transform& GetTransform() const { return m_transform; }
+
+		glm::vec3 GetPosition() const { return m_transform.GetPosition(); }
+
 		void SetTexture(const std::string& filename);
 		void SetPosition(float x, float y);
 		//---Componennt interface---
@@ -32,7 +39,7 @@ namespace dae
 			T* existingComponent = GetComponent<T>();
 			if (existingComponent != nullptr)
 			{
-				return existingComponent;
+				return; //I don't want to add multiple components of the same type to the same game object
 			}
 			
 			auto component = std::make_unique<T>(this, std::forward<Args>(args)...);
@@ -89,4 +96,6 @@ namespace dae
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 	};
+
+
 }

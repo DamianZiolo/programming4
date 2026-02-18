@@ -44,7 +44,6 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 
 	auto goText = std::make_unique<dae::GameObject>();
 	goText->SetPosition(292, 20);
-	goText->SetTexture("logo.png");
 	goText->AddComponent<dae::TextComponent>(
 		font,
 		"Programming 4 Assignment",

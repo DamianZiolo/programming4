@@ -16,8 +16,8 @@ namespace dae
 		std::shared_ptr<Texture2D> m_texture{};
 		std::vector<std::unique_ptr<Component>> m_components{};
 	public:
-		virtual void Update();
-		virtual void Render() const;
+		void Update();
+		void Render() const;
 
 		//This is to be able to change position of GO
 		Transform& GetTransform() { return m_transform; }

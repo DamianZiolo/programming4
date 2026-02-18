@@ -3,6 +3,15 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 
+void dae::GameObject::CleanupRemovedComponents()
+{
+	//if Lambda returns true, the element will be removed from the vector
+	std::erase_if(m_components, [](const std::unique_ptr<Component>& c)
+		{
+			return c->m_markedForRemoval;
+		});
+}
+
 dae::GameObject::~GameObject() = default;
 
 void dae::GameObject::Update(){}

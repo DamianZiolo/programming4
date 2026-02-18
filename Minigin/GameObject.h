@@ -34,6 +34,19 @@ namespace dae
 			m_components.emplace_back(std::move(component)); //I move the unique pointer to the vector, because I want the vector to take ownership of the component
 		}
 
+		template<typename T>
+		void RemoveComponent(T* component)
+		{
+			static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
+			if (!component) return;
+			if (component->GetOwner() != this) return; // albo assert
+			component->m_markedForRemoval = true;
+		}
+
+
+		void CleanupRemovedComponents();
+
+
 		GameObject() = default;
 		virtual ~GameObject();
 		GameObject(const GameObject& other) = delete;

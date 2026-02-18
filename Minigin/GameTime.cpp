@@ -4,7 +4,7 @@
 
 dae::GameTime& dae::GameTime::GetIntance()
 {
-	static Time instance;
+	static GameTime instance;
 	return instance;
 }
 

@@ -14,12 +14,31 @@ void dae::GameObject::CleanupRemovedComponents()
 
 dae::GameObject::~GameObject() = default;
 
-void dae::GameObject::Update(){}
+void dae::GameObject::Update(){
+
+	for (const auto& c : m_components)
+	{
+		if (c->IsActive())
+			c->Update();
+	}
+
+}
 
 void dae::GameObject::Render() const
 {
-	const auto& pos = m_transform.GetPosition();
-	Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
+	//old render, I will delete it later after adding Render component
+	if (m_texture)
+	{
+		const auto& pos = m_transform.GetPosition();
+		Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
+	}
+
+	for (const auto& c : m_components)
+	{
+		if (c->IsActive())
+			c->Render();
+	}
+
 }
 
 void dae::GameObject::SetTexture(const std::string& filename)

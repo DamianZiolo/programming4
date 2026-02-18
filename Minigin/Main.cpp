@@ -18,7 +18,7 @@
 #include "Minigin.h"
 #include "SceneManager.h"
 #include "ResourceManager.h"
-#include "TextObject.h"
+#include "TextComponent.h"
 #include "Scene.h"
 
 #include <filesystem>
@@ -41,10 +41,17 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 
 	//Create a text object, set the text and add it to the scene
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	auto to = std::make_unique<dae::TextObject>("Programming 4 Assignment", font);
-	to->SetColor({ 255, 255, 0, 255 });
-	to->SetPosition(292, 20);
-	scene.Add(std::move(to));
+
+	auto goText = std::make_unique<dae::GameObject>();
+	goText->SetPosition(292, 20);
+	goText->SetTexture("logo.png");
+	goText->AddComponent<dae::TextComponent>(
+		font,
+		"Programming 4 Assignment",
+		SDL_Color{ 255, 255, 0, 255 }
+	);
+	scene.Add(std::move(goText));
+
 }
 
 int main(int, char*[]) {

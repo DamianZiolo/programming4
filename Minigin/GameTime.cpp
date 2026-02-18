@@ -21,7 +21,6 @@ void dae::GameTime::Reset()
 void dae::GameTime::Tick()
 {
 	const std::uint64_t now = SDL_GetPerformanceCounter();
-
 	// Compute in double for better precision when converting large timer values,
 	// then cast to float since gameplay systems usually operate on floats.
 	const double dt = (now - m_prevCounter) * m_invFrequency; //time in seconds since last frame)

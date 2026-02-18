@@ -19,6 +19,7 @@
 #include "SceneManager.h"
 #include "ResourceManager.h"
 #include "TextComponent.h"
+#include "FPSComponent.h"
 #include "Scene.h"
 
 #include <filesystem>
@@ -49,6 +50,16 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 		"Programming 4 Assignment",
 		SDL_Color{ 255, 255, 0, 255 }
 	);
+	scene.Add(std::move(goText));
+
+	goText = std::make_unique<dae::GameObject>();
+	goText->SetPosition(292, 80);
+	goText->AddComponent<dae::TextComponent>(
+		font,
+		"0 FPS",
+		SDL_Color{ 255, 255, 0, 255 }
+	);
+	goText->AddComponent<dae::FPSComponent>();
 	scene.Add(std::move(goText));
 
 }

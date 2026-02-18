@@ -65,8 +65,8 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 }
 
 int main(int, char*[]) {
-	int* leak = new int[100];
-	leak[0] = 123;   
+	/*int* leak = new int[100];
+	leak[0] = 123;  */ 
 	// leak on purpose to check if vld is working
 
 #if __EMSCRIPTEN__

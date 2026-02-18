@@ -8,6 +8,9 @@ namespace dae
 	class Minigin final
 	{
 		bool m_quit{};
+		void ProcessInput();
+		void Update();
+		void Render();
 	public:
 		explicit Minigin(const std::filesystem::path& dataPath);
 		~Minigin();

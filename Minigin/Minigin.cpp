@@ -103,7 +103,22 @@ void dae::Minigin::Run(const std::function<void()>& load)
 void dae::Minigin::RunOneFrame() //Actuall ,,u[date" in which we update scene manager and render the scene and take care about inputs
 {
 	GameTime::GetIntance().Tick(); //Update the time, so we can get the delta time and use float dt = Time::GetInstance().GetDeltaTime();
+	ProcessInput();
+	Update();
+	Render();
+}
+
+void dae::Minigin::ProcessInput()
+{
 	m_quit = !InputManager::GetInstance().ProcessInput();
+}
+
+void dae::Minigin::Update()
+{
 	SceneManager::GetInstance().Update();
+}
+
+void dae::Minigin::Render()
+{
 	Renderer::GetInstance().Render();
 }

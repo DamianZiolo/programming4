@@ -3,10 +3,10 @@
 
 namespace dae
 {
-	class Time final
+	class GameTime final
 	{
 	public:
-		static Time& GetIntance();
+		static GameTime& GetIntance();
 
 		//Called once at start of the game
 		void Reset();
@@ -19,12 +19,12 @@ namespace dae
 
 	private:
 		//It's not obligatory to make default and delete but it's more readable and it makes it clear that we don't want to copy or move this class, because it's a singleton, I only want one instance of it
-		Time() = default;
-		~Time() = default;
-		Time(const Time&) = delete;
-		Time(Time&&) = delete;
-		Time& operator=(const Time&) = delete;
-		Time& operator=(Time&&) = delete;
+		GameTime() = default;
+		~GameTime() = default;
+		GameTime(const GameTime&) = delete;
+		GameTime(GameTime&&) = delete;
+		GameTime& operator=(const GameTime&) = delete;
+		GameTime& operator=(GameTime&&) = delete;
 
 		float m_deltaTime{0.f}; //Time of previous frame in seconds
 		float m_totalTime{ 0.f }; // Total time since the start of the game in seconds

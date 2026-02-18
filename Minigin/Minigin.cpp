@@ -15,7 +15,7 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
-#include "Time.h"
+#include "GameTime.h"
 
 SDL_Window* g_window{};
 
@@ -91,7 +91,7 @@ dae::Minigin::~Minigin()
 void dae::Minigin::Run(const std::function<void()>& load)
 {
 	load();
-	Time::GetIntance().Reset(); //Reset the time to start counting from 0, and set the previous counter to the current counter, so we don't get a huge delta time on the first frame
+	GameTime::GetIntance().Reset(); //Reset the time to start counting from 0, and set the previous counter to the current counter, so we don't get a huge delta time on the first frame
 #ifndef __EMSCRIPTEN__
 	while (!m_quit) //Until we don't quit the game, run one frame
 		RunOneFrame();
@@ -102,7 +102,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 void dae::Minigin::RunOneFrame() //Actuall ,,u[date" in which we update scene manager and render the scene and take care about inputs
 {
-	Time::GetIntance().Tick(); //Update the time, so we can get the delta time and use float dt = Time::GetInstance().GetDeltaTime();
+	GameTime::GetIntance().Tick(); //Update the time, so we can get the delta time and use float dt = Time::GetInstance().GetDeltaTime();
 	m_quit = !InputManager::GetInstance().ProcessInput();
 	SceneManager::GetInstance().Update();
 	Renderer::GetInstance().Render();

@@ -1,14 +1,14 @@
-#include "Time.h"
+#include "GameTime.h"
 #include <SDL3/SDL.h>
 #include <algorithm>
 
-dae::Time& dae::Time::GetIntance()
+dae::GameTime& dae::GameTime::GetIntance()
 {
 	static Time instance;
 	return instance;
 }
 
-void dae::Time::Reset()
+void dae::GameTime::Reset()
 {
 	const std::uint64_t frequency = SDL_GetPerformanceFrequency(); //how much ticks per second
 	m_invFrequency = 1.0 / static_cast<double>(frequency);
@@ -18,7 +18,7 @@ void dae::Time::Reset()
 	m_totalTime = 0.f;
 }
 
-void dae::Time::Tick()
+void dae::GameTime::Tick()
 {
 	const std::uint64_t now = SDL_GetPerformanceCounter();
 
@@ -32,12 +32,12 @@ void dae::Time::Tick()
 
 }
 
-float dae::Time::GetDeltaTime() const
+float dae::GameTime::GetDeltaTime() const
 {
 	return m_deltaTime;
 }
 
-float dae::Time::GetTotalTime() const
+float dae::GameTime::GetTotalTime() const
 {
 	return m_totalTime;
 }

@@ -5,7 +5,6 @@
 #include <vld.h>
 #endif
 
-//TODO: Leak detector is not working, CMAKE ,, find_package(VLD CONFIG) not detecting vld"
 #if _DEBUG
 	#if __has_include(<vld.h>)
 	#pragma message(">>> VLD HEADER FOUND - including vld.h")

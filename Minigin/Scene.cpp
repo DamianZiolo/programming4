@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "Scene.h"
+#include "GameObject.h"
 
 using namespace dae;
 
@@ -9,16 +10,9 @@ void Scene::Add(std::unique_ptr<GameObject> object)
 	m_objects.emplace_back(std::move(object));
 }
 
-void Scene::Remove(const GameObject& object)
+void Scene::Remove(GameObject& object)
 {
-	m_objects.erase(
-		std::remove_if(
-			m_objects.begin(),
-			m_objects.end(),
-			[&object](const auto& ptr) { return ptr.get() == &object; }
-		),
-		m_objects.end()
-	);
+	object.MarkForRemoval();
 }
 
 void Scene::RemoveAll()
@@ -32,6 +26,13 @@ void Scene::Update()
 	{
 		object->Update();
 	}
+
+	std::erase_if(m_objects, [](const std::unique_ptr<GameObject>& obj)
+		{
+			return obj->IsMarkedForRemoval();
+		});
+
+
 }
 
 void Scene::Render() const

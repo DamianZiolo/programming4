@@ -14,6 +14,7 @@ namespace dae
 	{
 		Transform m_transform{};
 		std::vector<std::unique_ptr<Component>> m_components{};
+		bool m_markedForRemoval{ false };
 	public:
 		void Update();
 		void Render() const;
@@ -87,6 +88,9 @@ namespace dae
 
 		void CleanupRemovedComponents();
 
+		
+		bool IsMarkedForRemoval() const { return m_markedForRemoval; }
+		void MarkForRemoval() { m_markedForRemoval = true; }
 
 		GameObject() = default;
 		~GameObject();

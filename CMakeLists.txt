@@ -29,6 +29,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/GameTime.cpp
   Minigin/TextComponent.cpp
   Minigin/FPSComponent.cpp
+  Minigin/RenderComponent.cpp
 )
 
 # enable c++20 features

@@ -21,6 +21,7 @@
 #include "TextComponent.h"
 #include "FPSComponent.h"
 #include "Scene.h"
+#include "RenderComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -31,12 +32,12 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 
 	//Create a game object, set it background and add it to the scene
 	auto go = std::make_unique<dae::GameObject>();
-	go->SetTexture("background.png");
+	go->AddComponent<dae::RenderComponent>("background.png"); //I add render component to the game object and set the texture to background.png, because I want to be able to render the background, and I want to use the render component to do that, because it's responsible for rendering the texture of the game object, and I want to keep the rendering logic separate from the game object logic, and also because I want to be able to change the texture of the game object without changing its position or other properties, and also because I want to be able to reuse the render component for other game objects that have different textures but similar rendering logic
 	scene.Add(std::move(go));
 
 	//Create a game object, set it logo and add it to the scene //because of std::move, the go variable is now empty, so we can reuse it to create another game object, it's unique pointer so we don't need to delete it
 	go = std::make_unique<dae::GameObject>();
-	go->SetTexture("logo.png");
+	go->AddComponent<dae::RenderComponent>("logo.png");
 	go->SetPosition(358, 180);
 	scene.Add(std::move(go));
 

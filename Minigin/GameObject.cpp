@@ -27,11 +27,6 @@ void dae::GameObject::Update(){
 void dae::GameObject::Render() const
 {
 	//old render, I will delete it later after adding Render component
-	if (m_texture)
-	{
-		const auto& pos = m_transform.GetPosition();
-		Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
-	}
 
 	for (const auto& c : m_components)
 	{
@@ -41,10 +36,7 @@ void dae::GameObject::Render() const
 
 }
 
-void dae::GameObject::SetTexture(const std::string& filename)
-{
-	m_texture = ResourceManager::GetInstance().LoadTexture(filename);
-}
+
 
 void dae::GameObject::SetPosition(float x, float y)
 {

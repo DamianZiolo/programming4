@@ -13,7 +13,6 @@ namespace dae
 	class GameObject final
 	{
 		Transform m_transform{};
-		std::shared_ptr<Texture2D> m_texture{};
 		std::vector<std::unique_ptr<Component>> m_components{};
 	public:
 		void Update();
@@ -26,7 +25,7 @@ namespace dae
 
 		glm::vec3 GetPosition() const { return m_transform.GetPosition(); }
 
-		void SetTexture(const std::string& filename);
+		
 		void SetPosition(float x, float y);
 		//---Componennt interface---
 		//Variadic template https://www.geeksforgeeks.org/cpp/variadic-function-templates-c/

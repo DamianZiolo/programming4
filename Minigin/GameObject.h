@@ -50,6 +50,8 @@ namespace dae
         // ----- Scene graph -----
         GameObject* GetParent() const { return m_parent; }
         const std::vector<GameObject*>& GetChildren() const { return m_children; }
+        Transform& GetTransform() { return m_transform; }
+        const Transform& GetTransform() const { return m_transform; }
 
 		// keepWorld = true -> object don't ,,jump" to new parent, but keeps its world position (local position will be recalculated)
         void SetParent(GameObject* newParent, bool keepWorld = true);

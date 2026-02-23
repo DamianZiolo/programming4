@@ -14,7 +14,7 @@ namespace dae
 
 	void RenderComponent::UpdatePosition()
 	{
-		m_Transform = GetOwner()->GetComponent<Transform>();
+		m_Transform = &GetOwner()->GetTransform();
 	}
 
 	void RenderComponent::Render() const

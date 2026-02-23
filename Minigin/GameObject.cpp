@@ -43,7 +43,9 @@ void dae::GameObject::SetDirty()
 
 void dae::GameObject::SetParent(GameObject* newParent, bool keepWorld)
 {
-	if (newParent == this) return;
+	(void)newParent;
+	(void)keepWorld;
+	/*if (newParent == this) return;
 	if (newParent && newParent->IsDescendantOf(this)) return;
 	glm::vec3 worldPos = m_transform.GetLocalPosition(); 
 	if (m_parent)
@@ -56,7 +58,7 @@ void dae::GameObject::SetParent(GameObject* newParent, bool keepWorld)
 	if (m_parent)
 	{
 		m_parent->AddChild(this);
-	}
+	}*/
 
 	//TODO still need to implement it 
 }

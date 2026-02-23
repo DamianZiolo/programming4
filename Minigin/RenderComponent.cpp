@@ -21,7 +21,7 @@ namespace dae
 	{
 		if (m_Texture && m_Transform)
 		{
-			const auto& pos = m_Transform->GetPosition();
+			const auto& pos = m_Transform->GetWorldPosition();
 			Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y);
 		}
 		

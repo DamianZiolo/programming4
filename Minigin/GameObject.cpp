@@ -3,18 +3,10 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 
-void dae::GameObject::CleanupRemovedComponents()
-{
-	//if Lambda returns true, the element will be removed from the vector
-	std::erase_if(m_components, [](const std::unique_ptr<Component>& c)
-		{
-			return c->m_markedForRemoval;
-		});
-}
-
 dae::GameObject::~GameObject() = default;
 
-void dae::GameObject::Update(){
+void dae::GameObject::Update()
+{
 
 	for (const auto& c : m_components)
 	{
@@ -26,8 +18,6 @@ void dae::GameObject::Update(){
 
 void dae::GameObject::Render() const
 {
-	//old render, I will delete it later after adding Render component
-
 	for (const auto& c : m_components)
 	{
 		if (c->IsActive())
@@ -36,9 +26,67 @@ void dae::GameObject::Render() const
 
 }
 
-
-
-void dae::GameObject::SetPosition(float x, float y)
+void dae::GameObject::SetLocalPosition(const glm::vec3& local)
 {
-	m_transform.SetPosition(x, y, 0.0f);
+	m_transform.SetLocalPosition(local);
+}
+
+void dae::GameObject::SetWorldPosition(const glm::vec3& world)
+{
+	m_transform.SetWorldPosition(world);
+}
+
+void dae::GameObject::SetDirty()
+{
+	//TODO: implement dirty flag
+}
+
+void dae::GameObject::SetParent(GameObject* newParent, bool keepWorld)
+{
+	if (newParent == this) return;
+	if (newParent && newParent->IsDescendantOf(this)) return;
+	glm::vec3 worldPos = m_transform.GetLocalPosition(); 
+	if (m_parent)
+	{
+		m_parent->RemoveChild(this);
+	}
+
+	m_parent = newParent;
+
+	if (m_parent)
+	{
+		m_parent->AddChild(this);
+	}
+
+	//TODO still need to implement it 
+}
+
+bool dae::GameObject::IsDescendantOf(const GameObject* potentialAncestor) const
+{
+	const GameObject* p = m_parent;
+	while (p)
+	{
+		if (p == potentialAncestor) return true;
+		p = p->m_parent;
+	}
+	return false;
+}
+
+void dae::GameObject::CleanupRemovedComponents()
+{
+	//if Lambda returns true, the element will be removed from the vector
+	std::erase_if(m_components, [](const std::unique_ptr<Component>& c)
+		{
+			return c->m_markedForRemoval;
+		});
+}
+
+void dae::GameObject::AddChild(GameObject* child)
+{
+	m_children.push_back(child);
+}
+
+void dae::GameObject::RemoveChild(GameObject* child)
+{
+	std::erase(m_children, child);
 }

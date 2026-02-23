@@ -38,14 +38,14 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	//Create a game object, set it logo and add it to the scene //because of std::move, the go variable is now empty, so we can reuse it to create another game object, it's unique pointer so we don't need to delete it
 	go = std::make_unique<dae::GameObject>();
 	go->AddComponent<dae::RenderComponent>("logo.png");
-	go->SetPosition(358, 180);
+	go->SetWorldPosition(358, 180);
 	scene.Add(std::move(go));
 
 	//Create a text object, set the text and add it to the scene
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
 	auto goText = std::make_unique<dae::GameObject>();
-	goText->SetPosition(292, 20);
+	goText->SetWorldPosition(292, 20);
 	goText->AddComponent<dae::TextComponent>(
 		font,
 		"Programming 4 Assignment",
@@ -54,7 +54,7 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	scene.Add(std::move(goText));
 
 	goText = std::make_unique<dae::GameObject>();
-	goText->SetPosition(292, 80);
+	goText->SetWorldPosition(292, 80);
 	goText->AddComponent<dae::TextComponent>(
 		font,
 		"0 FPS",

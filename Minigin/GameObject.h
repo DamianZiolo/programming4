@@ -1,104 +1,132 @@
 #pragma once
-#include <string>
+
+#include <vector>
 #include <memory>
+#include <type_traits>
+#include <algorithm>   // std::find, std::remove
+#include <utility>     // std::forward
+#include <glm/glm.hpp>
+
 #include "Transform.h"
 #include "Component.h"
-#include <vector>
-#include <type_traits>
-
 
 namespace dae
 {
-	class Texture2D;
-	class GameObject final
-	{
-		Transform m_transform{};
-		std::vector<std::unique_ptr<Component>> m_components{};
-		bool m_markedForRemoval{ false };
-	public:
-		void Update();
-		void Render() const;
+    class GameObject final
+    {
+    public:
+        GameObject() = default;
+        ~GameObject();
 
-		//This is to be able to change position of GO
-		Transform& GetTransform() { return m_transform; }
-		//this is to be able to read position of GO from const methods for example in Render 
-		const Transform& GetTransform() const { return m_transform; }
+        GameObject(const GameObject&) = delete;
+        GameObject(GameObject&&) = delete;
+        GameObject& operator=(const GameObject&) = delete;
+        GameObject& operator=(GameObject&&) = delete;
 
-		glm::vec3 GetPosition() const { return m_transform.GetPosition(); }
+        // ----- Main loop -----
+        void Update();
+        void Render() const;
 
-		
-		void SetPosition(float x, float y);
-		//---Componennt interface---
-		//Variadic template https://www.geeksforgeeks.org/cpp/variadic-function-templates-c/
-		template<typename T, typename... Args> // T -> component that I want to add, Args... -> arguments that I want to pass to the constructor of the component, I use variadic templates because I want to be able to pass any number of arguments to the constructor of the component, and I use perfect forwarding because I want to be able to pass lvalues and rvalues to the constructor of the component, and I want to avoid unnecessary copies of the arguments
-		//Pass all parameters to the constructor without copying them,
-		void AddComponent(Args&&... args)
-		{
-			static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
-			//std::forward always keep the same category, so for example with renderTexturecomponent if I pass ,,Texture.txt" as lvalue it's lvalue, but if I pass variable path then it's r value
-			T* existingComponent = GetComponent<T>();
-			if (existingComponent != nullptr)
-			{
-				return; //I don't want to add multiple components of the same type to the same game object
-			}
-			
-			auto component = std::make_unique<T>(this, std::forward<Args>(args)...);
-			m_components.emplace_back(std::move(component)); //I move the unique pointer to the vector, because I want the vector to take ownership of the component
-		}
+        // ----- Removal -----
+        bool IsMarkedForRemoval() const { return m_markedForRemoval; }
+        void MarkForRemoval() { m_markedForRemoval = true; }
 
-		template<typename T>
-		void RemoveComponent(T* component)
-		{
-			static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
-			if (!component) return;
-			if (component->GetOwner() != this) return; //I don't want to be able to delete component from other GO
-			component->m_markedForRemoval = true;
-		}
+        // ----- Transform API (Local/World) -----
+        // Local (relative to parent)
+        const glm::vec3& GetLocalPosition() const { return m_transform.GetLocalPosition(); }
+        void SetLocalPosition(const glm::vec3& local);
 
-		template<typename T>
-		T* GetComponent()
-		{
-			static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
-			for (auto& component : m_components)
-			{
-				//for every component I try to cast it to the type T, if cast success I return it
-				T* casted = dynamic_cast<T*>(component.get());
-				if (casted != nullptr)
-				{
-					return casted;
-				}
-			}
-			return nullptr;
-		}
+        // World
+		glm::vec3 GetWorldPosition() const { return m_transform.GetWorldPosition(); }
+        void SetWorldPosition(const glm::vec3& world);
 
-		template<typename T>
-		bool HasComponent() const
-		{
-			// GetComponent is not const, but I want to be able to call it from a const function
-			GameObject* ConstThis = const_cast<GameObject*>(this);
-			T* component = ConstThis->GetComponent<T>();
+        // Convenience overloads
+        void SetLocalPosition(float x, float y, float z = 0.0f) { SetLocalPosition(glm::vec3{ x, y, z }); }
+        void SetWorldPosition(float x, float y, float z = 0.0f) { SetWorldPosition(glm::vec3{ x, y, z }); }
 
-			if (component != nullptr)
-			{
-				return true;
-			}
+        // Dirty flag
+        void SetDirty();
 
-			return false;
-		}
+        // ----- Scene graph -----
+        GameObject* GetParent() const { return m_parent; }
+        const std::vector<GameObject*>& GetChildren() const { return m_children; }
 
-		void CleanupRemovedComponents();
+		// keepWorld = true -> object don't ,,jump" to new parent, but keeps its world position (local position will be recalculated)
+        void SetParent(GameObject* newParent, bool keepWorld = true);
 
-		
-		bool IsMarkedForRemoval() const { return m_markedForRemoval; }
-		void MarkForRemoval() { m_markedForRemoval = true; }
+        // Utility
+        bool IsDescendantOf(const GameObject* potentialAncestor) const;
 
-		GameObject() = default;
-		~GameObject();
-		GameObject(const GameObject& other) = delete;
-		GameObject(GameObject&& other) = delete;
-		GameObject& operator=(const GameObject& other) = delete;
-		GameObject& operator=(GameObject&& other) = delete;
-	};
+        // ----- Component API -----
+        template<typename T, typename... Args>
+        T* AddComponent(Args&&... args)
+        {
+            static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
+
+            // no duplicates of same type
+            if (GetComponent<T>() != nullptr)
+                return nullptr;
+
+            auto component = std::make_unique<T>(this, std::forward<Args>(args)...);
+            T* raw = component.get();
+            m_components.emplace_back(std::move(component));
+            return raw;
+        }
+
+        template<typename T>
+        void RemoveComponent(T* component)
+        {
+            static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
+            if (!component) return;
+            if (component->GetOwner() != this) return;
+            component->m_markedForRemoval = true;
+        }
+
+        template<typename T>
+        T* GetComponent()
+        {
+            static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
+
+            for (auto& c : m_components)
+            {
+                if (auto casted = dynamic_cast<T*>(c.get()))
+                    return casted;
+            }
+            return nullptr;
+        }
+
+        template<typename T>
+        const T* GetComponent() const
+        {
+            static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
+
+            for (const auto& c : m_components)
+            {
+                if (auto casted = dynamic_cast<const T*>(c.get()))
+                    return casted;
+            }
+            return nullptr;
+        }
+
+        template<typename T>
+        bool HasComponent() const
+        {
+            return GetComponent<T>() != nullptr;
+        }
+
+        void CleanupRemovedComponents();
+
+    private:
+        // Scene graph
+        void AddChild(GameObject* child);
+        void RemoveChild(GameObject* child);
 
 
+        //Members
+        Transform m_transform{};
+        std::vector<std::unique_ptr<Component>> m_components{};
+        bool m_markedForRemoval{ false };
+        GameObject* m_parent{ nullptr };
+        std::vector<GameObject*> m_children{};
+    };
 }

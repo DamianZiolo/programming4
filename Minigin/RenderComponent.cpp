@@ -21,6 +21,12 @@ namespace dae
 	{
 		if (m_Texture && m_Transform)
 		{
+			if (m_Height > 0.f && m_Width > 0.f)
+			{
+				const auto& pos = m_Transform->GetWorldPosition();
+				Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y, m_Width, m_Height);
+				return;
+			}
 			const auto& pos = m_Transform->GetWorldPosition();
 			Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y);
 		}

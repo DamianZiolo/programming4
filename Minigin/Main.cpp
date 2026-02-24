@@ -22,6 +22,7 @@
 #include "FPSComponent.h"
 #include "Scene.h"
 #include "RenderComponent.h"
+#include "RotationComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -40,6 +41,23 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	go->AddComponent<dae::RenderComponent>("logo.png");
 	go->SetWorldPosition(358, 180);
 	scene.Add(std::move(go));
+
+	auto parent = std::make_unique<dae::GameObject>();
+	parent->AddComponent<dae::RenderComponent>("Player.png");
+	parent->GetComponent<dae::RenderComponent>()->SetSize(20, 20);
+	const glm::vec3 screenCenter{ 512.0f, 288.0f, 0.0f };
+	parent->AddComponent<dae::RotationComponent>(screenCenter, 150.0f, 1.0f, false);
+
+	auto child = std::make_unique<dae::GameObject>();
+	child->AddComponent<dae::RenderComponent>("Player.png");
+	child->GetComponent<dae::RenderComponent>()->SetSize(10, 10);
+	child->SetParent(parent.get(), false);
+	child->AddComponent<dae::RotationComponent>(glm::vec3{ 0,0,0 }, 80.0f, 2.0f, true);
+
+	scene.Add(std::move(parent));
+	scene.Add(std::move(child));
+
+
 
 	//Create a text object, set the text and add it to the scene
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
@@ -62,6 +80,7 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	);
 	goText->AddComponent<dae::FPSComponent>();
 	scene.Add(std::move(goText));
+
 
 }
 

@@ -7,7 +7,7 @@ dae::GameObject::~GameObject() = default;
 
 void dae::GameObject::Update()
 {
-
+	UpdateWorldTransform();
 	for (const auto& c : m_components)
 	{
 		if (c->IsActive())

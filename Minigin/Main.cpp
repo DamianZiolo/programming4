@@ -32,20 +32,20 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	auto& scene = dae::SceneManager::GetInstance().CreateScene(); // returns a reference to the scene that is stored in the scene manager
 
 	//Create a game object, set it background and add it to the scene
+	const glm::vec3 screenCenter{ 512.0f, 288.0f, 0.0f };
 	auto go = std::make_unique<dae::GameObject>();
 	go->AddComponent<dae::RenderComponent>("background.png"); //I add render component to the game object and set the texture to background.png, because I want to be able to render the background, and I want to use the render component to do that, because it's responsible for rendering the texture of the game object, and I want to keep the rendering logic separate from the game object logic, and also because I want to be able to change the texture of the game object without changing its position or other properties, and also because I want to be able to reuse the render component for other game objects that have different textures but similar rendering logic
 	scene.Add(std::move(go));
 
 	//Create a game object, set it logo and add it to the scene //because of std::move, the go variable is now empty, so we can reuse it to create another game object, it's unique pointer so we don't need to delete it
 	go = std::make_unique<dae::GameObject>();
+	go->SetLocalPosition(screenCenter);
 	go->AddComponent<dae::RenderComponent>("logo.png");
-	go->SetWorldPosition(358, 180);
 	scene.Add(std::move(go));
 
 	auto parent = std::make_unique<dae::GameObject>();
 	parent->AddComponent<dae::RenderComponent>("Player.png");
 	parent->GetComponent<dae::RenderComponent>()->SetSize(20, 20);
-	const glm::vec3 screenCenter{ 512.0f, 288.0f, 0.0f };
 	parent->AddComponent<dae::RotationComponent>(screenCenter, 150.0f, 1.0f, false);
 
 	auto child = std::make_unique<dae::GameObject>();
@@ -63,7 +63,7 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
 	auto goText = std::make_unique<dae::GameObject>();
-	goText->SetWorldPosition(292, 20);
+	goText->SetLocalPosition(292, 20);
 	goText->AddComponent<dae::TextComponent>(
 		font,
 		"Programming 4 Assignment",
@@ -72,7 +72,7 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	scene.Add(std::move(goText));
 
 	goText = std::make_unique<dae::GameObject>();
-	goText->SetWorldPosition(292, 80);
+	goText->SetLocalPosition(292, 80);
 	goText->AddComponent<dae::TextComponent>(
 		font,
 		"0 FPS",

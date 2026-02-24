@@ -39,6 +39,7 @@ namespace dae
         // World
 		glm::vec3 GetWorldPosition() const { return m_transform.GetWorldPosition(); }
         void SetWorldPosition(const glm::vec3& world);
+        void UpdateWorldTransform();
 
         // Convenience overloads
         void SetLocalPosition(float x, float y, float z = 0.0f) { SetLocalPosition(glm::vec3{ x, y, z }); }

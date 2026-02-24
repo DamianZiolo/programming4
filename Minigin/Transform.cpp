@@ -2,24 +2,22 @@
 
 void dae::Transform::SetLocalPosition(const float x, const float y, const float z)
 {
-	m_localPosition.x = x;
-	m_localPosition.y = y;
-	m_localPosition.z = z;
+	SetLocalPosition({ x, y, z });
 }
 
 void dae::Transform::SetLocalPosition(const glm::vec3& position)
 { 
 	m_localPosition = position;
+	//After we change the local position, we need to mark the transform as dirty, because the world position will change, and we need to recalculate it in the next update
+	SetDirty();
 }
 
-void dae::Transform::SetWorldPosition(float x, float y, float z)
+void dae::Transform::SetWorldPosition(float x, float y, float z) const
 {
-	m_worldPosition.x = x;
-	m_worldPosition.y = y;
-	m_worldPosition.z = z;
+	SetWorldPosition({ x, y, z });
 }
 
-void dae::Transform::SetWorldPosition(const glm::vec3& position)
+void dae::Transform::SetWorldPosition(const glm::vec3& position) const
 {
 	m_worldPosition = position;
 }

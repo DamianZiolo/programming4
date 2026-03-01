@@ -37,7 +37,7 @@ namespace dae
         void SetLocalPosition(const glm::vec3& local);
 
         // World
-		glm::vec3 GetWorldPosition() const { return m_transform.GetWorldPosition(); }
+        glm::vec3 GetWorldPosition();//TODO - update world position should be here because we need it!
         void SetWorldPosition(const glm::vec3& world);
         void UpdateWorldTransform();
 

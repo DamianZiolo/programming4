@@ -3,14 +3,14 @@
 #include "RotationComponent.h"
 #include <iostream>
 
-dae::RotationComponent::RotationComponent(GameObject* owner, glm::vec3 orbitPoint, float radius, float angularSpeed, bool clockwise, float phaseRad):
+dae::RotationComponent::RotationComponent(GameObject* owner, float radius, float angularSpeed, bool clockwise, float phaseRad):
 	Component(owner)
-	, m_orbitPoint(orbitPoint)
 	, m_radius(radius)
 	, m_angularSpeed(angularSpeed)
 	, m_clockwise(clockwise)
 	, m_phaseRad(phaseRad)
 {
+	center = GetOwner()->GetLocalPosition();
 }
 
 void dae::RotationComponent::Update()
@@ -28,8 +28,11 @@ void dae::RotationComponent::Update()
 		m_phaseRad -= m_angularSpeed * deltaTime;
 	}
 
-	const float x = m_orbitPoint.x + m_radius * cos(m_phaseRad);
-	const float y = m_orbitPoint.y + m_radius * sin(m_phaseRad);
+	
+	const float x = center.x + m_radius * std::cos(m_phaseRad);
+	const float y = center.y + m_radius * std::sin(m_phaseRad);
+
+	GetOwner()->SetLocalPosition({ x, y, center.z });
 
 	GetOwner()->SetLocalPosition(glm::vec3{ x, y, 0.0f });
 }

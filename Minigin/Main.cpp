@@ -44,15 +44,17 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	scene.Add(std::move(go));
 
 	auto parent = std::make_unique<dae::GameObject>();
+	parent->SetLocalPosition(screenCenter);
 	parent->AddComponent<dae::RenderComponent>("Player.png");
 	parent->GetComponent<dae::RenderComponent>()->SetSize(20, 20);
-	parent->AddComponent<dae::RotationComponent>(screenCenter, 150.0f, 1.0f, false);
+	parent->AddComponent<dae::RotationComponent>(150.0f, 1.0f, false);
+	
 
 	auto child = std::make_unique<dae::GameObject>();
 	child->AddComponent<dae::RenderComponent>("Player.png");
 	child->GetComponent<dae::RenderComponent>()->SetSize(10, 10);
 	child->SetParent(parent.get(), false);
-	child->AddComponent<dae::RotationComponent>(glm::vec3{ 0,0,0 }, 80.0f, 2.0f, true);
+	child->AddComponent<dae::RotationComponent>(80.0f, 2.0f, true);
 
 	scene.Add(std::move(parent));
 	scene.Add(std::move(child));

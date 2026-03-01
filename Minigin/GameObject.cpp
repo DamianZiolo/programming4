@@ -7,7 +7,7 @@ dae::GameObject::~GameObject() = default;
 
 void dae::GameObject::Update()
 {
-	UpdateWorldTransform();
+
 	for (const auto& c : m_components)
 	{
 		if (c->IsActive())
@@ -29,6 +29,12 @@ void dae::GameObject::Render() const
 void dae::GameObject::SetLocalPosition(const glm::vec3& local)
 {
 	m_transform.SetLocalPosition(local);
+}
+
+glm::vec3 dae::GameObject::GetWorldPosition()
+{
+	UpdateWorldTransform();
+	return m_transform.GetWorldPosition();
 }
 
 void dae::GameObject::SetWorldPosition(const glm::vec3& world)
@@ -69,6 +75,10 @@ void dae::GameObject::UpdateWorldTransform()
 void dae::GameObject::SetDirty()
 {
 	m_transform.SetDirty();
+	for(GameObject* child : m_children)
+	{
+		child->SetDirty();
+	}
 }
 
 void dae::GameObject::SetParent(GameObject* newParent, bool keepWorld)

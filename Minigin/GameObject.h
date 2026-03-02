@@ -55,7 +55,7 @@ namespace dae
         const Transform& GetTransform() const { return m_transform; }
 
 		// keepWorld = true -> object don't ,,jump" to new parent, but keeps its world position (local position will be recalculated)
-        void SetParent(GameObject* newParent, bool keepWorld = true);
+        void SetParent(GameObject* parent, bool keepWorldPosition);
 
         // Utility
         bool IsDescendantOf(const GameObject* potentialAncestor) const;

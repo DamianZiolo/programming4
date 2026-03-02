@@ -28,6 +28,7 @@ void dae::GameObject::Render() const
 
 void dae::GameObject::SetLocalPosition(const glm::vec3& local)
 {
+	SetDirty();
 	m_transform.SetLocalPosition(local);
 }
 
@@ -44,32 +45,14 @@ void dae::GameObject::SetWorldPosition(const glm::vec3& world)
 
 void dae::GameObject::UpdateWorldTransform()
 {
-	if (!m_transform.IsDirty())
+	if (m_transform.IsDirty() )
 	{
-		return;
+		if (m_parent == nullptr)
+			m_transform.SetWorldPosition(m_transform.GetLocalPosition() );
+		else
+			m_transform.SetWorldPosition(m_parent->GetWorldPosition() + m_transform.GetLocalPosition() );
 	}
-	
-	//if object has a parent, its world position is the sum of its local position and its parent's world position, otherwise its world position is the same as its local position
-	if (m_parent)
-	{
-		m_parent->UpdateWorldTransform(); //first update position of parent, because I need it to calculate the world position of this object
-
-		const glm::vec3 parentWorldPos = m_parent->GetWorldPosition();
-		const glm::vec3 newWorldPos = parentWorldPos + m_transform.GetLocalPosition();
-		m_transform.SetWorldPosition(newWorldPos);
-	}
-	else 
-	{
-		m_transform.SetWorldPosition(m_transform.GetLocalPosition());
-	}
-
 	m_transform.ClearDirty();
-
-	for (auto* child : m_children)
-	{
-		if (child)
-			child->SetDirty(); 
-	}
 }
 
 void dae::GameObject::SetDirty()
@@ -81,41 +64,24 @@ void dae::GameObject::SetDirty()
 	}
 }
 
-void dae::GameObject::SetParent(GameObject* newParent, bool keepWorld)
+void dae::GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
 {
-	//If the new parent is the same as the current parent, do nothing
-	if (newParent == this) return;
-	//If the new parent is a descendant of this game object, do nothing, because it would create a cycle in the scene graph, and we don't want that, because it would lead to issues with updating and rendering, and also because it's not necessary to have a cycle in the scene graph, we can just set the parent to nullptr if we want to detach the game object from its current parent
-	if (newParent && newParent->IsDescendantOf(this)) return;
-	if(keepWorld)
-	{
-		glm::vec3 worldPos = GetWorldPosition();
-		if (m_parent)
-		{
-			m_parent->RemoveChild(this);
-		}
-		m_parent = newParent;
-		if (m_parent)
-		{
-			m_parent->AddChild(this);
-			SetWorldPosition(worldPos);
-		}
-	}
+	if (IsDescendantOf(parent) || parent == this || m_parent == parent)
+		return;
+	if (parent == nullptr)
+		SetLocalPosition(GetWorldPosition());
 	else
 	{
-		if (m_parent)
-		{
-			m_parent->RemoveChild(this);
-		}
-		m_parent = newParent;
-		if (m_parent) 
-		{
-			m_parent->AddChild(this);
-		}
-		SetDirty();
+		if (keepWorldPosition)
+			SetLocalPosition(GetWorldPosition() - parent->GetWorldPosition());
+		else
+			SetDirty();
 	}
-
+	if (m_parent) m_parent->RemoveChild(this);
+	m_parent = parent;
+	if (m_parent) m_parent->AddChild(this);
 }
+
 
 bool dae::GameObject::IsDescendantOf(const GameObject* potentialAncestor) const
 {

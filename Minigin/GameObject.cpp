@@ -26,6 +26,16 @@ void dae::GameObject::Render() const
 
 }
 
+void dae::GameObject::MarkForRemoval()
+{
+	m_markedForRemoval = true;
+	if (m_children.empty()) return;
+	for(auto child : m_children)
+	{
+		child->MarkForRemoval();
+	}
+}
+
 void dae::GameObject::SetLocalPosition(const glm::vec3& local)
 {
 	SetDirty();

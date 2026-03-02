@@ -2,37 +2,31 @@
 #include "GameObject.h"
 #include "RotationComponent.h"
 #include <iostream>
+#include <cmath>
 
-dae::RotationComponent::RotationComponent(GameObject* owner, float radius, float angularSpeed, bool clockwise, float phaseRad):
-	Component(owner)
-	, m_radius(radius)
-	, m_angularSpeed(angularSpeed)
-	, m_clockwise(clockwise)
-	, m_phaseRad(phaseRad)
+dae::RotationComponent::RotationComponent(GameObject* owner, float radius, float angularSpeed, bool clockwise, float phaseRad)
+    : Component(owner)
+    , m_radius(radius)
+    , m_angularSpeed(angularSpeed)
+    , m_clockwise(clockwise)
+    , m_phaseRad(phaseRad)
 {
-	center = GetOwner()->GetLocalPosition();
+    m_center = GetOwner()->GetLocalPosition();
 }
 
 void dae::RotationComponent::Update()
 {
-	std::cout << "Test" << std::endl;
-	if (!IsActive()) return;
+    if (!IsActive()) return;
 
-	const float deltaTime = GameTime::GetIntance().GetDeltaTime();
-	if (m_clockwise)
-	{
-		m_phaseRad += m_angularSpeed * deltaTime;
-	}
-	else
-	{
-		m_phaseRad -= m_angularSpeed * deltaTime;
-	}
+    const float deltaTime = GameTime::GetIntance().GetDeltaTime();
 
-	
-	const float x = center.x + m_radius * std::cos(m_phaseRad);
-	const float y = center.y + m_radius * std::sin(m_phaseRad);
+    if (m_clockwise)
+        m_phaseRad += m_angularSpeed * deltaTime;
+    else
+        m_phaseRad -= m_angularSpeed * deltaTime;
 
-	GetOwner()->SetLocalPosition({ x, y, center.z });
+    const float x = m_center.x + m_radius * std::cos(m_phaseRad);
+    const float y = m_center.y + m_radius * std::sin(m_phaseRad);
 
-	GetOwner()->SetLocalPosition(glm::vec3{ x, y, 0.0f });
+    GetOwner()->SetLocalPosition(glm::vec3{ x, y, m_center.z });
 }

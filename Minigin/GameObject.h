@@ -29,7 +29,7 @@ namespace dae
 
         // ----- Removal -----
         bool IsMarkedForRemoval() const { return m_markedForRemoval; }
-        void MarkForRemoval() { m_markedForRemoval = true; }
+        void MarkForRemoval();
 
         // ----- Transform API (Local/World) -----
         // Local (relative to parent)

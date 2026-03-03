@@ -57,29 +57,30 @@ void dae::Renderer::Render() const
 	ImGui::InputInt("Samples", &samples);
 	if (ImGui::Button("Trash the cache"))
 	{
+		if (samples < 1) samples = 1;                       // ważne
+		const size_t N = static_cast<size_t>(samples);
+
 		results.clear();
-		results.reserve(samples);
-		auto arr = std::make_unique<int[]>(samples);
-		for (int i = 0; i < samples; ++i)
-		{
-			arr[i] = i;
-		}
+		results.reserve(11);                                 // tylko 11 stepów
+
+		auto arr = std::make_unique<int[]>(N);
+		for (size_t i = 0; i < N; ++i)
+			arr[i] = static_cast<int>(i);
 
 		for (size_t step = 1; step <= 1024; step *= 2)
 		{
 			auto t0 = std::chrono::high_resolution_clock::now();
 
-			for (size_t i = 0; i < samples; i += step)
+			for (size_t i = 0; i < N; i += step)            // <-- TU JEST FIX
 				arr[i] *= 2;
 
 			auto t1 = std::chrono::high_resolution_clock::now();
 
 			auto time = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
-
 			results.push_back(static_cast<float>(time));
 		}
+
 		hasResult1 = true;
-		
 	}
 	if (hasResult1 && !results.empty())
 	{
@@ -111,8 +112,9 @@ void dae::Renderer::Render() const
 	{
 		resultsA.clear();
 		resultsA.reserve(11);
-
-		int N = samples2;
+		
+		if (samples2 < 1) samples2 = 1;
+		const size_t N = static_cast<size_t>(samples2);
 
 		struct Transform { float matrix[16]; };
 		struct GameObject3DLike

@@ -125,7 +125,7 @@ void dae::Renderer::Render() const
 
 		auto arr = std::make_unique<GameObject3DLike[]>(N);
 		for (size_t i = 0; i < N; ++i)
-			arr[i].id = arr[i].id = static_cast<int>(i);
+			arr[i].id = static_cast<int>(i);
 
 		static volatile int sink = 0;
 
@@ -133,7 +133,7 @@ void dae::Renderer::Render() const
 		{
 			auto t0 = std::chrono::high_resolution_clock::now();
 
-			for (size_t i = 0; i < (size_t)N; i += step)
+			for (size_t i = 0; i < N; i += step)
 			{
 				arr[i].id *= 2;
 				sink += arr[i].id;
@@ -153,7 +153,8 @@ void dae::Renderer::Render() const
 		resultsB.clear();
 		resultsB.reserve(11);
 
-		int N = samples2;
+		if (samples2 < 1) samples2 = 1;
+		const size_t N = static_cast<size_t>(samples2);
 
 		struct Transform { float matrix[16]; };
 		struct GameObject3DLike
@@ -167,7 +168,7 @@ void dae::Renderer::Render() const
 
 		for (size_t i = 0; i < N; ++i)
 		{
-			arr[i].id = i;
+			arr[i].id = static_cast<int>(i);      // <-- FIX C4267
 			arr[i].local = &transforms[i];
 		}
 
@@ -177,10 +178,10 @@ void dae::Renderer::Render() const
 		{
 			auto t0 = std::chrono::high_resolution_clock::now();
 
-			for (size_t i = 0; i < (size_t)N; i += step)
+			for (size_t i = 0; i < N; i += step)
 			{
 				arr[i].id *= 2;
-				arr[i].local->matrix[0] += 1.0f; 
+				arr[i].local->matrix[0] += 1.0f;
 				sink += arr[i].id;
 			}
 

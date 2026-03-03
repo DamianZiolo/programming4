@@ -98,61 +98,138 @@ void dae::Renderer::Render() const
 	ImGui::End();
 
 	ImGui::Begin("Exercise 2");
-	ImGui::Text("Pick number of samples");\
+
+	ImGui::Text("Pick number of samples");
 	static int samples2 = 1000000;
 	ImGui::InputInt("Samples", &samples2);
 
-	
+	static std::vector<float> resultsA;
+	static std::vector<float> resultsB;
+	static bool hasA = false;
+	static bool hasB = false;
 
-	if (ImGui::Button("Trash the cache with GameObject3D"))
+	if (ImGui::Button("Trash cache - Transform local"))
 	{
-		results2.clear();
+		resultsA.clear();
+		resultsA.reserve(11);
+
 		int N = samples2;
 
 		struct Transform { float matrix[16]; };
+		struct GameObject3DLike
+		{
+			Transform local;
+			int id;
+		};
 
+		auto arr = std::make_unique<GameObject3DLike[]>(N);
+		for (int i = 0; i < N; ++i)
+			arr[i].id = i;
+
+		static volatile int sink = 0;
+
+		for (size_t step = 1; step <= 1024; step *= 2)
+		{
+			auto t0 = std::chrono::high_resolution_clock::now();
+
+			for (size_t i = 0; i < (size_t)N; i += step)
+			{
+				arr[i].id *= 2;
+				sink += arr[i].id;
+			}
+
+			auto t1 = std::chrono::high_resolution_clock::now();
+			auto time = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+
+			resultsA.push_back((float)time);
+		}
+
+		hasA = true;
+	}
+
+	if (ImGui::Button("Trash cache - Transform pointer"))
+	{
+		resultsB.clear();
+		resultsB.reserve(11);
+
+		int N = samples2;
+
+		struct Transform { float matrix[16]; };
 		struct GameObject3DLike
 		{
 			Transform* local;
 			int id;
 		};
 
-		
+		auto transforms = std::make_unique<Transform[]>(N);
 		auto arr = std::make_unique<GameObject3DLike[]>(N);
+
 		for (int i = 0; i < N; ++i)
 		{
 			arr[i].id = i;
+			arr[i].local = &transforms[i];
 		}
+
+		static volatile int sink = 0;
 
 		for (size_t step = 1; step <= 1024; step *= 2)
 		{
 			auto t0 = std::chrono::high_resolution_clock::now();
 
-			for (size_t i = 0; i < N; i += step)
+			for (size_t i = 0; i < (size_t)N; i += step)
+			{
 				arr[i].id *= 2;
+				arr[i].local->matrix[0] += 1.0f; 
+				sink += arr[i].id;
+			}
 
 			auto t1 = std::chrono::high_resolution_clock::now();
-
 			auto time = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
 
-			results2.push_back(static_cast<float>(time));
-
+			resultsB.push_back((float)time);
 		}
-		hasResult2 = true;
+
+		hasB = true;
 	}
 
-	if (hasResult2 && !results2.empty())
+	//red
+	if (hasA && !resultsA.empty())
 	{
+		ImGui::Text("Transform local");
+		ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(1, 0, 0, 1)); // czerwony
+
 		ImGui::PlotLines(
-			"Execution Time (us)",
-			results2.data(),
-			static_cast<int>(results2.size()),
+			"##PlotA",
+			resultsA.data(),
+			(int)resultsA.size(),
 			0,
 			nullptr,
 			0.0f,
-			*std::max_element(results2.begin(), results2.end()),
+			*std::max_element(resultsA.begin(), resultsA.end()),
 			ImVec2(0, 200)
 		);
+
+		ImGui::PopStyleColor();
+	}
+
+	//green
+	if (hasB && !resultsB.empty())
+	{
+		ImGui::Text("Transform pointer");
+		ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(0, 1, 0, 1)); 
+
+		ImGui::PlotLines(
+			"##PlotB",
+			resultsB.data(),
+			(int)resultsB.size(),
+			0,
+			nullptr,
+			0.0f,
+			*std::max_element(resultsB.begin(), resultsB.end()),
+			ImVec2(0, 200)
+		);
+
+		ImGui::PopStyleColor();
 	}
 
 	ImGui::End();

@@ -124,7 +124,7 @@ void dae::Renderer::Render() const
 		};
 
 		auto arr = std::make_unique<GameObject3DLike[]>(N);
-		for (int i = 0; i < N; ++i)
+		for (size_t i = 0; i < N; ++i)
 			arr[i].id = i;
 
 		static volatile int sink = 0;
@@ -165,7 +165,7 @@ void dae::Renderer::Render() const
 		auto transforms = std::make_unique<Transform[]>(N);
 		auto arr = std::make_unique<GameObject3DLike[]>(N);
 
-		for (int i = 0; i < N; ++i)
+		for (size_t i = 0; i < N; ++i)
 		{
 			arr[i].id = i;
 			arr[i].local = &transforms[i];

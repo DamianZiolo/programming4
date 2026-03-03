@@ -51,7 +51,6 @@ void dae::Renderer::Render() const
 	static std::vector<float> results;
 	static std::vector<float> results2;
 	static bool hasResult1 = false;
-	static bool hasResult2 = false;
 	ImGui::Begin("Exercise 1");
 	ImGui::Text("Pick number of samples");\
 	static int samples = 1000000;

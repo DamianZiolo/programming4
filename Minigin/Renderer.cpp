@@ -53,15 +53,15 @@ void dae::Renderer::Render() const
 	static bool hasResult1 = false;
 	ImGui::Begin("Exercise 1");
 	ImGui::Text("Pick number of samples");\
-	static int samples = 1000000;
+	static int samples = 100;
 	ImGui::InputInt("Samples", &samples);
 	if (ImGui::Button("Trash the cache"))
 	{
-		if (samples < 1) samples = 1;                       // ważne
+		if (samples < 1) samples = 1;                       
 		const size_t N = static_cast<size_t>(samples);
 
 		results.clear();
-		results.reserve(11);                                 // tylko 11 stepów
+		results.reserve(11);                                 
 
 		auto arr = std::make_unique<int[]>(N);
 		for (size_t i = 0; i < N; ++i)
@@ -71,7 +71,7 @@ void dae::Renderer::Render() const
 		{
 			auto t0 = std::chrono::high_resolution_clock::now();
 
-			for (size_t i = 0; i < N; i += step)            // <-- TU JEST FIX
+			for (size_t i = 0; i < N; i += step)            
 				arr[i] *= 2;
 
 			auto t1 = std::chrono::high_resolution_clock::now();
@@ -100,7 +100,7 @@ void dae::Renderer::Render() const
 	ImGui::Begin("Exercise 2");
 
 	ImGui::Text("Pick number of samples");
-	static int samples2 = 1000000;
+	static int samples2 = 100;
 	ImGui::InputInt("Samples", &samples2);
 
 	static std::vector<float> resultsA;
@@ -112,7 +112,7 @@ void dae::Renderer::Render() const
 	{
 		resultsA.clear();
 		resultsA.reserve(11);
-		
+
 		if (samples2 < 1) samples2 = 1;
 		const size_t N = static_cast<size_t>(samples2);
 
@@ -123,26 +123,42 @@ void dae::Renderer::Render() const
 			int id;
 		};
 
-		auto arr = std::make_unique<GameObject3DLike[]>(N);
-		for (size_t i = 0; i < N; ++i)
-			arr[i].id = static_cast<int>(i);
+		const size_t arraySize = 1000000;
+		auto arr = std::make_unique<GameObject3DLike[]>(arraySize);
 
-		static volatile int sink = 0;
+		for (size_t i = 0; i < arraySize; ++i)
+			arr[i].id = static_cast<int>(i);
 
 		for (size_t step = 1; step <= 1024; step *= 2)
 		{
-			auto t0 = std::chrono::high_resolution_clock::now();
+			std::vector<int64_t> timeArray;
+			timeArray.reserve(N);
 
-			for (size_t i = 0; i < N; i += step)
+			for (size_t j = 0; j < N; ++j)
 			{
-				arr[i].id *= 2;
-				sink += arr[i].id;
+				auto t0 = std::chrono::high_resolution_clock::now();
+
+				for (size_t i = 0; i < arraySize; i += step)
+				{
+					arr[i].id *= 2;
+				}
+
+				auto t1 = std::chrono::high_resolution_clock::now();
+				auto time = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+
+				timeArray.push_back(time);
 			}
 
-			auto t1 = std::chrono::high_resolution_clock::now();
-			auto time = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+			std::sort(timeArray.begin(), timeArray.end());
 
-			resultsA.push_back((float)time);
+			int64_t sum = 0;
+			for (size_t i = 1; i < timeArray.size() - 1; ++i)
+			{
+				sum += timeArray[i];
+			}
+
+			double avg = (double)sum / (timeArray.size() - 2);
+			resultsA.push_back((float)avg);
 		}
 
 		hasA = true;
@@ -159,36 +175,50 @@ void dae::Renderer::Render() const
 		struct Transform { float matrix[16]; };
 		struct GameObject3DLike
 		{
-			Transform* local;
+			std::unique_ptr<Transform> local;
 			int id;
 		};
+		const size_t arraySize = 100000;
+		auto transforms = std::make_unique<Transform[]>(arraySize);
+		auto arr = std::make_unique<GameObject3DLike[]>(arraySize);
 
-		auto transforms = std::make_unique<Transform[]>(N);
-		auto arr = std::make_unique<GameObject3DLike[]>(N);
-
-		for (size_t i = 0; i < N; ++i)
+		for (size_t i = 0; i < arraySize; ++i)
 		{
-			arr[i].id = static_cast<int>(i);      // <-- FIX C4267
-			arr[i].local = &transforms[i];
+			arr[i].id = static_cast<int>(i);
+			arr[i].local = std::make_unique<Transform>();
 		}
-
-		static volatile int sink = 0;
 
 		for (size_t step = 1; step <= 1024; step *= 2)
 		{
-			auto t0 = std::chrono::high_resolution_clock::now();
+			std::vector<int64_t> timeArray;
+			timeArray.reserve(N);
 
-			for (size_t i = 0; i < N; i += step)
+			for (size_t j = 0; j < N; ++j)
 			{
-				arr[i].id *= 2;
-				arr[i].local->matrix[0] += 1.0f;
-				sink += arr[i].id;
+				auto t0 = std::chrono::high_resolution_clock::now();
+
+				for (size_t i = 0; i < arraySize; i += step)
+				{
+					arr[i].id *= 2;
+					arr[i].local->matrix[0] += 1.0f;
+				}
+
+				auto t1 = std::chrono::high_resolution_clock::now();
+				auto time = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+
+				timeArray.push_back((int64_t)time);
 			}
 
-			auto t1 = std::chrono::high_resolution_clock::now();
-			auto time = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+			std::sort(timeArray.begin(), timeArray.end());
 
-			resultsB.push_back((float)time);
+			int64_t sum = 0;
+			for (size_t k = 1; k < timeArray.size() - 1; ++k)
+			{
+				sum += timeArray[k];
+			}
+
+			double avg = (double)sum / (double)(timeArray.size() - 2);
+			resultsB.push_back((float)avg);
 		}
 
 		hasB = true;
@@ -198,7 +228,7 @@ void dae::Renderer::Render() const
 	if (hasA && !resultsA.empty())
 	{
 		ImGui::Text("Transform local");
-		ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(1, 0, 0, 1)); // czerwony
+		ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(1, 0, 0, 1)); 
 
 		ImGui::PlotLines(
 			"##PlotA",

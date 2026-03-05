@@ -23,6 +23,7 @@
 #include "Scene.h"
 #include "RenderComponent.h"
 #include "RotationComponent.h"
+#include "TrashcacheComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -59,6 +60,10 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	scene.Add(std::move(parent));
 	scene.Add(std::move(child));
 
+	auto goTrashCache = std::make_unique<dae::GameObject>();
+	goTrashCache->SetLocalPosition(10, 200);
+	goTrashCache->AddComponent<dae::TrashcacheComponent>();
+	scene.Add(std::move(goTrashCache));
 
 
 	//Create a text object, set the text and add it to the scene

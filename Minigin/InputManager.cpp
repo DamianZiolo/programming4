@@ -27,3 +27,19 @@ bool dae::InputManager::ProcessInput()
 
 	return true;
 }
+
+void dae::InputManager::BindKeyboardCommand(SDL_Scancode key, InputState state, std::unique_ptr<Command> command)
+{
+}
+
+void dae::InputManager::BindControllerCommand(int button, InputState state, std::unique_ptr<Command> command, int controllerIndex)
+{
+}
+
+void dae::InputManager::UnbindKeyboardCommand(SDL_Scancode key, InputState state)
+{
+}
+
+void dae::InputManager::UnbindControllerCommand(int button, InputState state, int controllerIndex)
+{
+}

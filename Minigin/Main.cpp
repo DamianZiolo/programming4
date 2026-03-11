@@ -29,7 +29,7 @@
 #include "MoveCommand.h"
 
 #include <filesystem>
-#include <Xinput.h>
+#include "ControllerButton.h"
 namespace fs = std::filesystem;
 
 static void load() //Load is static so other files can't call it, only main.cpp can
@@ -80,37 +80,45 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 		dae::InputState::Pressed,
 		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 1.f, 0.f, 0.f })
 	);
+	scene.Add(std::move(parent));
 
+
+	parent = std::make_unique<dae::GameObject>();
+	parent->SetLocalPosition(screenCenter);
+	parent->AddComponent<dae::RenderComponent>("Player.png");
+	parent->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
+
+	parentMovement = parent->AddComponent<dae::MovementComponent>(200.f);
 	//DPad
 	input.BindControllerCommand(
-		XINPUT_GAMEPAD_DPAD_UP,
+		dae::ControllerButton::DPadUp,
 		dae::InputState::Pressed,
 		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 0.f, -1.f, 0.f }),
 		0
 	);
 
 	input.BindControllerCommand(
-		XINPUT_GAMEPAD_DPAD_DOWN,
+		dae::ControllerButton::DPadDown,
 		dae::InputState::Pressed,
 		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 0.f, 1.f, 0.f }),
 		0
 	);
 
 	input.BindControllerCommand(
-		XINPUT_GAMEPAD_DPAD_LEFT,
+		dae::ControllerButton::DPadLeft,
 		dae::InputState::Pressed,
 		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ -1.f, 0.f, 0.f }),
 		0
 	);
 
 	input.BindControllerCommand(
-		XINPUT_GAMEPAD_DPAD_RIGHT,
+		dae::ControllerButton::DPadRight,
 		dae::InputState::Pressed,
 		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 1.f, 0.f, 0.f }),
 		0
 	);
-
 	scene.Add(std::move(parent));
+
 
 	//Create a text object, set the text and add it to the scene
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);

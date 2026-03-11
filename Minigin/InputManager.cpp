@@ -2,6 +2,7 @@
 #include <backends/imgui_impl_sdl3.h>
 #include "InputManager.h"
 #include "Controller.h"
+#include "ControllerButton.h"
 
 bool dae::InputManager::ProcessInput()
 {
@@ -114,10 +115,10 @@ void dae::InputManager::BindKeyboardCommand(SDL_Scancode key, InputState state, 
 	m_KeyboardBindings.emplace_back(KeyboardBinding{ key,state,std::move(command) });
 }
 
-void dae::InputManager::BindControllerCommand(int button, InputState state, std::unique_ptr<Command> command, int controllerIndex)
+void dae::InputManager::BindControllerCommand(ControllerButton button, InputState state, std::unique_ptr<Command> command, int controllerIndex)
 {
 	assert(command && "BindControllerCommand received nullptr command");
-	if (button < 0 || state == InputState::None || controllerIndex < 0)
+	if (state == InputState::None || controllerIndex < 0)
 	{
 		return;
 	}
@@ -125,6 +126,7 @@ void dae::InputManager::BindControllerCommand(int button, InputState state, std:
 	//we need move command because it's unique pointer
 	m_ControllerBindings.emplace_back(ControllerBinding{ button,state,std::move(command),controllerIndex });
 }
+
 
 void dae::InputManager::UnbindKeyboardCommand(SDL_Scancode key, InputState state)
 {
@@ -145,9 +147,9 @@ void dae::InputManager::UnbindKeyboardCommand(SDL_Scancode key, InputState state
 
 }
 
-void dae::InputManager::UnbindControllerCommand(int button, InputState state, int controllerIndex)
+void dae::InputManager::UnbindControllerCommand(ControllerButton button, InputState state, int controllerIndex)
 {
-	if (button < 0 || state == InputState::None || controllerIndex < 0)
+	if (state == InputState::None || controllerIndex < 0)
 	{
 		return;
 	}
@@ -159,6 +161,18 @@ void dae::InputManager::UnbindControllerCommand(int button, InputState state, in
 			m_ControllerBindings.erase(iterator);
 			return;
 		}
+	}
+
+}
+
+dae::InputManager::InputManager()
+{
+	m_PreviousKeyboardState.resize(SDL_SCANCODE_COUNT);
+
+	//create 4 controllers already, we don't need to use them all
+	for (int i = 0; i < 4; ++i)
+	{
+		m_Controllers.emplace_back(std::make_unique<Controller>(i));
 	}
 
 }

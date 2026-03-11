@@ -6,6 +6,7 @@
 #include <vector>
 #include <SDL3/SDL.h>
 #include "Controller.h"
+#include "ControllerButton.h"
 
 namespace dae
 {
@@ -16,14 +17,14 @@ namespace dae
 		bool ProcessInput();
 		
 		void BindKeyboardCommand(SDL_Scancode key, InputState state, std::unique_ptr<Command> command);
-		void BindControllerCommand(int button, InputState state, std::unique_ptr<Command> command, int controllerIndex = 0);
+		void BindControllerCommand(ControllerButton button, InputState state, std::unique_ptr<Command> command, int controllerIndex = 0);
 
 		void UnbindKeyboardCommand(SDL_Scancode key, InputState state);
-		void UnbindControllerCommand(int button, InputState state, int controllerIndex = 0);
+		void UnbindControllerCommand(ControllerButton button, InputState state, int controllerIndex = 0);
 
 	private:
 		friend class Singleton<InputManager>;
-		InputManager() = default;
+		InputManager();
 
 		struct KeyboardBinding
 		{
@@ -32,13 +33,12 @@ namespace dae
 			std::unique_ptr<Command> command;
 		};
 
-		struct ControllerBinding 
+		struct ControllerBinding
 		{
-			int button;
+			ControllerButton button;
 			InputState state;
 			std::unique_ptr<Command> command;
 			int controllerIndex;
-
 		};
 
 		std::vector<KeyboardBinding> m_KeyboardBindings{};

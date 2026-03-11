@@ -141,9 +141,6 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	);
 	goText->AddComponent<dae::FPSComponent>();
 	scene.Add(std::move(goText));
-
-
-
 }
 
 int main(int, char*[]) {

@@ -5,10 +5,10 @@
 #include <memory>
 #include <vector>
 #include <SDL3/SDL.h>
+#include "Controller.h"
 
 namespace dae
 {
-	class Controller;
 
 	class InputManager final : public Singleton<InputManager>
 	{

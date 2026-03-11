@@ -32,6 +32,9 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/RenderComponent.cpp
   Minigin/RotationComponent.cpp
   Minigin/TrashcacheComponent.cpp
+  Minigin/Controller.cpp
+  Minigin/MoveCommand.cpp
+  Minigin/MovementComponent.cpp
 )
 
 # enable c++20 features
@@ -203,6 +206,8 @@ elseif(WIN32)
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TARGET_NAME})
   # Set working directory to output folder
   set_target_properties(${TARGET_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>")
+
+  target_link_libraries("${TARGET_NAME}" PUBLIC xinput.lib)
 
   # Copy SDL dlls to output folder
   set(SDL_RUNTIME_DLLS

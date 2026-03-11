@@ -1,16 +1,15 @@
 #include "Controller.h"
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <Xinput.h>
+#endif
+
 dae::Controller::Controller(int controllerIndex):
 	m_ControllerIndex(controllerIndex)
 {
 
-}
-
-{
-//Bit operators reminder!!
-// ^  = XOR (bitwise exclusive OR) -> detects bits that changed
-// &  = AND (keeps only bits that exist in both values)
-// ~  = NOT (flips all bits)
 }
 
 void dae::Controller::Update()

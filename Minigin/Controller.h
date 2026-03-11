@@ -1,4 +1,5 @@
-#pragra once
+#pragma once
+#include <Windows.h>
 #include <Xinput.h>
 
 namespace dae {

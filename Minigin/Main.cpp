@@ -24,8 +24,12 @@
 #include "RenderComponent.h"
 #include "RotationComponent.h"
 #include "TrashcacheComponent.h"
+#include "MovementComponent.h"
+#include "InputManager.h"
+#include "MoveCommand.h"
 
 #include <filesystem>
+#include <Xinput.h>
 namespace fs = std::filesystem;
 
 static void load() //Load is static so other files can't call it, only main.cpp can
@@ -48,6 +52,64 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	parent->SetLocalPosition(screenCenter);
 	parent->AddComponent<dae::RenderComponent>("Player.png");
 	parent->GetComponent<dae::RenderComponent>()->SetSize(20, 20);
+	auto& input = dae::InputManager::GetInstance();
+
+	auto* parentMovement = parent->AddComponent<dae::MovementComponent>(100.f);
+
+	// Keyboard
+	input.BindKeyboardCommand(
+		SDL_SCANCODE_W,
+		dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 0.f, -1.f, 0.f })
+	);
+
+	input.BindKeyboardCommand(
+		SDL_SCANCODE_S,
+		dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 0.f, 1.f, 0.f })
+	);
+
+	input.BindKeyboardCommand(
+		SDL_SCANCODE_A,
+		dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ -1.f, 0.f, 0.f })
+	);
+
+	input.BindKeyboardCommand(
+		SDL_SCANCODE_D,
+		dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 1.f, 0.f, 0.f })
+	);
+
+	//DPad
+	input.BindControllerCommand(
+		XINPUT_GAMEPAD_DPAD_UP,
+		dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 0.f, -1.f, 0.f }),
+		0
+	);
+
+	input.BindControllerCommand(
+		XINPUT_GAMEPAD_DPAD_DOWN,
+		dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 0.f, 1.f, 0.f }),
+		0
+	);
+
+	input.BindControllerCommand(
+		XINPUT_GAMEPAD_DPAD_LEFT,
+		dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ -1.f, 0.f, 0.f }),
+		0
+	);
+
+	input.BindControllerCommand(
+		XINPUT_GAMEPAD_DPAD_RIGHT,
+		dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 1.f, 0.f, 0.f }),
+		0
+	);
+
 	scene.Add(std::move(parent));
 
 	//Create a text object, set the text and add it to the scene

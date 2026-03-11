@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
 #include <backends/imgui_impl_sdl3.h>
 #include "InputManager.h"
+#include "Controller.h"
 
 bool dae::InputManager::ProcessInput()
 {
@@ -20,6 +21,7 @@ bool dae::InputManager::ProcessInput()
 	//it returns array of bools
 	const bool* keyboardState = SDL_GetKeyboardState(nullptr);
 
+	//Check and execute all valid keyboard bindings
 	for (auto& binding : m_KeyboardBindings)
 	{
 		bool execute = false;
@@ -55,6 +57,46 @@ bool dae::InputManager::ProcessInput()
 		keyboardState,
 		keyboardState + SDL_SCANCODE_COUNT
 	);
+
+	
+	for (auto& controller : m_Controllers)
+	{
+		controller->Update();
+	}
+	//Check and execute all valid controllers bindings
+	for (auto& binding : m_ControllerBindings)
+	{
+		bool execute = false;
+
+		//Check if controler is valid
+		if (binding.controllerIndex >= m_Controllers.size())
+		{
+			continue;
+		}
+		
+		auto& controller = m_Controllers[binding.controllerIndex];
+
+		switch (binding.state)
+		{
+		case InputState::Pressed:
+			execute = controller->IsPressed(binding.button);
+			break;
+
+		case InputState::Down:
+			execute = controller->IsDownThisFrame(binding.button);
+			break;
+
+		case InputState::Up:
+			execute = controller->IsUpThisFrame(binding.button);
+			break;
+		}
+
+		if (execute)
+		{
+			binding.command->Execute();
+		}
+	}
+
 
 	return true;
 }

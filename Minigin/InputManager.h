@@ -45,6 +45,8 @@ namespace dae
 		std::vector<ControllerBinding> m_ControllerBindings{};
 		std::vector<std::unique_ptr<Controller>> m_Controllers{};
 
+		
+		std::vector<uint8_t> m_PreviousKeyboardState{};
 	};
 
 }

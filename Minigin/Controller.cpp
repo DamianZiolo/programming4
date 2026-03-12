@@ -1,6 +1,6 @@
 #include "Controller.h"
 
-#if defined(__EMSCRIPTEN__)
+#if __EMSCRIPTEN__
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_gamepad.h>
 #else
@@ -13,7 +13,7 @@
 
 namespace
 {
-#if defined(__EMSCRIPTEN__)
+#if __EMSCRIPTEN__
 	SDL_GamepadButton ToSDLButton(dae::ControllerButton button)
 	{
 		switch (button)
@@ -58,7 +58,7 @@ namespace dae
 		{
 		}
 
-#if defined(__EMSCRIPTEN__)
+#if __EMSCRIPTEN__
 		~Impl()
 		{
 			if (m_pGamepad)
@@ -71,7 +71,7 @@ namespace dae
 
 		void Update()
 		{
-#if defined(__EMSCRIPTEN__)
+#if __EMSCRIPTEN__
 			for (int i = 0; i < static_cast<int>(SDL_GAMEPAD_BUTTON_COUNT); ++i)
 			{
 				m_PreviousButtons[i] = m_CurrentButtons[i];
@@ -126,7 +126,7 @@ namespace dae
 
 		bool IsPressed(ControllerButton button) const
 		{
-#if defined(__EMSCRIPTEN__)
+#if __EMSCRIPTEN__
 			const auto sdlButton = ToSDLButton(button);
 			if (sdlButton == SDL_GAMEPAD_BUTTON_INVALID)
 				return false;
@@ -140,7 +140,7 @@ namespace dae
 
 		bool IsDownThisFrame(ControllerButton button) const
 		{
-#if defined(__EMSCRIPTEN__)
+#if __EMSCRIPTEN__
 			const auto sdlButton = ToSDLButton(button);
 			if (sdlButton == SDL_GAMEPAD_BUTTON_INVALID)
 				return false;
@@ -155,7 +155,7 @@ namespace dae
 
 		bool IsUpThisFrame(ControllerButton button) const
 		{
-#if defined(__EMSCRIPTEN__)
+#if __EMSCRIPTEN__
 			const auto sdlButton = ToSDLButton(button);
 			if (sdlButton == SDL_GAMEPAD_BUTTON_INVALID)
 				return false;
@@ -169,7 +169,7 @@ namespace dae
 		}
 
 	private:
-#if defined(__EMSCRIPTEN__)
+#if __EMSCRIPTEN__
 		void OpenGamepadIfNeeded()
 		{
 			if (m_pGamepad)
@@ -195,7 +195,7 @@ namespace dae
 		int m_ControllerIndex{};
 		bool m_IsConnected{ false };
 
-#if defined(__EMSCRIPTEN__)
+#if __EMSCRIPTEN__
 		SDL_Gamepad* m_pGamepad{ nullptr };
 		std::array<bool, SDL_GAMEPAD_BUTTON_COUNT> m_PreviousButtons{};
 		std::array<bool, SDL_GAMEPAD_BUTTON_COUNT> m_CurrentButtons{};

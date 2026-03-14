@@ -4,18 +4,21 @@
 
 namespace dae
 {
-	class MovementComponent;
+	class GameObject;
 	
 	class MoveCommand final : public Command
 	{
 	public:
-		MoveCommand(MovementComponent* movementComponent, const glm::vec3& direction);
+		MoveCommand(const glm::vec3& direction, GameObject* target);
 
 		void Execute() override;
+		float GetSpeed() const { return m_Speed; }
+		void SetSpeed(float speed) { m_Speed = speed; }
 
 	private:
-		MovementComponent* m_pMovementComponent{};
+		float m_Speed{};
 		glm::vec3 m_Direction{};
+		GameObject* m_pTarget{};
 
 	};
 

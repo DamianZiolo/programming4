@@ -53,32 +53,29 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	parent->AddComponent<dae::RenderComponent>("Player.png");
 	parent->GetComponent<dae::RenderComponent>()->SetSize(20, 20);
 	auto& input = dae::InputManager::GetInstance();
-
-	auto* parentMovement = parent->AddComponent<dae::MovementComponent>(100.f);
-
 	// Keyboard
 	input.BindKeyboardCommand(
 		SDL_SCANCODE_W,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 0.f, -1.f, 0.f })
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, -1.f, 0.f }, parent.get() )
 	);
 
 	input.BindKeyboardCommand(
 		SDL_SCANCODE_S,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 0.f, 1.f, 0.f })
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, 1.f, 0.f }, parent.get())
 	);
 
 	input.BindKeyboardCommand(
 		SDL_SCANCODE_A,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ -1.f, 0.f, 0.f })
+		std::make_unique<dae::MoveCommand>(glm::vec3{ -1.f, 0.f, 0.f }, parent.get())
 	);
 
 	input.BindKeyboardCommand(
 		SDL_SCANCODE_D,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 1.f, 0.f, 0.f })
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 1.f, 0.f, 0.f }, parent.get())
 	);
 	scene.Add(std::move(parent));
 
@@ -88,33 +85,32 @@ static void load() //Load is static so other files can't call it, only main.cpp 
 	parent->AddComponent<dae::RenderComponent>("Player.png");
 	parent->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
 
-	parentMovement = parent->AddComponent<dae::MovementComponent>(200.f);
 	//DPad
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadUp,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 0.f, -1.f, 0.f }),
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, -1.f, 0.f }, parent.get()),
 		0
 	);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadDown,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 0.f, 1.f, 0.f }),
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, 1.f, 0.f }, parent.get()),
 		0
 	);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadLeft,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ -1.f, 0.f, 0.f }),
+		std::make_unique<dae::MoveCommand>(glm::vec3{ -1.f, 0.f, 0.f }, parent.get()),
 		0
 	);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadRight,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(parentMovement, glm::vec3{ 1.f, 0.f, 0.f }),
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 1.f, 0.f, 0.f }, parent.get()),
 		0
 	);
 	scene.Add(std::move(parent));

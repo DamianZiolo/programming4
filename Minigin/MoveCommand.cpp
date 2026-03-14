@@ -1,16 +1,22 @@
 #include "MoveCommand.h"
 #include "MovementComponent.h"
+#include "GameTime.h"
+#include "GameObject.h"
 
-dae::MoveCommand::MoveCommand(MovementComponent* movementComponent, const glm::vec3& direction)
-	: m_pMovementComponent(movementComponent)
-	, m_Direction(direction)
+dae::MoveCommand::MoveCommand(const glm::vec3& direction, GameObject* target)
+	:m_Direction(direction),
+	m_pTarget{ target },
+	m_Speed(100.f)
 {
 }
 
 void dae::MoveCommand::Execute()
 {
-	if (!m_pMovementComponent)
+	if (m_pTarget == nullptr)
 		return;
-
-	m_pMovementComponent->Move(m_Direction);
+	const float dt = GameTime::GetIntance().GetDeltaTime();
+	auto position = m_pTarget->GetLocalPosition();
+	position += m_Direction * m_Speed * dt;
+	m_pTarget->SetLocalPosition(position);
 }
+

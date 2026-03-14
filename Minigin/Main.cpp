@@ -24,7 +24,6 @@
 #include "RenderComponent.h"
 #include "RotationComponent.h"
 #include "TrashcacheComponent.h"
-#include "MovementComponent.h"
 #include "InputManager.h"
 #include "MoveCommand.h"
 

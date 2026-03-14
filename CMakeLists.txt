@@ -34,7 +34,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/TrashcacheComponent.cpp
   Minigin/Controller.cpp
   Minigin/MoveCommand.cpp
-  Minigin/MovementComponent.cpp
+  
 )
 
 # enable c++20 features

@@ -4,9 +4,9 @@
 #include "GameObject.h"
 
 dae::MoveCommand::MoveCommand(const glm::vec3& direction, GameObject* target)
-	:m_Direction(direction),
-	m_pTarget{ target },
-	m_Speed(100.f)
+	: m_Speed(100.f),
+	m_Direction(direction),
+	m_pTarget(target)
 {
 }
 

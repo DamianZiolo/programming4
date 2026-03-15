@@ -34,6 +34,10 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/TrashcacheComponent.cpp
   Minigin/Controller.cpp
   Minigin/MoveCommand.cpp
+  Minigin/HealthComponent.cpp
+  Minigin/GameActor.cpp
+  Minigin/ShotCommand.cpp
+  Minigin/HealthDisplayComponent.cpp
   
 )
 

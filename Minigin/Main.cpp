@@ -26,116 +26,166 @@
 #include "TrashcacheComponent.h"
 #include "InputManager.h"
 #include "MoveCommand.h"
+#include "HealthComponent.h"
+#include "HealthDisplayComponent.h"
+#include "ShotCommand.h"
 
 #include <filesystem>
 #include "ControllerButton.h"
+#include "GameActor.h"
 namespace fs = std::filesystem;
 
-static void load() //Load is static so other files can't call it, only main.cpp can
+void CreateBackground(dae::Scene& scene)
 {
-	auto& scene = dae::SceneManager::GetInstance().CreateScene(); // returns a reference to the scene that is stored in the scene manager
-
-	//Create a game object, set it background and add it to the scene
-	const glm::vec3 screenCenter{ 512.0f, 288.0f, 0.0f };
 	auto go = std::make_unique<dae::GameObject>();
-	go->AddComponent<dae::RenderComponent>("background.png"); //I add render component to the game object and set the texture to background.png, because I want to be able to render the background, and I want to use the render component to do that, because it's responsible for rendering the texture of the game object, and I want to keep the rendering logic separate from the game object logic, and also because I want to be able to change the texture of the game object without changing its position or other properties, and also because I want to be able to reuse the render component for other game objects that have different textures but similar rendering logic
+	go->AddComponent<dae::RenderComponent>("background.png");
 	scene.Add(std::move(go));
+}
 
-	//Create a game object, set it logo and add it to the scene //because of std::move, the go variable is now empty, so we can reuse it to create another game object, it's unique pointer so we don't need to delete it
-	go = std::make_unique<dae::GameObject>();
+void CreateLogo(dae::Scene& scene, const glm::vec3& screenCenter)
+{
+	auto go = std::make_unique<dae::GameObject>();
 	go->SetLocalPosition(screenCenter);
 	go->AddComponent<dae::RenderComponent>("logo.png");
 	scene.Add(std::move(go));
+}
 
+dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
+{
 	auto parent = std::make_unique<dae::GameObject>();
+
 	parent->SetLocalPosition(screenCenter);
 	parent->AddComponent<dae::RenderComponent>("Player.png");
 	parent->GetComponent<dae::RenderComponent>()->SetSize(20, 20);
+
+	auto actor = parent->AddComponent<dae::GameActor>();
+	parent->AddComponent<dae::HealthComponent>(3);
+
 	auto& input = dae::InputManager::GetInstance();
-	// Keyboard
-	input.BindKeyboardCommand(
-		SDL_SCANCODE_W,
-		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, -1.f, 0.f }, parent.get() )
-	);
 
-	input.BindKeyboardCommand(
-		SDL_SCANCODE_S,
-		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, 1.f, 0.f }, parent.get())
-	);
+	input.BindKeyboardCommand(SDL_SCANCODE_SPACE, dae::InputState::Down,
+		std::make_unique<dae::ShotCommand>(parent.get()));
 
-	input.BindKeyboardCommand(
-		SDL_SCANCODE_A,
-		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ -1.f, 0.f, 0.f }, parent.get())
-	);
+	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, parent.get()));
 
-	input.BindKeyboardCommand(
-		SDL_SCANCODE_D,
-		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 1.f, 0.f, 0.f }, parent.get())
-	);
+	input.BindKeyboardCommand(SDL_SCANCODE_S, dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,1,0 }, parent.get()));
+
+	input.BindKeyboardCommand(SDL_SCANCODE_A, dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(glm::vec3{ -1,0,0 }, parent.get()));
+
+	input.BindKeyboardCommand(SDL_SCANCODE_D, dae::InputState::Pressed,
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, parent.get()));
+
 	scene.Add(std::move(parent));
 
+	return actor;
+}
 
-	parent = std::make_unique<dae::GameObject>();
+void CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
+{
+	auto parent = std::make_unique<dae::GameObject>();
+
 	parent->SetLocalPosition(screenCenter);
 	parent->AddComponent<dae::RenderComponent>("Player.png");
 	parent->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
 
-	//DPad
+	parent->AddComponent<dae::GameActor>();
+	parent->AddComponent<dae::HealthComponent>(3);
+
+	auto& input = dae::InputManager::GetInstance();
+
+	input.BindControllerCommand(
+		dae::ControllerButton::B,
+		dae::InputState::Pressed,
+		std::make_unique<dae::ShotCommand>(parent.get()),
+		0);
+
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadUp,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, -1.f, 0.f }, parent.get()),
-		0
-	);
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, parent.get()),
+		0);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadDown,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, 1.f, 0.f }, parent.get()),
-		0
-	);
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,1,0 }, parent.get()),
+		0);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadLeft,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ -1.f, 0.f, 0.f }, parent.get()),
-		0
-	);
+		std::make_unique<dae::MoveCommand>(glm::vec3{ -1,0,0 }, parent.get()),
+		0);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadRight,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 1.f, 0.f, 0.f }, parent.get()),
-		0
-	);
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, parent.get()),
+		0);
+
 	scene.Add(std::move(parent));
+}
 
+void CreateLivesUI(dae::Scene& scene, dae::GameActor* actor, std::shared_ptr<dae::Font> font)
+{
+	auto uiLives = std::make_unique<dae::GameObject>();
 
-	//Create a text object, set the text and add it to the scene
-	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+	uiLives->SetLocalPosition(20, 20);
 
+	uiLives->AddComponent<dae::TextComponent>(
+		font,
+		"Lives: 3",
+		SDL_Color{ 255,255,255,255 });
+
+	uiLives->AddComponent<dae::HealthDisplayComponent>(actor);
+
+	scene.Add(std::move(uiLives));
+}
+
+void CreateTexts(dae::Scene& scene, std::shared_ptr<dae::Font> font)
+{
 	auto goText = std::make_unique<dae::GameObject>();
+
 	goText->SetLocalPosition(292, 20);
 	goText->AddComponent<dae::TextComponent>(
 		font,
 		"Programming 4 Assignment",
-		SDL_Color{ 255, 255, 0, 255 }
-	);
+		SDL_Color{ 255,255,0,255 });
+
 	scene.Add(std::move(goText));
 
+
 	goText = std::make_unique<dae::GameObject>();
+
 	goText->SetLocalPosition(292, 80);
 	goText->AddComponent<dae::TextComponent>(
 		font,
 		"0 FPS",
-		SDL_Color{ 255, 255, 0, 255 }
-	);
+		SDL_Color{ 255,255,0,255 });
+
 	goText->AddComponent<dae::FPSComponent>();
+
 	scene.Add(std::move(goText));
+}
+
+static void load()
+{
+	auto& scene = dae::SceneManager::GetInstance().CreateScene();
+	const glm::vec3 screenCenter{ 512.f,288.f,0.f };
+
+	CreateBackground(scene);
+	CreateLogo(scene, screenCenter);
+
+	auto playerActor = CreateKeyboardPlayer(scene, screenCenter);
+	CreateControllerPlayer(scene, screenCenter);
+
+	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+
+	CreateTexts(scene, font);
+	CreateLivesUI(scene, playerActor, font);
 }
 
 int main(int, char*[]) {
@@ -154,3 +204,4 @@ int main(int, char*[]) {
 	engine.Run(load);
     return 0;
 }
+

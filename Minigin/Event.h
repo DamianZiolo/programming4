@@ -4,6 +4,7 @@ namespace dae
     enum class Event
     {
         PlayerDamaged,
-        PlayerDied
+        PlayerDied,
+        ScoreChanged
     };
 }

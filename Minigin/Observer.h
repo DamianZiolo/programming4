@@ -1,3 +1,4 @@
+#pragma once
 #include "Event.h"
 
 namespace dae
@@ -7,7 +8,7 @@ namespace dae
 	{
 	public:
 		virtual ~Observer() = default;
-		virtual void Notify(Event event, GameActor* actor) = 0;
 
+		virtual void Notify(dae::Event event, GameActor* actor) = 0;
 	};
 }

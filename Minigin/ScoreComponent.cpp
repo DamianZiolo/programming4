@@ -1,0 +1,23 @@
+#include "ScoreComponent.h"
+#include "GameObject.h"
+#include "GameActor.h"
+#include "Event.h"
+#include <cassert>
+
+dae::ScoreComponent::ScoreComponent(GameObject* owner)
+	: Component(owner)
+{
+	auto actor = GetOwner()->GetComponent<GameActor>();
+	assert(actor && "ScoreComponent requires a GameActor component on the same GameObject");
+}
+
+void dae::ScoreComponent::AddScore(int amount)
+{
+	m_Score += amount;
+	GetOwner()->GetComponent<GameActor>()->NotifyObservers(Event::ScoreChanged);
+}
+
+int dae::ScoreComponent::GetScore() const
+{
+	return m_Score;
+}

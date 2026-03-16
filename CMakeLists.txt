@@ -38,7 +38,10 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/GameActor.cpp
   Minigin/ShotCommand.cpp
   Minigin/HealthDisplayComponent.cpp
-  
+  Minigin/DisplayComponent.cpp
+  Minigin/ScoreComponent.cpp
+  Minigin/ScoreDisplayComponent.cpp
+  Minigin/CollectedPointsCommand.cpp
 )
 
 # enable c++20 features

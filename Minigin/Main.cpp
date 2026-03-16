@@ -29,6 +29,9 @@
 #include "HealthComponent.h"
 #include "HealthDisplayComponent.h"
 #include "ShotCommand.h"
+#include "ScoreDisplayComponent.h"
+#include "ScoreComponent.h"
+#include "CollectedPointsCommand.h"
 
 #include <filesystem>
 #include "ControllerButton.h"
@@ -52,53 +55,61 @@ void CreateLogo(dae::Scene& scene, const glm::vec3& screenCenter)
 
 dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
 {
-	auto parent = std::make_unique<dae::GameObject>();
+	auto player = std::make_unique<dae::GameObject>();
 
-	parent->SetLocalPosition(screenCenter);
-	parent->AddComponent<dae::RenderComponent>("Player.png");
-	parent->GetComponent<dae::RenderComponent>()->SetSize(20, 20);
-
-	auto actor = parent->AddComponent<dae::GameActor>();
-	parent->AddComponent<dae::HealthComponent>(3);
+	player->SetLocalPosition(screenCenter);
+	player->AddComponent<dae::RenderComponent>("Player.png");
+	player->GetComponent<dae::RenderComponent>()->SetSize(20, 20);
+	auto actor = player->AddComponent<dae::GameActor>();
+	player->AddComponent<dae::ScoreComponent>();
+	player->AddComponent<dae::HealthComponent>(3);
 
 	auto& input = dae::InputManager::GetInstance();
 
 	input.BindKeyboardCommand(SDL_SCANCODE_SPACE, dae::InputState::Down,
-		std::make_unique<dae::ShotCommand>(parent.get()));
+		std::make_unique<dae::ShotCommand>(player.get()));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, parent.get()));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, player.get()));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_S, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,1,0 }, parent.get()));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,1,0 }, player.get()));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_A, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ -1,0,0 }, parent.get()));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ -1,0,0 }, player.get()));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_D, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, parent.get()));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, player.get()));
 
-	scene.Add(std::move(parent));
+	input.BindKeyboardCommand(
+		SDL_SCANCODE_P,
+		dae::InputState::Down,
+		std::make_unique<dae::CollectedPointsCommand>(player.get(), 100)
+	);
+
+	scene.Add(std::move(player));
 
 	return actor;
 }
 
-void CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
+dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
 {
 	auto parent = std::make_unique<dae::GameObject>();
 
 	parent->SetLocalPosition(screenCenter);
 	parent->AddComponent<dae::RenderComponent>("Player.png");
 	parent->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
+	auto actor = parent->AddComponent<dae::GameActor>();
+	parent->AddComponent<dae::ScoreComponent>();
 
-	parent->AddComponent<dae::GameActor>();
+	
 	parent->AddComponent<dae::HealthComponent>(3);
 
 	auto& input = dae::InputManager::GetInstance();
 
 	input.BindControllerCommand(
 		dae::ControllerButton::B,
-		dae::InputState::Pressed,
+		dae::InputState::Down,
 		std::make_unique<dae::ShotCommand>(parent.get()),
 		0);
 
@@ -126,23 +137,57 @@ void CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
 		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, parent.get()),
 		0);
 
+	input.BindControllerCommand(
+		dae::ControllerButton::A,
+		dae::InputState::Down,
+		std::make_unique<dae::CollectedPointsCommand>(parent.get(), 100)
+	);
+
 	scene.Add(std::move(parent));
+
+	return actor;
 }
 
-void CreateLivesUI(dae::Scene& scene, dae::GameActor* actor, std::shared_ptr<dae::Font> font)
+void CreateLivesUI(
+	dae::Scene& scene,
+	dae::GameActor* actor,
+	std::shared_ptr<dae::Font> font,
+	const glm::vec3& position,
+	const std::string& label)
 {
-	auto uiLives = std::make_unique<dae::GameObject>();
+	auto ui = std::make_unique<dae::GameObject>();
 
-	uiLives->SetLocalPosition(20, 20);
+	ui->SetLocalPosition(position);
 
-	uiLives->AddComponent<dae::TextComponent>(
+	ui->AddComponent<dae::TextComponent>(
 		font,
-		"Lives: 3",
+		label + "3",
 		SDL_Color{ 255,255,255,255 });
 
-	uiLives->AddComponent<dae::HealthDisplayComponent>(actor);
+	ui->AddComponent<dae::HealthDisplayComponent>(actor);
 
-	scene.Add(std::move(uiLives));
+	scene.Add(std::move(ui));
+}
+
+void CreateScoreUI(
+	dae::Scene& scene,
+	dae::GameActor* actor,
+	std::shared_ptr<dae::Font> font,
+	const glm::vec3& position,
+	const std::string& label)
+{
+	auto ui = std::make_unique<dae::GameObject>();
+
+	ui->SetLocalPosition(position);
+
+	ui->AddComponent<dae::TextComponent>(
+		font,
+		label + "0",
+		SDL_Color{ 255,255,255,255 });
+
+	ui->AddComponent<dae::ScoreDisplayComponent>(actor);
+
+	scene.Add(std::move(ui));
 }
 
 void CreateTexts(dae::Scene& scene, std::shared_ptr<dae::Font> font)
@@ -171,6 +216,34 @@ void CreateTexts(dae::Scene& scene, std::shared_ptr<dae::Font> font)
 	scene.Add(std::move(goText));
 }
 
+void CreateControlsUI(
+	dae::Scene& scene,
+	std::shared_ptr<dae::Font> font,
+	const glm::vec3& position)
+{
+	auto ui = std::make_unique<dae::GameObject>();
+
+	ui->SetLocalPosition(position);
+
+	std::string controlsText =
+		"Keyboard Controls:\n"
+		"W A S D - Move\n"
+		"SPACE - Shoot\n"
+		"P - Add Score\n\n"
+		"Controller Controls:\n"
+		"DPad - Move\n"
+		"B - Shoot\n"
+		"A - Add Score";
+
+	ui->AddComponent<dae::TextComponent>(
+		font,
+		controlsText,
+		SDL_Color{ 255,255,255,255 }
+	);
+
+	scene.Add(std::move(ui));
+}
+
 static void load()
 {
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
@@ -179,13 +252,20 @@ static void load()
 	CreateBackground(scene);
 	CreateLogo(scene, screenCenter);
 
-	auto playerActor = CreateKeyboardPlayer(scene, screenCenter);
-	CreateControllerPlayer(scene, screenCenter);
+	auto player1 = CreateKeyboardPlayer(scene, screenCenter);
+	auto player2 = CreateControllerPlayer(scene, screenCenter);
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
-	CreateTexts(scene, font);
-	CreateLivesUI(scene, playerActor, font);
+	CreateLivesUI(scene, player1, font, { 20,20,0 }, "Health: ");
+	CreateScoreUI(scene, player1, font, { 20,60,0 }, "Score: ");
+	CreateLivesUI(scene, player2, font, { 20,100,0 }, "Health: ");
+	CreateScoreUI(scene, player2, font, { 20,140,0 }, "Score: ");
+	CreateControlsUI(
+		scene,
+		font,
+		glm::vec3{ 20.f, 400.f, 0.f }
+	);
 }
 
 int main(int, char*[]) {

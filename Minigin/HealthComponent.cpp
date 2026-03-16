@@ -20,8 +20,12 @@ void dae::HealthComponent::DealDamage()
 	m_CurrentHealth -= 1;
 	GetOwner()->GetComponent<dae::GameActor>()->NotifyObservers(Event::PlayerDamaged);
 
-	if (m_CurrentHealth < 0)
+	if (m_CurrentHealth <= 0)
+	{
 		m_CurrentHealth = 0;
+		GetOwner()->GetComponent<dae::GameActor>()->NotifyObservers(Event::PlayerDied);
+	}
+		
 }
 
 int dae::HealthComponent::GetHealth() const 

@@ -2,13 +2,18 @@
 #include "GameObject.h"
 #include "GameActor.h"
 #include "Event.h"
+#include <stdexcept>
 
 dae::HealthComponent::HealthComponent(GameObject* owner, int startHealth) : Component(owner)
 	,m_MaxHealth(startHealth)
 	,m_CurrentHealth(startHealth)
 {
 	auto actor = GetOwner()->GetComponent<dae::GameActor>();
-	assert(actor && "HealthComponent requires a GameActor component on the same GameObject");
+
+	if (!actor)
+	{
+		throw std::runtime_error("HealthComponent requires a GameActor component");
+	}
 }
 
 void dae::HealthComponent::Update()

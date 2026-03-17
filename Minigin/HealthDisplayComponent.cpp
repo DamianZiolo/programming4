@@ -17,7 +17,6 @@ dae::HealthDisplayComponent::HealthDisplayComponent(GameObject* owner, GameActor
 void dae::HealthDisplayComponent::Notify(Event event)
 {
 
-
 	if (event == Event::PlayerDamaged)
 	{
 		int lives = m_pHealthComponent->GetHealth();

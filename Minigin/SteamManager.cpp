@@ -32,13 +32,17 @@ void dae::SteamManager::Update()
 #endif
 }
 
+#if USE_STEAMWORKS
 void dae::SteamManager::UnlockAchievement(const char* achievementID)
 {
-#if USE_STEAMWORKS
 	if (SteamUserStats())
 	{
 		SteamUserStats()->SetAchievement(achievementID);
 		SteamUserStats()->StoreStats();
 	}
-#endif
 }
+#else
+void dae::SteamManager::UnlockAchievement(const char*)
+{
+}
+#endif

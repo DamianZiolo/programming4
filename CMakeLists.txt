@@ -42,6 +42,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/ScoreComponent.cpp
   Minigin/ScoreDisplayComponent.cpp
   Minigin/CollectedPointsCommand.cpp
+  Minigin/SteamManager.cpp
 )
 
 # enable c++20 features

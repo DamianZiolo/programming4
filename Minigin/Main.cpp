@@ -32,6 +32,7 @@
 #include "ScoreDisplayComponent.h"
 #include "ScoreComponent.h"
 #include "CollectedPointsCommand.h"
+#include "SteamManager.h"
 
 #include <filesystem>
 #include "ControllerButton.h"
@@ -226,13 +227,11 @@ void CreateControlsUI(
 	ui->SetLocalPosition(position);
 
 	std::string controlsText =
-		"Keyboard Controls:\n"
-		"W A S D - Move\n"
-		"SPACE - Shoot\n"
-		"P - Add Score\n\n"
-		"Controller Controls:\n"
-		"DPad - Move\n"
-		"B - Shoot\n"
+		"Keyboard:"
+		"SPACE - Shoot"
+		"P - Add Score"
+		"Controller:"
+		"B - Shoot"
 		"A - Add Score";
 
 	ui->AddComponent<dae::TextComponent>(
@@ -280,8 +279,10 @@ int main(int, char*[]) {
 	if(!fs::exists(data_location))
 		data_location = "../Data/";
 #endif
+	dae::SteamManager::Init();
 	dae::Minigin engine(data_location);
 	engine.Run(load);
+	dae::SteamManager::Shutdown();
     return 0;
 }
 

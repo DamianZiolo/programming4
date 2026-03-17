@@ -16,6 +16,7 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "GameTime.h"
+#include "SteamManager.h"
 
 SDL_Window* g_window{};
 
@@ -102,6 +103,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 void dae::Minigin::RunOneFrame() //Actuall ,,u[date" in which we update scene manager and render the scene and take care about inputs
 {
+	dae::SteamManager::Update();
 	GameTime::GetIntance().Tick(); //Update the time, so we can get the delta time and use float dt = Time::GetInstance().GetDeltaTime();
 	ProcessInput();
 	Update();

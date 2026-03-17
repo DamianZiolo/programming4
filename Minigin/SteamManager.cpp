@@ -31,3 +31,14 @@ void dae::SteamManager::Update()
 	SteamAPI_RunCallbacks();
 #endif
 }
+
+void dae::SteamManager::UnlockAchievement(const char* achievementID)
+{
+#if USE_STEAMWORKS
+	if (SteamUserStats())
+	{
+		SteamUserStats()->SetAchievement(achievementID);
+		SteamUserStats()->StoreStats();
+	}
+#endif
+}

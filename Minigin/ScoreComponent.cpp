@@ -15,6 +15,10 @@ void dae::ScoreComponent::AddScore(int amount)
 {
 	m_Score += amount;
 	GetOwner()->GetComponent<GameActor>()->NotifyObservers(Event::ScoreChanged);
+	if (m_Score >= 500)
+	{
+		GetOwner()->GetComponent<GameActor>()->NotifyObservers(Event::ScoreReached500);
+	}
 }
 
 int dae::ScoreComponent::GetScore() const

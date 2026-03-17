@@ -5,6 +5,7 @@ namespace dae
     {
         PlayerDamaged,
         PlayerDied,
-        ScoreChanged
+        ScoreChanged,
+        ScoreReached500
     };
 }

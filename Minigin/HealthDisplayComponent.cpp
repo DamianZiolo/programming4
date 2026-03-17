@@ -14,10 +14,9 @@ dae::HealthDisplayComponent::HealthDisplayComponent(GameObject* owner, GameActor
 	m_pTextComponent = GetOwner()->GetComponent<TextComponent>();
 }
 
-void dae::HealthDisplayComponent::Notify(Event event, GameActor* actor)
+void dae::HealthDisplayComponent::Notify(Event event)
 {
-	if (actor != m_pActor)
-		return;
+
 
 	if (event == Event::PlayerDamaged)
 	{

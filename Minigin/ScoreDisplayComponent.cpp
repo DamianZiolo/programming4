@@ -14,11 +14,8 @@ m_pActor{ actor }
 }
 
 
-void dae::ScoreDisplayComponent::Notify(Event event, GameActor* actor)
+void dae::ScoreDisplayComponent::Notify(Event event)
 {
-	if (actor != m_pActor)
-		return;
-
 	if (event == Event::ScoreChanged)
 	{
 		int score = m_pScoreComponent->GetScore();

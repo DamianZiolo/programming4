@@ -24,7 +24,7 @@ void dae::GameActor::NotifyObservers(Event event)
 {
 	for (auto observer : m_observers)
 	{
-		observer->Notify(event, this);
+		observer->Notify(event);
 	}
 }
 

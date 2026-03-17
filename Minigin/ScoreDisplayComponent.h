@@ -15,7 +15,7 @@ namespace dae
 		ScoreDisplayComponent(GameObject* owner, GameActor* actor);
 
 		void Update() override {};
-		void Notify(Event event, GameActor* actor) override;
+		void Notify(Event event) override;
 
 	private:
 		GameActor* m_pActor{};

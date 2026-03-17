@@ -7,6 +7,7 @@ namespace dae
 		static void Init();
 		static void Shutdown();
 		static void Update();
+		static void UnlockAchievement(const char* achievementID);
 
 	};
 

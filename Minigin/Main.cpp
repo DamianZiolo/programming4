@@ -33,6 +33,7 @@
 #include "ScoreComponent.h"
 #include "CollectedPointsCommand.h"
 #include "SteamManager.h"
+#include "AchievementSystemComponent.h"
 
 #include <filesystem>
 #include "ControllerButton.h"
@@ -265,6 +266,15 @@ static void load()
 		font,
 		glm::vec3{ 20.f, 400.f, 0.f }
 	);
+
+	auto achievementGO = std::make_unique<dae::GameObject>();
+	auto achievement = achievementGO->AddComponent<dae::AchievementSystemComponent>();
+
+	achievement->AddActor(player1);
+	achievement->AddActor(player2);
+
+	scene.Add(std::move(achievementGO));
+
 }
 
 int main(int, char*[]) {

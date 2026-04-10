@@ -1,88 +1,80 @@
-﻿# Minigin
+# 🚀 Minigin Project – Programming 4
 
-Minigin is a very small project using [SDL3](https://www.libsdl.org/) and [glm](https://github.com/g-truc/glm) for 2D c++ game projects. It is in no way a game engine, only a barebone start project where everything sdl related has been set up. It contains glm for vector math, to aleviate the need to write custom vector and matrix classes.
+## 🎮 About
 
-[![Build Status](https://github.com/avadae/minigin/actions/workflows/cmake.yml/badge.svg)](https://github.com/avadae/cmake/actions)
-[![Build Status](https://github.com/avadae/minigin/actions/workflows/emscripten.yml/badge.svg)](https://github.com/avadae/emscripten/actions)
-[![GitHub Release](https://img.shields.io/github/v/release/avadae/minigin?logo=github&sort=semver)](https://github.com/avadae/minigin/releases/latest)
+This project is a **game built using Minigin**, created as part of the **Programming 4** course.
 
-# Goal
+The main goal of this assignment is to **develop a custom game engine in C++ from scratch**, and then use it to recreate a classic arcade game.
 
-Minigin can/may be used as a start project for the exam assignment in the course [Programming 4](https://youtu.be/j96Oh6vzhmg) at DAE. In that assignment students need to recreate a popular 80's arcade game with a game engine they need to program themselves. During the course we discuss several game programming patterns, using the book '[Game Programming Patterns](https://gameprogrammingpatterns.com/)' by [Robert Nystrom](https://github.com/munificent) as reading material. 
+---
 
-# Disclaimer
+## 🎯 Goal of the Assignment
 
-Minigin is, despite perhaps the suggestion in its name, **not** a game engine. It is just a very simple SDL3 ready project with some of the scaffolding in place to get started. None of the patterns discussed in the course are used yet (except singleton which use we challenge during the course). It is up to the students to implement their own vision for their engine, apply patterns as they see fit, create their game as efficient as possible.
+As part of the course, I am:
 
-# Use
+* Building my **own game engine in C++**
+* Learning and applying **game programming patterns**
+* Using the book 👉 [https://gameprogrammingpatterns.com](https://gameprogrammingpatterns.com) as a reference
 
-Get the source from this project, or since students need to have their work on github too, they can use this repository as a template. Hit the "Use this template" button on the top right corner of the github page of this project.
+Once the engine reaches a solid state, I will use it to recreate the classic arcade game:
 
-## Windows version
+> 🕹️ **Galaga**
 
-Either
-- Open the root folder in Visual Studio 2026; this will be recognized as a cmake project.
-  
-Or
-- Install CMake 
-- Install CMake and CMake Tools extensions in Visual Code
-- Open the root folder in Visual Code,  this will be recognized as a cmake project.
+with an additional custom feature:
 
-Or
-- Use whatever editor you like :)
+* 👥 **Duo Mode** – my own gameplay variation
 
-## Emscripten (web) version
+---
 
-### On windows
+## 🧠 Engine Features (So Far)
 
-For installing all of the needed tools on Windows I recommend using [Chocolatey](https://chocolatey.org/). You can then run the following in a terminal to install what is needed:
+During development, I have already implemented several important systems and patterns:
 
-    choco install -y cmake
-    choco install -y emscripten
-    choco install -y ninja
-    choco install -y python
+### 🔧 Core Systems
 
-In a terminal, navigate to the root folder. Run this: 
+* Game Loop
+* Update Method
+* Component System
+* Scene Graph
 
-    mkdir build_web
-    cd build_web
-    emcmake cmake ..
-    emmake ninja
+### 🧩 Patterns & Architecture
 
-To be able to see the webpage you can start a python webserver in the build_web folder
+* Dirty Flag
+* Command Pattern
+* Observer Pattern
+* Pimpl (Pointer to Implementation)
 
-    python -m http.server
+These systems form the foundation of my custom engine and will continue to evolve throughout the project.
 
-Then browse to http://localhost:8000 and you're good to go.
+---
 
-### On OSX
+## ⚠️ Disclaimer
 
-On Mac you can use homebrew
+This project is **not a full-featured engine** (yet 😉).
+It is a learning-focused implementation aimed at understanding:
 
-    brew install cmake
-    brew install emscripten
-    brew install python
+* Engine architecture
+* Performance considerations
+* Game programming patterns
 
-In a terminal on OSX, navigate to the root folder. Run this: 
+---
 
-    mkdir build_web
-    cd build_web
-    emcmake cmake .. -DCMAKE_OSX_ARCHITECTURES=""
-    emmake make
+## 🚀 Tech Stack
 
-To be able to see the webpage you can start a python webserver in the build_web folder
+* C++
+* SDL3
+* glm (math library)
 
-    python3 -m http.server
+---
 
-Then browse to http://localhost:8000 and you're good to go.
+## 📌 Status
 
-## Github Actions
+🛠️ Work in progress – continuously expanding and improving the engine.
 
-This project is build with github actions.
-- The CMake workflow builds the project in Debug and Release for Windows and serves as a check that the project builds on that platform.
-- The Emscripten workflow generates a web version of the project and publishes it as a [github page](https://avadae.github.io/minigin/). 
-  - The url of that page will be `https://<username>.github.io/<repository>/`
-- You can embed this page with 
+---
 
-```<iframe style="position: absolute; top: 0px; left: 0px; width: 1024px; height: 576px;" src="https://<username>.github.io/<repository>/" loading="lazy"></iframe>```
+## 🌐 Web Build
 
+The project will also be available as a **web build using Emscripten**, allowing the game to run directly in the browser.
+
+---

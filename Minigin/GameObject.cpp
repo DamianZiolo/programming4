@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
+#include "BoxCollider.h"
 
 dae::GameObject::~GameObject() = default;
 
@@ -121,4 +122,13 @@ void dae::GameObject::AddChild(GameObject* child)
 void dae::GameObject::RemoveChild(GameObject* child)
 {
 	std::erase(m_children, child);
+}
+
+void dae::GameObject::OnCollisionEnter(BoxCollider* other)
+{
+	for (auto& component : m_components)
+	{
+		component->OnCollisionEnter(other);
+	}
+
 }

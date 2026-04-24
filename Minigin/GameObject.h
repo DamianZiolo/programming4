@@ -12,6 +12,8 @@
 
 namespace dae
 {
+    class BoxCollider;
+
     class GameObject final
     {
     public:
@@ -118,6 +120,8 @@ namespace dae
         }
 
         void CleanupRemovedComponents();
+
+        void OnCollisionEnter(BoxCollider* other);
 
     private:
         // Scene graph

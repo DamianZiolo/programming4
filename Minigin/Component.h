@@ -4,7 +4,7 @@
 namespace dae
 {
 	class GameObject;
-
+	class BoxCollider;
 	class Component
 	{
 	public: 
@@ -15,7 +15,8 @@ namespace dae
 		GameObject* GetOwner() const { return m_Owner; }
 		bool IsActive() const { return m_IsActive; }
 		void SetActive(bool active) { m_IsActive = active; }
-
+		//optional override of this metdo
+		void OnCollisionEnter(BoxCollider* other) { (void)other; }
 		//I delete it because component is not meant to be copied or moved, because it has a pointer to its owner, and if we copy or move it, we would have multiple components pointing to the same owner, which can lead to issues with ownership and memory management, and also because it's not necessary to copy or move components, we can just create new ones and add them to the game object
 		Component(const Component&) = delete;
 		Component(Component&&) = delete;

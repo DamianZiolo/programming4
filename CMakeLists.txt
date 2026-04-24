@@ -14,11 +14,12 @@ else()
 endif()
 
 # list source files here
-add_executable(${TARGET_NAME} ${TARGET_PARAM}
+
+#Engine DamianZ static library
+add_library(MiniginEngine STATIC
   Minigin/Font.cpp
   Minigin/GameObject.cpp
   Minigin/InputManager.cpp
-  Minigin/Main.cpp
   Minigin/Minigin.cpp
   Minigin/Renderer.cpp
   Minigin/ResourceManager.cpp
@@ -33,20 +34,26 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/RotationComponent.cpp
   Minigin/TrashcacheComponent.cpp
   Minigin/Controller.cpp
-  Minigin/MoveCommand.cpp
-  Minigin/HealthComponent.cpp
-  Minigin/GameActor.cpp
-  Minigin/ShotCommand.cpp
-  Minigin/HealthDisplayComponent.cpp
   Minigin/DisplayComponent.cpp
-  Minigin/ScoreComponent.cpp
-  Minigin/ScoreDisplayComponent.cpp
-  Minigin/CollectedPointsCommand.cpp
   Minigin/SteamManager.cpp
-  Minigin/AchievementSystemComponent.cpp
+)
+
+#Game executable Galaga Dziolo
+add_executable(${TARGET_NAME} ${TARGET_PARAM}
+Games/Galaga/Main.cpp
+  Games/Galaga/HealthComponent.cpp
+  Games/Galaga/GameActor.cpp
+  Games/Galaga/ShotCommand.cpp
+  Games/Galaga/HealthDisplayComponent.cpp
+  Games/Galaga/ScoreComponent.cpp
+  Games/Galaga/ScoreDisplayComponent.cpp
+  Games/Galaga/CollectedPointsCommand.cpp
+  Games/Galaga/AchievementSystemComponent.cpp
+  Games/Galaga/MoveCommand.cpp
 )
 
 # enable c++20 features
+target_compile_features(MiniginEngine PUBLIC cxx_std_20)
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
 
 include(FetchContent)
@@ -154,33 +161,41 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/steam")
 find_package(Steamworks QUIET)
 
-target_include_directories("${TARGET_NAME}" PUBLIC
-  ${CMAKE_SOURCE_DIR}/Minigin/
-  ${VLD_INCLUDE_DIR}
-)
-
-target_include_directories("${TARGET_NAME}" PUBLIC 
+target_include_directories(MiniginEngine PUBLIC
   ${CMAKE_SOURCE_DIR}/Minigin/
   ${glm_SOURCE_DIR}
   ${sdl3_SOURCE_DIR}/include
-  ${sdl3_image_SOURCE_DIR}/include
   ${sdl3_ttf_SOURCE_DIR}/include
   ${imgui_SOURCE_DIR}
   ${VLD_INCLUDE_DIR}
 )
 
-target_link_libraries("${TARGET_NAME}" PUBLIC 
-  SDL3::SDL3 
+target_include_directories(${TARGET_NAME} PRIVATE
+  ${CMAKE_SOURCE_DIR}/Games/Galaga/
+)
+
+target_link_libraries(MiniginEngine PUBLIC
+  SDL3::SDL3
   SDL3_ttf::SDL3_ttf
+  glm::glm
   imgui
   ${VLD_LIBRARIES}
 )
 
-target_link_libraries("${TARGET_NAME}" PUBLIC
+target_link_libraries(${TARGET_NAME} PRIVATE
+  MiniginEngine
+)
+
+target_link_libraries(MiniginEngine PUBLIC
   SDL3::SDL3
   SDL3_ttf::SDL3_ttf
   glm::glm
+  imgui
   ${VLD_LIBRARIES}
+)
+
+target_link_libraries(${TARGET_NAME} PRIVATE
+  MiniginEngine
 )
 
 if(MSVC)
@@ -216,7 +231,7 @@ elseif(WIN32)
   # Set working directory to output folder
   set_target_properties(${TARGET_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>")
 
-  target_link_libraries("${TARGET_NAME}" PUBLIC xinput.lib)
+  target_link_libraries(MiniginEngine PUBLIC xinput.lib)
 
   # Copy SDL dlls to output folder
   set(SDL_RUNTIME_DLLS

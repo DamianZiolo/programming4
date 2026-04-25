@@ -2,11 +2,23 @@
 #include "GameObject.h"
 #include "Renderer.h"
 #include "Transform.h"
+#include "CollisionManager.h"
 
 dae::BoxCollider::BoxCollider(GameObject* owner, const glm::vec2& size):
 	Component(owner)
 	,m_Size(size)
 {
+	CollisionManager::GetInstance().RegisterCollider(this);
+}
+
+dae::BoxCollider::~BoxCollider()
+{
+	auto& collisionManager = CollisionManager::GetInstance();
+
+	if (!collisionManager.IsShuttingDown())
+	{
+		collisionManager.UnregisterCollider(this);
+	}
 }
 
 void dae::BoxCollider::Update()

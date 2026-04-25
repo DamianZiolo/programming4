@@ -22,6 +22,18 @@ void dae::CollisionManager::UnregisterCollider(BoxCollider* collider)
 	m_Colliders.erase(it, m_Colliders.end());
 }
 
+void dae::CollisionManager::Clear()
+{
+	m_Colliders.clear();
+}
+
+void dae::CollisionManager::Shutdown()
+{
+	m_IsShuttingDown = true;
+	Clear();
+}
+
+
 void dae::CollisionManager::Update()
 {
 	for (size_t i = 0; i < m_Colliders.size(); ++i)

@@ -35,9 +35,11 @@
 #include "SteamManager.h"
 #include "AchievementSystemComponent.h"
 
+
 #include <filesystem>
 #include "ControllerButton.h"
 #include "GameActor.h"
+#include "BoxCollider.h"
 namespace fs = std::filesystem;
 
 void CreateBackground(dae::Scene& scene)
@@ -65,6 +67,11 @@ dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenC
 	auto actor = player->AddComponent<dae::GameActor>();
 	player->AddComponent<dae::ScoreComponent>();
 	player->AddComponent<dae::HealthComponent>(3);
+	auto playerCollider = player->AddComponent<dae::BoxCollider>(glm::vec2(20,20));
+	playerCollider->SetDrawDebug(true);
+	
+	//turn on debug 
+
 
 	auto& input = dae::InputManager::GetInstance();
 
@@ -92,6 +99,17 @@ dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenC
 	scene.Add(std::move(player));
 
 	return actor;
+}
+
+void CreateEnemie(dae::Scene& scene)
+{
+	auto enemy = std::make_unique<dae::GameObject>();
+	enemy->SetLocalPosition(glm::vec3(200, 200, 200));
+	enemy->AddComponent<dae::RenderComponent>("Enemy1.png");
+	enemy->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
+	auto playerCollider = enemy->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
+	playerCollider->SetDrawDebug(true);
+	scene.Add(std::move(enemy));
 }
 
 dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
@@ -244,6 +262,8 @@ void CreateControlsUI(
 	scene.Add(std::move(ui));
 }
 
+
+
 static void load()
 {
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
@@ -254,6 +274,7 @@ static void load()
 
 	auto player1 = CreateKeyboardPlayer(scene, screenCenter);
 	auto player2 = CreateControllerPlayer(scene, screenCenter);
+	CreateEnemie(scene);
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
@@ -266,6 +287,7 @@ static void load()
 		font,
 		glm::vec3{ 20.f, 400.f, 0.f }
 	);
+
 
 	auto achievementGO = std::make_unique<dae::GameObject>();
 	auto achievement = achievementGO->AddComponent<dae::AchievementSystemComponent>();

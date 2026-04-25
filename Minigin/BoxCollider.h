@@ -8,6 +8,7 @@ namespace dae
 	{
 	public:
 		BoxCollider(GameObject* owner, const glm::vec2& size);
+		~BoxCollider() override;
 
 		void Update() override;
 		void Render() const override;

@@ -17,6 +17,7 @@
 #include "ResourceManager.h"
 #include "GameTime.h"
 #include "SteamManager.h"
+#include "CollisionManager.h"
 
 SDL_Window* g_window{};
 
@@ -95,7 +96,10 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	GameTime::GetIntance().Reset(); //Reset the time to start counting from 0, and set the previous counter to the current counter, so we don't get a huge delta time on the first frame
 #ifndef __EMSCRIPTEN__
 	while (!m_quit) //Until we don't quit the game, run one frame
+	{
 		RunOneFrame();
+	}
+	CollisionManager::GetInstance().Shutdown();
 #else
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
 #endif
@@ -118,6 +122,7 @@ void dae::Minigin::ProcessInput()
 void dae::Minigin::Update()
 {
 	SceneManager::GetInstance().Update();
+	CollisionManager::GetInstance().Update();
 }
 
 void dae::Minigin::Render()

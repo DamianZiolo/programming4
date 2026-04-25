@@ -52,6 +52,8 @@ Games/Galaga/Main.cpp
   Games/Galaga/CollectedPointsCommand.cpp
   Games/Galaga/AchievementSystemComponent.cpp
   Games/Galaga/MoveCommand.cpp
+  Games/Galaga/Enemy.cpp
+  Games/Galaga/EnemyFly.cpp
 )
 
 # enable c++20 features

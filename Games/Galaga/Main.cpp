@@ -40,6 +40,7 @@
 #include "ControllerButton.h"
 #include "GameActor.h"
 #include "BoxCollider.h"
+#include <EnemyFly.h>
 namespace fs = std::filesystem;
 
 void CreateBackground(dae::Scene& scene)
@@ -101,14 +102,15 @@ dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenC
 	return actor;
 }
 
-void CreateEnemie(dae::Scene& scene)
+void CreateEnemie(dae::Scene& scene, glm::vec3 position)
 {
 	auto enemy = std::make_unique<dae::GameObject>();
-	enemy->SetLocalPosition(glm::vec3(200, 200, 200));
+	enemy->SetLocalPosition(position);
 	enemy->AddComponent<dae::RenderComponent>("Enemy1.png");
 	enemy->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
 	auto playerCollider = enemy->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
 	playerCollider->SetDrawDebug(true);
+	enemy->AddComponent<dae::EnemyFly>();
 	scene.Add(std::move(enemy));
 }
 
@@ -274,7 +276,12 @@ static void load()
 
 	auto player1 = CreateKeyboardPlayer(scene, screenCenter);
 	auto player2 = CreateControllerPlayer(scene, screenCenter);
-	CreateEnemie(scene);
+	for (int i{ 0 }; i < 20;++i)
+	{
+		CreateEnemie(scene, glm::vec3(30 + 50*i, 50, 0));
+		CreateEnemie(scene, glm::vec3(30 + 50 * i, 100, 0));
+	}
+	
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 

@@ -80,8 +80,8 @@ bool dae::BoxCollider::IsCollidingWith(const BoxCollider& other) const
 
 glm::vec2 dae::BoxCollider::GetPosition() const
 {
-	const glm::vec3 worldPosition = GetOwner()->GetTransform().GetWorldPosition();
-	return glm::vec2{ worldPosition.x, worldPosition.y };
+	const glm::vec3 localPosition = GetOwner()->GetTransform().GetLocalPosition();
+	return glm::vec2{ localPosition.x, localPosition.y };
 }
 
 glm::vec2 dae::BoxCollider::GetSize() const

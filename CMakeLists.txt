@@ -100,6 +100,20 @@ if(NOT SDL3_FOUND)
   endif()
 endif()
 
+#Add SLD3_mixer
+find_package(SDL3_mixer CONFIG QUIET)
+
+if(NOT SDL3_mixer_FOUND)
+  FetchContent_Declare(
+    SDL3_mixer
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
+    GIT_TAG release-3.2.0
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
+  )
+  FetchContent_MakeAvailable(SDL3_mixer)
+endif()
+
 # Dear ImGui
 FetchContent_Declare(
   imgui
@@ -183,6 +197,7 @@ target_include_directories(${TARGET_NAME} PRIVATE
 target_link_libraries(MiniginEngine PUBLIC
   SDL3::SDL3
   SDL3_ttf::SDL3_ttf
+  SDL3_mixer::SDL3_mixer
   glm::glm
   imgui
   ${VLD_LIBRARIES}
@@ -192,17 +207,6 @@ target_link_libraries(${TARGET_NAME} PRIVATE
   MiniginEngine
 )
 
-target_link_libraries(MiniginEngine PUBLIC
-  SDL3::SDL3
-  SDL3_ttf::SDL3_ttf
-  glm::glm
-  imgui
-  ${VLD_LIBRARIES}
-)
-
-target_link_libraries(${TARGET_NAME} PRIVATE
-  MiniginEngine
-)
 
 if(MSVC)
   # compile at warning level 4 + treat warnings as errors
@@ -239,11 +243,12 @@ elseif(WIN32)
 
   target_link_libraries(MiniginEngine PUBLIC xinput.lib)
 
-  # Copy SDL dlls to output folder
+  #Copy SDL ddls to output folder
   set(SDL_RUNTIME_DLLS
-    SDL3::SDL3
-    SDL3_ttf::SDL3_ttf
-  )
+  SDL3::SDL3
+  SDL3_ttf::SDL3_ttf
+  SDL3_mixer::SDL3_mixer
+)
 
   foreach(dllTarget IN LISTS SDL_RUNTIME_DLLS)
     add_custom_command(

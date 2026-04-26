@@ -17,6 +17,6 @@ void dae::ShotCommand::Execute()
 	if (health)
 	{
 		health->DealDamage();
-		ServiceLocator::GetSoundSystem().Play(67, 1.f);
+		ServiceLocator::GetSoundSystem().Play(1, 1.f);
 	}
 }

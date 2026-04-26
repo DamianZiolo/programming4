@@ -250,11 +250,8 @@ void CreateControlsUI(
 
 	std::string controlsText =
 		"Keyboard:"
-		"SPACE - Shoot"
-		"P - Add Score"
-		"Controller:"
-		"B - Shoot"
-		"A - Add Score";
+		"SPACE - Shoot (THIS PLAY SOUND)"
+		;
 
 	ui->AddComponent<dae::TextComponent>(
 		font,
@@ -271,6 +268,7 @@ static void load()
 {
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
 	const glm::vec3 screenCenter{ 512.f,288.f,0.f };
+	dae::ServiceLocator::GetSoundSystem().RegisterSound(1, "Data/sound1.mp3");
 
 	CreateBackground(scene);
 	//CreateLogo(scene, screenCenter);

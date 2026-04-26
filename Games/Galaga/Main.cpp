@@ -41,6 +41,7 @@
 #include "GameActor.h"
 #include "BoxCollider.h"
 #include <EnemyFly.h>
+#include <ServiceLocator.h>
 namespace fs = std::filesystem;
 
 void CreateBackground(dae::Scene& scene)
@@ -272,7 +273,7 @@ static void load()
 	const glm::vec3 screenCenter{ 512.f,288.f,0.f };
 
 	CreateBackground(scene);
-	CreateLogo(scene, screenCenter);
+	//CreateLogo(scene, screenCenter);
 
 	auto player1 = CreateKeyboardPlayer(scene, screenCenter);
 	auto player2 = CreateControllerPlayer(scene, screenCenter);
@@ -303,6 +304,8 @@ static void load()
 	achievement->AddActor(player2);
 
 	scene.Add(std::move(achievementGO));
+
+	dae::ServiceLocator::GetSoundSystem().Play(1, 1.0f);
 
 }
 

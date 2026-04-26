@@ -38,6 +38,8 @@ add_library(MiniginEngine STATIC
   Minigin/SteamManager.cpp
   Minigin/BoxCollider.cpp
   Minigin/CollisionManager.cpp
+  Minigin/ServiceLocator.cpp
+  Minigin/SDLSoundSystem.cpp
 )
 
 #Game executable Galaga Dziolo

@@ -1,6 +1,7 @@
 #include "ShotCommand.h"
 #include "GameObject.h"
 #include "HealthComponent.h"
+#include "ServiceLocator.h"
 
 dae::ShotCommand::ShotCommand(GameObject* player)
 	: m_pTarget(player)
@@ -16,5 +17,6 @@ void dae::ShotCommand::Execute()
 	if (health)
 	{
 		health->DealDamage();
+		ServiceLocator::GetSoundSystem().Play(67, 1.f);
 	}
 }

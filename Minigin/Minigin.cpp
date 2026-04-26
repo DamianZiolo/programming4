@@ -18,6 +18,9 @@
 #include "GameTime.h"
 #include "SteamManager.h"
 #include "CollisionManager.h"
+#include "ServiceLocator.h"
+#include "NullSoundSystem.h"
+#include "SDLSoundSystem.h"
 
 SDL_Window* g_window{};
 
@@ -80,6 +83,7 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 
 	Renderer::GetInstance().Init(g_window);
 	ResourceManager::GetInstance().Init(dataPath);
+	ServiceLocator::RegisterSoundSystem(std::make_unique<SDLSoundSystem>() );
 }
 
 dae::Minigin::~Minigin()

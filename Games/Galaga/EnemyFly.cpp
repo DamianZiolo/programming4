@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include <windows.h>
 #include <sstream>
+#include "ServiceLocator.h"
 
 dae::EnemyFly::EnemyFly(GameObject* owner):Enemy(owner)
 {
@@ -35,5 +36,6 @@ void dae::EnemyFly::OnCollisionEnter(BoxCollider* other)
 		OutputDebugStringA("EnemyFly.cpp: I'm dying!\n");
 		Die();
 	}
+	ServiceLocator::GetSoundSystem().Play(1, 1.f);
 
 }

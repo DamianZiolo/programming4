@@ -51,20 +51,19 @@ namespace dae
 			if (m_Mixer != nullptr)
 			{
 				MIX_StopAllTracks(m_Mixer, 0);
+				MIX_DestroyMixer(m_Mixer);
+				m_Mixer = nullptr;
 			}
 
 			for (auto& clip : m_AudioClips)
 			{
-				MIX_DestroyAudio(clip.second);
+				if (clip.second != nullptr)
+				{
+					MIX_DestroyAudio(clip.second);
+				}
 			}
 
 			m_AudioClips.clear();
-
-			if (m_Mixer != nullptr)
-			{
-				MIX_DestroyMixer(m_Mixer);
-				m_Mixer = nullptr;
-			}
 
 			MIX_Quit();
 		}

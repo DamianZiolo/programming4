@@ -81,9 +81,9 @@ namespace dae
 		}
 
 	private:
-		void ProcessQueue()
+		void ProcessQueue() 
 		{
-			while (m_IsRunning)
+			while (m_IsRunning) //use condition variable instead
 			{
 				SoundRequest request{};
 				bool hasRequest = false;
@@ -105,7 +105,7 @@ namespace dae
 				}
 				else
 				{
-					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					std::this_thread::sleep_for(std::chrono::milliseconds(1)); //That much precision is not required
 				}
 			}
 		}
@@ -187,6 +187,10 @@ namespace dae
 		m_Impl->Play(id, volume);
 	}
 }
+//IMPORTANT NOTE THREADING ON THE EXAM
+// PLAYING THE SOUND WHILE THE LOCK IS STILL ACTIVE
+
+
 
 //dae::SDLSoundSystem::SDLSoundSystem()
 //{

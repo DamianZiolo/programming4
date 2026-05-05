@@ -1,5 +1,7 @@
 #pragma once
 #include "BossState.h"
+#include <memory>
+#include <glm/vec3.hpp>
 
 namespace dae
 {
@@ -10,5 +12,7 @@ namespace dae
 
 	private:
 		float m_Timer{};
+		glm::vec3 m_StartPos{};
+		bool m_Returning{ false };
 	};
 }

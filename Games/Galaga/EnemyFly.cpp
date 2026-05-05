@@ -35,7 +35,8 @@ void dae::EnemyFly::OnCollisionEnter(BoxCollider* other)
 	{
 		OutputDebugStringA("EnemyFly.cpp: I'm dying!\n");
 		Die();
+		ServiceLocator::GetSoundSystem().Play(1, 1.f);
 	}
-	ServiceLocator::GetSoundSystem().Play(1, 1.f);
+	
 
 }

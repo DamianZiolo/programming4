@@ -303,7 +303,7 @@ static void load()
 		CreateEnemie(scene, glm::vec3(30 + 50 * i, 100, 0));
 	}
 
-	CreateBoss(scene, glm::vec3(300, 300, 0));
+	CreateBoss(scene, glm::vec3(300, 50, 0));
 	
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);

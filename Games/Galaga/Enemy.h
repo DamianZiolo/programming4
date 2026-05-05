@@ -19,7 +19,6 @@ namespace dae
 		Enemy& operator=(const Enemy&) = delete;
 		Enemy& operator=(Enemy&&) = delete;
 
-	protected:
 		void Die();
 
 	};

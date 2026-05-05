@@ -42,6 +42,8 @@
 #include "BoxCollider.h"
 #include <EnemyFly.h>
 #include <ServiceLocator.h>
+#include "EnemyBoss.h"
+
 namespace fs = std::filesystem;
 
 void CreateBackground(dae::Scene& scene)
@@ -113,6 +115,26 @@ void CreateEnemie(dae::Scene& scene, glm::vec3 position)
 	playerCollider->SetDrawDebug(true);
 	enemy->AddComponent<dae::EnemyFly>();
 	scene.Add(std::move(enemy));
+}
+
+void CreateBoss(dae::Scene& scene, glm::vec3 position)
+{
+	auto boss = std::make_unique<dae::GameObject>();
+
+	boss->SetLocalPosition(position);
+
+	// Render
+	boss->AddComponent<dae::RenderComponent>("Boss.png");
+	boss->GetComponent<dae::RenderComponent>()->SetSize(60, 60); 
+
+	// Collider
+	auto collider = boss->AddComponent<dae::BoxCollider>(glm::vec2(60, 60));
+	collider->SetDrawDebug(true);
+
+	// Boss component
+	boss->AddComponent<dae::EnemyBoss>();
+	//auto* bossComp = boss->AddComponent<dae::EnemyBoss>();
+	scene.Add(std::move(boss));
 }
 
 dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
@@ -280,6 +302,8 @@ static void load()
 		CreateEnemie(scene, glm::vec3(30 + 50*i, 50, 0));
 		CreateEnemie(scene, glm::vec3(30 + 50 * i, 100, 0));
 	}
+
+	CreateBoss(scene, glm::vec3(300, 300, 0));
 	
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);

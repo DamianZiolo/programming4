@@ -56,6 +56,10 @@ Games/Galaga/Main.cpp
   Games/Galaga/MoveCommand.cpp
   Games/Galaga/Enemy.cpp
   Games/Galaga/EnemyFly.cpp
+  Games/Galaga/EnemyBoss.cpp
+  Games/Galaga/BossFormationState.cpp
+  Games/Galaga/BossBombingRunState.cpp
+  Games/Galaga/BossTractorBeamState.cpp
 )
 
 # enable c++20 features

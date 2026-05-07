@@ -21,6 +21,7 @@ std::unique_ptr<dae::BossState> dae::BossBombingRunState::Update(dae::EnemyBoss&
     const float amplitude = 50.f;
     const float frequency = 4.f;
 
+    //RETURNING SHOULD BE REPLACE WITH SEPARATE STATE -> NOTES AT THE BOTTOM OF THE FILE
     if (!m_Returning)
     {
         // fly down + circles
@@ -55,3 +56,11 @@ std::unique_ptr<dae::BossState> dae::BossBombingRunState::Update(dae::EnemyBoss&
 
     return nullptr;
 }
+
+
+//Class feedback:
+// BossBombingRunState::Update(…)
+
+// - replace float with auto and add {} variables initialization
+// - returing supose to be the state instead of using ifs, because now     if (!m_Returning) behave like a state
+

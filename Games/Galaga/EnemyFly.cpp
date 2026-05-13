@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <sstream>
 #include "ServiceLocator.h"
+#include <ProjectileComponent.h>
 
 dae::EnemyFly::EnemyFly(GameObject* owner):Enemy(owner)
 {
@@ -38,5 +39,11 @@ void dae::EnemyFly::OnCollisionEnter(BoxCollider* other)
 		ServiceLocator::GetSoundSystem().Play(1, 1.f);
 	}
 	
-
+	auto* bullet = other->GetOwner()->GetComponent<ProjectileComponent>();
+	if (bullet)
+	{
+		OutputDebugStringA("EnemyFly.cpp: I'm dying!\n");
+		Die();
+		ServiceLocator::GetSoundSystem().Play(1, 1.f);
+	}
 }

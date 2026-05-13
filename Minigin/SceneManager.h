@@ -12,6 +12,8 @@ namespace dae
 	{
 	public:
 		Scene& CreateScene();
+		void SetActiveScene(size_t index);
+		Scene& GetActiveScene();
 
 		void Update();
 		void Render();
@@ -19,5 +21,6 @@ namespace dae
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
 		std::vector<std::unique_ptr<Scene>> m_scenes{};
+		size_t m_activeSceneIndex{ 0 };
 	};
 }

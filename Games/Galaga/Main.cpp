@@ -140,34 +140,53 @@ std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene)
 {
 	const int rows = 4;
 	const int cols = 10;
+
 	float spacingX = 100.f;
 	float spacingY = 50.f;
 
 	auto fleet = std::make_unique<dae::GameObject>();
 	fleet->SetLocalPosition(glm::vec3(50.f, 0.f, 0.f));
 
-	auto fleetComponent =
-		fleet->AddComponent<dae::FleetComponent>(rows, cols, spacingX, spacingY);
+	auto* fleetRaw = fleet.get();
+
+	auto fleetComponent = fleet->AddComponent<dae::FleetComponent>(
+			rows,
+			cols,
+			spacingX,
+			spacingY);
 
 	for (int row = 0; row < rows; ++row)
 	{
 		for (int col = 0; col < cols; ++col)
 		{
+			auto slot = std::make_unique<dae::GameObject>();
+
+			slot->SetLocalPosition(
+				col * spacingX,
+				row * spacingY,
+				0.f);
+
+			slot->SetParent(fleetRaw, false);
+
+			auto* slotRaw = slot.get();
+
+			scene.Add(std::move(slot));
+
+			fleetComponent->SetSlot(row, col, slotRaw);
+
 			if (row == 0)
 			{
 				auto boss = CreateBoss();
-				auto slot = fleetComponent->GetSlot(row, col);
 
-				boss->SetParent(slot, false);
+				boss->SetParent(slotRaw, false);
 
 				scene.Add(std::move(boss));
 			}
 			else
 			{
 				auto enemy = CreateFly();
-				auto slot = fleetComponent->GetSlot(row, col);
 
-				enemy->SetParent(slot, false);
+				enemy->SetParent(slotRaw, false);
 
 				scene.Add(std::move(enemy));
 			}

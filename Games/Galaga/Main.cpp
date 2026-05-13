@@ -43,6 +43,7 @@
 #include <EnemyFly.h>
 #include <ServiceLocator.h>
 #include "EnemyBoss.h"
+#include "FleetComponent.h"
 
 namespace fs = std::filesystem;
 
@@ -105,37 +106,78 @@ dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenC
 	return actor;
 }
 
-void CreateEnemie(dae::Scene& scene, glm::vec3 position)
+std::unique_ptr<dae::GameObject> CreateFly()
 {
 	auto enemy = std::make_unique<dae::GameObject>();
-	enemy->SetLocalPosition(position);
+
 	enemy->AddComponent<dae::RenderComponent>("Enemy1.png");
 	enemy->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
-	auto playerCollider = enemy->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
-	playerCollider->SetDrawDebug(true);
+
+	auto collider = enemy->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
+	collider->SetDrawDebug(true);
+
 	enemy->AddComponent<dae::EnemyFly>();
-	scene.Add(std::move(enemy));
+
+	return enemy;
 }
 
-void CreateBoss(dae::Scene& scene, glm::vec3 position)
+std::unique_ptr<dae::GameObject> CreateBoss()
 {
 	auto boss = std::make_unique<dae::GameObject>();
 
-	boss->SetLocalPosition(position);
-
-	// Render
 	boss->AddComponent<dae::RenderComponent>("Boss.png");
-	boss->GetComponent<dae::RenderComponent>()->SetSize(60, 60); 
+	boss->GetComponent<dae::RenderComponent>()->SetSize(50, 50);
 
-	// Collider
-	auto collider = boss->AddComponent<dae::BoxCollider>(glm::vec2(60, 60));
+	auto collider = boss->AddComponent<dae::BoxCollider>(glm::vec2(50, 50));
 	collider->SetDrawDebug(true);
 
-	// Boss component
 	boss->AddComponent<dae::EnemyBoss>();
-	//auto* bossComp = boss->AddComponent<dae::EnemyBoss>();
-	scene.Add(std::move(boss));
+
+	return boss;
 }
+
+std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene)
+{
+	const int rows = 4;
+	const int cols = 10;
+	float spacingX = 100.f;
+	float spacingY = 50.f;
+
+	auto fleet = std::make_unique<dae::GameObject>();
+	fleet->SetLocalPosition(glm::vec3(50.f, 0.f, 0.f));
+
+	auto fleetComponent =
+		fleet->AddComponent<dae::FleetComponent>(rows, cols, spacingX, spacingY);
+
+	for (int row = 0; row < rows; ++row)
+	{
+		for (int col = 0; col < cols; ++col)
+		{
+			if (row == 0)
+			{
+				auto boss = CreateBoss();
+				auto slot = fleetComponent->GetSlot(row, col);
+
+				boss->SetParent(slot, false);
+
+				scene.Add(std::move(boss));
+			}
+			else
+			{
+				auto enemy = CreateFly();
+				auto slot = fleetComponent->GetSlot(row, col);
+
+				enemy->SetParent(slot, false);
+
+				scene.Add(std::move(enemy));
+			}
+		}
+	}
+
+	return fleet;
+}
+
+
 
 dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
 {
@@ -297,13 +339,8 @@ static void load()
 
 	auto player1 = CreateKeyboardPlayer(scene, screenCenter);
 	auto player2 = CreateControllerPlayer(scene, screenCenter);
-	for (int i{ 0 }; i < 20;++i)
-	{
-		CreateEnemie(scene, glm::vec3(30 + 50*i, 50, 0));
-		CreateEnemie(scene, glm::vec3(30 + 50 * i, 100, 0));
-	}
 
-	CreateBoss(scene, glm::vec3(300, 50, 0));
+	scene.Add(CreateFleet(scene));
 	
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);

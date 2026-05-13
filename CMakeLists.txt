@@ -60,6 +60,7 @@ Games/Galaga/Main.cpp
   Games/Galaga/BossFormationState.cpp
   Games/Galaga/BossBombingRunState.cpp
   Games/Galaga/BossTractorBeamState.cpp
+  Games/Galaga/FleetComponent.cpp
 )
 
 # enable c++20 features

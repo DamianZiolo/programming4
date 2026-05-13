@@ -202,7 +202,6 @@ target_link_libraries(MiniginEngine PUBLIC
   SDL3::SDL3
   SDL3_ttf::SDL3_ttf
   SDL3_mixer::SDL3_mixer
-  glm::glm
   imgui
   ${VLD_LIBRARIES}
 )

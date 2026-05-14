@@ -46,7 +46,7 @@ namespace dae
 
         if (distance <= 2.f)
         {
-            owner->SetParent(slot, true);
+            owner->SetParent(slot, false);
             owner->SetLocalPosition(0.f, 0.f, 0.f);
 
             return std::make_unique<BossFormationState>();

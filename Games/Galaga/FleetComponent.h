@@ -40,5 +40,8 @@ namespace dae
 		float m_SpacingY{};
 
 		std::vector<Slot> m_Slots;
+
+		glm::vec3 m_StartPos{};
+		float m_Time{};
 	};
 }

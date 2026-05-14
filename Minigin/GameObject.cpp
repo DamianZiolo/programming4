@@ -51,7 +51,14 @@ glm::vec3 dae::GameObject::GetWorldPosition()
 
 void dae::GameObject::SetWorldPosition(const glm::vec3& world)
 {
-	m_transform.SetWorldPosition(world);
+	if (m_parent)
+	{
+		SetLocalPosition(world - m_parent->GetWorldPosition());
+	}
+	else
+	{
+		SetLocalPosition(world);
+	}
 }
 
 void dae::GameObject::UpdateWorldTransform()

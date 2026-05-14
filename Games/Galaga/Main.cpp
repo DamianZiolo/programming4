@@ -161,12 +161,12 @@ std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene)
 		{
 			auto slot = std::make_unique<dae::GameObject>();
 
+			slot->SetParent(fleetRaw, false);
+
 			slot->SetLocalPosition(
 				col * spacingX,
 				row * spacingY,
 				0.f);
-
-			slot->SetParent(fleetRaw, false);
 
 			auto* slotRaw = slot.get();
 

@@ -15,10 +15,20 @@ dae::ProjectileComponent::ProjectileComponent(GameObject* owner):
 
 void dae::ProjectileComponent::OnCollisionEnter(BoxCollider* other)
 {
+	if (m_HasHit)
+		return;
+
+
 	auto* enemy = other->GetOwner()->GetComponent<Enemy>();
 	if (enemy)
 	{
+		m_HasHit = true;
+		enemy->TakeDamage();
 		OutputDebugStringA("Projectile hit\n");
+
+		if (auto* col = GetOwner()->GetComponent<BoxCollider>())
+			col->SetActive(false);
+
 		GetOwner()->MarkForRemoval();
 	}
 

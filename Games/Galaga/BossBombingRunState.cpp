@@ -4,6 +4,8 @@
 #include "GameObject.h"
 #include "GameTime.h"
 #include <BossReturnState.h>
+#include <BossState.h>
+#include <RenderComponent.h>
 
 void dae::BossBombingRunState::OnEnter(EnemyBoss& boss)
 {
@@ -38,6 +40,7 @@ std::unique_ptr<dae::BossState> dae::BossBombingRunState::Update(dae::EnemyBoss&
     return nullptr;
 }
 
+
 //RETURNING SHOULD BE REPLACE WITH SEPARATE STATE -> NOTES AT THE BOTTOM OF THE FILE
 // 
 //Class feedback:
@@ -46,3 +49,18 @@ std::unique_ptr<dae::BossState> dae::BossBombingRunState::Update(dae::EnemyBoss&
 // - replace float with auto and add {} variables initialization
 // - returing supose to be the state instead of using ifs, because now     if (!m_Returning) behave like a state
 
+
+
+//if (boss.GetHealth() <= 0)
+//{
+//    boss.Die();
+//    return nullptr;
+//}
+//
+////reminder: after 1st hit change sprite color of the boss here to purple;
+//if (auto* render = boss.GetOwner()->GetComponent<RenderComponent>())
+//{
+//    render->SetTexture("boss_purple.png");
+//}
+//
+//return nullptr;

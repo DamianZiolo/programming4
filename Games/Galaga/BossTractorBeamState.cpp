@@ -43,10 +43,4 @@ namespace dae
 
         return nullptr;
     }
-
-    std::unique_ptr<BossState> BossTractorBeamState::OnHit(EnemyBoss& boss)
-    {
-        boss.TakeDamage();
-        return nullptr;
-    }
 }

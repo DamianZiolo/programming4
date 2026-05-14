@@ -10,6 +10,7 @@
 
 dae::EnemyFly::EnemyFly(GameObject* owner):Enemy(owner)
 {
+	m_Health = 1;
 }
 
 void dae::EnemyFly::Update()
@@ -17,33 +18,3 @@ void dae::EnemyFly::Update()
 	
 }
 
-void dae::EnemyFly::OnCollisionEnter(BoxCollider* other)
-{
-	auto* myCollider = GetOwner()->GetComponent<BoxCollider>();
-
-	auto myPos = myCollider->GetPosition();
-	auto otherPos = other->GetPosition();
-	
-	std::stringstream ss;
-	ss << "Enemy collision!\n";
-	ss << "My collider pos: " << myPos.x << ", " << myPos.y << "\n";
-	ss << "Other collider pos: " << otherPos.x << ", " << otherPos.y << "\n";
-
-	OutputDebugStringA(ss.str().c_str());
-
-	auto* actor = other->GetOwner()->GetComponent<GameActor>();
-	if (actor)
-	{
-		OutputDebugStringA("EnemyFly.cpp: I'm dying!\n");
-		Die();
-		ServiceLocator::GetSoundSystem().Play(1, 1.f);
-	}
-	
-	auto* bullet = other->GetOwner()->GetComponent<ProjectileComponent>();
-	if (bullet)
-	{
-		OutputDebugStringA("EnemyFly.cpp: I'm dying!\n");
-		Die();
-		ServiceLocator::GetSoundSystem().Play(1, 1.f);
-	}
-}

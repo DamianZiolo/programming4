@@ -6,10 +6,23 @@
 #include "GameObject.h"
 #include "GameActor.h"
 #include <BossFormationState.h>
+#include <RenderComponent.h>
 
 dae::EnemyBoss::EnemyBoss(GameObject* owner):Enemy(owner)
 {
 	m_State = std::make_unique<BossFormationState>();
+	m_Health = 2;
+}
+
+void dae::EnemyBoss::TakeDamage()
+{
+	Enemy::TakeDamage();
+
+	if (m_Health == 1)
+	{
+		auto renderer = GetOwner()->GetComponent<RenderComponent>();
+		renderer->SetTexture("boss_purple.png");
+	}
 }
 
 void dae::EnemyBoss::Update()
@@ -28,21 +41,6 @@ void dae::EnemyBoss::Update()
 
 }
 
-void dae::EnemyBoss::TakeDamage()
-{
-	if (m_State == nullptr)
-		return;
-
-	m_Health--;
-
-	auto newState = m_State->OnHit(*this);
-
-	if (newState)
-	{
-		ChangeState(std::move(newState));
-	}
-}
-
 void dae::EnemyBoss::ChangeState(std::unique_ptr<BossState> newState)
 {
 	if (m_State)
@@ -55,15 +53,5 @@ void dae::EnemyBoss::ChangeState(std::unique_ptr<BossState> newState)
 	if (m_State)
 	{
 		m_State->OnEnter(*this);
-	}
-}
-
-void dae::EnemyBoss::OnCollisionEnter(BoxCollider* other)
-{
-	auto* actor = other->GetOwner()->GetComponent<GameActor>();
-
-	if (actor)
-	{
-		TakeDamage();
 	}
 }

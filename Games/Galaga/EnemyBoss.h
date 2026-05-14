@@ -14,24 +14,20 @@ namespace dae
 	public:
 		explicit EnemyBoss(GameObject* owner);
 		~EnemyBoss() override = default;
+		void TakeDamage() override;
 
 		void Update() override;
-
-		void OnCollisionEnter(BoxCollider* other) override;
-
 		EnemyBoss(const EnemyBoss&) = delete;
 		EnemyBoss(EnemyBoss&&) = delete;
 		EnemyBoss& operator=(const EnemyBoss&) = delete;
 		EnemyBoss& operator=(EnemyBoss&&) = delete;
 
-		void TakeDamage();
 		int GetHealth() { return m_Health; }
 		void ChangeState(std::unique_ptr<BossState> newState);
 
 	private:
 		std::unique_ptr<BossState> m_State;
-		int m_Health{ 2 };
-
+		bool m_IsDamaged{ false };
 	};
 
 }

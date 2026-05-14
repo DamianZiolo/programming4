@@ -34,20 +34,4 @@ namespace dae
         return nullptr;
     }
 
-    std::unique_ptr<dae::BossState> BossFormationState::OnHit(EnemyBoss& boss)
-    {
-        if (boss.GetHealth() <= 0)
-        {
-            boss.Die(); 
-            return nullptr;
-        }
-
-      //reminder: after 1st hit change sprite color of the boss here to purple;
-        if (auto* render = boss.GetOwner()->GetComponent<RenderComponent>())
-        {
-            render->SetTexture("boss_purple.png");
-        }
-
-        return nullptr;
-    }
 }

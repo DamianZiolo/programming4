@@ -12,9 +12,11 @@ namespace dae
 		ProjectileComponent(GameObject* owner);
 		virtual void OnCollisionEnter(BoxCollider* other) override;
 		void Update() override;
-
+		bool HasHit() { return m_HasHit; }
 	private:
 		GameObject* m_pOwner;
 		glm::vec3 m_Velocity{ 0.f, -100.f, 0.f };
+
+		bool m_HasHit{ false };
 	};
 }

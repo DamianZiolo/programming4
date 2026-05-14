@@ -14,7 +14,6 @@ namespace dae
 		virtual void OnExit(EnemyBoss& boss) { (void)boss; };
 
 		virtual std::unique_ptr<BossState> Update(EnemyBoss& boss) = 0;
-		virtual std::unique_ptr<BossState> OnHit(EnemyBoss& boss) { (void)boss; return nullptr; }
 
 	};
 

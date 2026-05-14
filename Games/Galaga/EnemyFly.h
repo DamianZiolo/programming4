@@ -13,8 +13,6 @@ namespace dae
 
 		void Update() override;
 
-		void OnCollisionEnter(BoxCollider* other) override;
-
 		EnemyFly(const EnemyFly&) = delete;
 		EnemyFly(EnemyFly&&) = delete;
 		EnemyFly& operator=(const EnemyFly&) = delete;

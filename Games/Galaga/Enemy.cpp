@@ -3,20 +3,27 @@
 #include "GameObject.h"
 #include <GameActor.h>
 #include <iostream>
+#include <ProjectileComponent.h>
+#include <Windows.h>
+#include <sstream>
 
 dae::Enemy::Enemy(GameObject* owner):Component(owner)
 {
 }
 
-void dae::Enemy::OnCollisionEnter(BoxCollider* other)
+
+void dae::Enemy::TakeDamage()
 {
-	if (other->GetOwner()->GetComponent<GameActor>())
+	m_Health--;
+
+	std::stringstream ss;
+	ss << "Enemy HP: " << m_Health << "\n";
+	OutputDebugStringA(ss.str().c_str());
+
+	if (m_Health <= 0)
 	{
-		std::cout << "Enemy.cpp: I'm dying!" << std::endl;
 		Die();
 	}
-
-
 }
 
 void dae::Enemy::Die()

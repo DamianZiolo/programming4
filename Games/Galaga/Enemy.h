@@ -11,8 +11,7 @@ namespace dae
 	public:
 		explicit Enemy(GameObject* owner);
 		~Enemy() override = default;
-
-		virtual void OnCollisionEnter(BoxCollider* other) override;
+		virtual void TakeDamage();
 
 		Enemy(const Enemy&) = delete;
 		Enemy(Enemy&&) = delete;
@@ -23,6 +22,9 @@ namespace dae
 		GameObject* GetSlot() { return m_pSlot; }
 	private:
 		GameObject* m_pSlot;
+	protected:
+		int m_Health{};
+		
 	};
 
 }

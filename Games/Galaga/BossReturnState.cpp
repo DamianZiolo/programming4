@@ -55,13 +55,5 @@ namespace dae
         return nullptr;
     }
 
-    std::unique_ptr<BossState> BossReturnState::OnHit(EnemyBoss& boss)
-    {
-        if (boss.GetHealth() <= 0)
-        {
-            boss.Die();
-        }
-
-        return nullptr;
-    }
+ 
 }

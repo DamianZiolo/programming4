@@ -3,6 +3,7 @@
 #include <BossFormationState.h>
 #include "GameObject.h"
 #include "GameTime.h"
+#include <BossReturnState.h>
 
 void dae::BossBombingRunState::OnEnter(EnemyBoss& boss)
 {
@@ -21,43 +22,24 @@ std::unique_ptr<dae::BossState> dae::BossBombingRunState::Update(dae::EnemyBoss&
     const float amplitude = 50.f;
     const float frequency = 4.f;
 
-    //RETURNING SHOULD BE REPLACE WITH SEPARATE STATE -> NOTES AT THE BOTTOM OF THE FILE
-    if (!m_Returning)
+    // fly down + circles
+    pos.y += speed * dt;
+    pos.x += std::sin(m_Timer * frequency) * amplitude * dt;
+
+    // TODO: spawn bombs here
+
+    // after time we're going back
+    if (m_Timer >= 3.0f) //atack time
     {
-        // fly down + circles
-        pos.y += speed * dt;
-        pos.x += std::sin(m_Timer * frequency) * amplitude * dt;
-
-        // TODO: spawn bombs here
-
-        // after time we're going back
-        if (m_Timer >= 3.0f) //atack time
-        {
-            m_Returning = true;
-        }
-    }
-    else
-    {
-        //going back to start position
-        glm::vec3 dir = m_StartPos - pos;
-
-        float distance = std::sqrt(dir.x * dir.x + dir.y * dir.y);
-
-        if (distance < 5.f)
-        {
-            return std::make_unique<BossFormationState>();
-        }
-
-        dir /= distance;
-        pos += dir * speed * dt;
+      return std::make_unique<BossReturnState>();
     }
 
     owner->SetLocalPosition(pos);
-
     return nullptr;
 }
 
-
+//RETURNING SHOULD BE REPLACE WITH SEPARATE STATE -> NOTES AT THE BOTTOM OF THE FILE
+// 
 //Class feedback:
 // BossBombingRunState::Update(…)
 

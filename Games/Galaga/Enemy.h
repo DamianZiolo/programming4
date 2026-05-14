@@ -18,9 +18,11 @@ namespace dae
 		Enemy(Enemy&&) = delete;
 		Enemy& operator=(const Enemy&) = delete;
 		Enemy& operator=(Enemy&&) = delete;
-
 		void Die();
-
+		void SetSlot(GameObject* slotPointer);
+		GameObject* GetSlot() { return m_pSlot; }
+	private:
+		GameObject* m_pSlot;
 	};
 
 }

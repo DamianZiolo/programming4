@@ -179,6 +179,8 @@ std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene)
 				auto boss = CreateBoss();
 
 				boss->SetParent(slotRaw, false);
+				auto enemyComponent = boss->GetComponent<dae::Enemy>();
+				enemyComponent->SetSlot(fleetComponent->GetSlot(row, col));
 
 				scene.Add(std::move(boss));
 			}
@@ -187,6 +189,8 @@ std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene)
 				auto enemy = CreateFly();
 
 				enemy->SetParent(slotRaw, false);
+				auto enemyComponent = enemy->GetComponent<dae::Enemy>();
+				enemyComponent->SetSlot(fleetComponent->GetSlot(row, col));
 
 				scene.Add(std::move(enemy));
 			}

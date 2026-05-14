@@ -23,3 +23,8 @@ void dae::Enemy::Die()
 {
 	GetOwner()->MarkForRemoval();
 }
+
+void dae::Enemy::SetSlot(GameObject* slotPointer)
+{
+	m_pSlot = slotPointer;
+}

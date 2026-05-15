@@ -64,6 +64,8 @@ Games/Galaga/Main.cpp
   Games/Galaga/ProjectileComponent.cpp
   Games/Galaga/BossReturnState.cpp
   Games/Galaga/MenuComponent.cpp
+  Games/Galaga/MenuMoveCommand.cpp
+  Games/Galaga/ConfirmCommand.cpp
 )
 
 # enable c++20 features

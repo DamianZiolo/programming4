@@ -45,6 +45,8 @@
 #include "EnemyBoss.h"
 #include "FleetComponent.h"
 #include <MenuComponent.h>
+#include <MenuMoveCommand.h>
+#include <ConfirmCommand.h>
 
 namespace fs = std::filesystem;
 
@@ -425,6 +427,35 @@ static void LoadMenuScene(dae::Scene& menuScene)
 		"Versus mode",
 		SDL_Color{ 255,255,255,255 });
 	menu->AddOption(versusText);
+
+	auto& input = dae::InputManager::GetInstance();
+	//W and S
+	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Down, 
+		std::make_unique<dae::MenuMoveCommand>(menu, -1));
+	input.BindKeyboardCommand(SDL_SCANCODE_S, dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(menu, 1));
+
+	//Arrows
+	input.BindKeyboardCommand(SDL_SCANCODE_UP, dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(menu, -1));
+	input.BindKeyboardCommand(SDL_SCANCODE_DOWN, dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(menu, 1));
+
+	//keyboard cofirmation
+	input.BindKeyboardCommand(SDL_SCANCODE_RETURN, dae::InputState::Down,
+		std::make_unique<dae::ConfirmCommand>(menu));
+
+	//Pad
+	input.BindControllerCommand(dae::ControllerButton::DPadUp, dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(menu, -1), 0);
+
+	input.BindControllerCommand(dae::ControllerButton::DPadDown, dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(menu, 1), 0);
+
+	input.BindControllerCommand(dae::ControllerButton::A, dae::InputState::Down,
+		std::make_unique<dae::ConfirmCommand>(menu), 0);
+
+
 	menuScene.Add(std::move(versus));
 	menuScene.Add(std::move(menuController));
 }

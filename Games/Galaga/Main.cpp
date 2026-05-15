@@ -68,11 +68,11 @@ dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenC
 
 	player->SetLocalPosition(screenCenter);
 	player->AddComponent<dae::RenderComponent>("Player.png");
-	player->GetComponent<dae::RenderComponent>()->SetSize(20, 20);
+	player->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
 	auto actor = player->AddComponent<dae::GameActor>();
 	player->AddComponent<dae::ScoreComponent>();
 	player->AddComponent<dae::HealthComponent>(3);
-	auto playerCollider = player->AddComponent<dae::BoxCollider>(glm::vec2(20,20));
+	auto playerCollider = player->AddComponent<dae::BoxCollider>(glm::vec2(30,30));
 	playerCollider->SetDrawDebug(true);
 	
 	//turn on debug 
@@ -211,7 +211,8 @@ dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& scree
 	parent->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
 	auto actor = parent->AddComponent<dae::GameActor>();
 	parent->AddComponent<dae::ScoreComponent>();
-
+	auto playerCollider = parent->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
+	playerCollider->SetDrawDebug(true);
 	
 	parent->AddComponent<dae::HealthComponent>(3);
 
@@ -349,31 +350,28 @@ void CreateControlsUI(
 	scene.Add(std::move(ui));
 }
 
-
-
-static void load()
+static void LoadGameScene(dae::Scene& mainScene)
 {
-	auto& scene = dae::SceneManager::GetInstance().CreateScene();
 	const glm::vec3 screenCenter{ 512.f,288.f,0.f };
 	dae::ServiceLocator::GetSoundSystem().RegisterSound(1, "Data/sound1.mp3");
 
-	CreateBackground(scene);
+	CreateBackground(mainScene);
 	//CreateLogo(scene, screenCenter);
 
-	auto player1 = CreateKeyboardPlayer(scene, screenCenter);
-	auto player2 = CreateControllerPlayer(scene, screenCenter);
+	auto player1 = CreateKeyboardPlayer(mainScene, screenCenter);
+	auto player2 = CreateControllerPlayer(mainScene, screenCenter);
 
-	scene.Add(CreateFleet(scene));
-	
+	mainScene.Add(CreateFleet(mainScene));
+
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
-	CreateLivesUI(scene, player1, font, { 20,20,0 }, "Health: ");
-	CreateScoreUI(scene, player1, font, { 20,60,0 }, "Score: ");
-	CreateLivesUI(scene, player2, font, { 20,100,0 }, "Health: ");
-	CreateScoreUI(scene, player2, font, { 20,140,0 }, "Score: ");
+	CreateLivesUI(mainScene, player1, font, { 20,20,0 }, "Health: ");
+	CreateScoreUI(mainScene, player1, font, { 20,60,0 }, "Score: ");
+	CreateLivesUI(mainScene, player2, font, { 20,100,0 }, "Health: ");
+	CreateScoreUI(mainScene, player2, font, { 20,140,0 }, "Score: ");
 	CreateControlsUI(
-		scene,
+		mainScene,
 		font,
 		glm::vec3{ 20.f, 400.f, 0.f }
 	);
@@ -385,9 +383,77 @@ static void load()
 	achievement->AddActor(player1);
 	achievement->AddActor(player2);
 
-	scene.Add(std::move(achievementGO));
+	mainScene.Add(std::move(achievementGO));
 
-	dae::ServiceLocator::GetSoundSystem().Play(1, 1.0f);
+	//dae::ServiceLocator::GetSoundSystem().Play(1, 1.0f);
+
+}
+
+static void LoadMenuScene(dae::Scene& menuScene)
+{
+	auto fontTitle = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 64);
+	auto fontMenu = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+	
+	//CreateLogo(menuScene, glm::vec3{ 512.f, 120.f, 0.f });
+
+	auto single = std::make_unique<dae::GameObject>();
+	single->SetLocalPosition(420.f, 260.f, 0.f);
+	single->AddComponent<dae::TextComponent>(
+		fontMenu,
+		"Single mode",
+		SDL_Color{ 255,255,0,255 });
+	menuScene.Add(std::move(single));
+
+	auto coop = std::make_unique<dae::GameObject>();
+	coop->SetLocalPosition(420.f, 320.f, 0.f);
+	coop->AddComponent<dae::TextComponent>(
+		fontMenu,
+		"Co-op mode",
+		SDL_Color{ 255,255,255,255 });
+	menuScene.Add(std::move(coop));
+
+	auto versus = std::make_unique<dae::GameObject>();
+	versus->SetLocalPosition(420.f, 380.f, 0.f);
+	versus->AddComponent<dae::TextComponent>(
+		fontMenu,
+		"Versus mode",
+		SDL_Color{ 255,255,255,255 });
+	menuScene.Add(std::move(versus));
+}
+
+static void LoadScoreScene(dae::Scene& scoreScene)
+{
+	auto fontTitle = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 64);
+	auto fontMenu = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+
+	auto single = std::make_unique<dae::GameObject>();
+	single->SetLocalPosition(420.f, 260.f, 0.f);
+	single->AddComponent<dae::TextComponent>(
+		fontMenu,
+		"Score",
+		SDL_Color{ 255,255,0,255 });
+	scoreScene.Add(std::move(single));
+
+	
+}
+
+static void load()
+{
+	auto& menuScene = dae::SceneManager::GetInstance().CreateScene();
+	auto& mainScene = dae::SceneManager::GetInstance().CreateScene();
+	auto& ScoreScene = dae::SceneManager::GetInstance().CreateScene();
+	
+	//0 menu
+	//1 main
+	//2 score
+
+	dae::SceneManager::GetInstance().SetActiveScene(0);
+	
+
+	LoadGameScene(mainScene);
+	LoadMenuScene(menuScene);
+	LoadScoreScene(ScoreScene);
+	
 
 }
 

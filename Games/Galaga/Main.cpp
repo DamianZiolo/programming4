@@ -44,6 +44,7 @@
 #include <ServiceLocator.h>
 #include "EnemyBoss.h"
 #include "FleetComponent.h"
+#include <MenuComponent.h>
 
 namespace fs = std::filesystem;
 
@@ -394,31 +395,38 @@ static void LoadMenuScene(dae::Scene& menuScene)
 	auto fontTitle = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 64);
 	auto fontMenu = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 	
+	auto menuController = std::make_unique<dae::GameObject>();
+	auto* menu = menuController->AddComponent<dae::MenuComponent>();
 	//CreateLogo(menuScene, glm::vec3{ 512.f, 120.f, 0.f });
 
 	auto single = std::make_unique<dae::GameObject>();
 	single->SetLocalPosition(420.f, 260.f, 0.f);
-	single->AddComponent<dae::TextComponent>(
+	auto singleText = single->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Single mode",
 		SDL_Color{ 255,255,0,255 });
+
+	menu->AddOption(singleText);
 	menuScene.Add(std::move(single));
 
 	auto coop = std::make_unique<dae::GameObject>();
 	coop->SetLocalPosition(420.f, 320.f, 0.f);
-	coop->AddComponent<dae::TextComponent>(
+	auto coopText = coop->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Co-op mode",
 		SDL_Color{ 255,255,255,255 });
+	menu->AddOption(coopText);
 	menuScene.Add(std::move(coop));
 
 	auto versus = std::make_unique<dae::GameObject>();
 	versus->SetLocalPosition(420.f, 380.f, 0.f);
-	versus->AddComponent<dae::TextComponent>(
+	auto versusText = versus->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Versus mode",
 		SDL_Color{ 255,255,255,255 });
+	menu->AddOption(versusText);
 	menuScene.Add(std::move(versus));
+	menuScene.Add(std::move(menuController));
 }
 
 static void LoadScoreScene(dae::Scene& scoreScene)

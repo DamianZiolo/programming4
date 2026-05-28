@@ -6,6 +6,14 @@
 
 namespace dae
 {
+	enum class ProjectileOwner
+	{
+		Player,
+		Enemy,
+		None
+	};
+
+
 	class ProjectileComponent final : public Component
 	{
 	public:
@@ -13,10 +21,21 @@ namespace dae
 		virtual void OnCollisionEnter(BoxCollider* other) override;
 		void Update() override;
 		bool HasHit() { return m_HasHit; }
+		void SetVelocity(float velocity);
+		void Activate(const glm::vec3& position, float velocity, ProjectileOwner ownerType);
+		void Deactivate();
+		bool IsInUse() const;
+		ProjectileOwner GetProjectileOwner() const;
 	private:
 		GameObject* m_pOwner;
 		glm::vec3 m_Velocity{ 0.f, -100.f, 0.f };
-
 		bool m_HasHit{ false };
+		bool m_IsInUse{ false };
+
+		
+		ProjectileOwner m_OwnerType{ ProjectileOwner::None };
+		float m_LifeTime{ 0.f };
+		float m_MaxLifeTime{ 10.f };
+
 	};
 }

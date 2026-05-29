@@ -67,8 +67,10 @@ Games/Galaga/Main.cpp
   Games/Galaga/MenuMoveCommand.cpp
   Games/Galaga/ConfirmCommand.cpp
   Games/Galaga/ProjectilePoolComponent.cpp
-  Games/Galaga/BossTractorMoveState.cpp 
+  Games/Galaga/BossTractorMoveState.cpp
   Games/Galaga/BossTractorLoopState.cpp
+  Games/Galaga/BossAttackMoveState.cpp
+  Games/Galaga/BossDiveDownState.cpp
 )
 
 # enable c++20 features

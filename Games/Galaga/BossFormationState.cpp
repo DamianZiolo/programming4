@@ -6,6 +6,7 @@
 #include <RenderComponent.h>
 #include <cstdlib>
 #include "BossTractorLoopState.h"
+#include <BossAttackMoveState.h>
 //#include "BossBombingRunState.h"
 //#include "BossTractorBeamState.h"
 
@@ -27,14 +28,7 @@ namespace dae
 
         if (m_Timer >= m_TimeUntilAttack)
         {
-            const auto randomAttack = rand() % 2;
-
-            if (randomAttack == 0)
-            {
-                return std::make_unique<BossBombingRunState>();
-            }
-
-            return std::make_unique<BossTractorLoopState>();
+            return std::make_unique<BossAttackMoveState>();
         }
 
         return nullptr;

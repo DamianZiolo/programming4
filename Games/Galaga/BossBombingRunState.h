@@ -1,24 +1,29 @@
 #pragma once
+
 #include "BossState.h"
+
+#include <glm/glm.hpp>
 #include <memory>
-#include <glm/vec3.hpp>
 
 namespace dae
 {
-	class ProjectilePoolComponent;
-	class BossBombingRunState final : public BossState
-	{
-		void OnEnter(EnemyBoss& boss) override;
-		std::unique_ptr<dae::BossState> Update(EnemyBoss& boss) override;
+    class BossBombingRunState final : public BossState
+    {
+    public:
+        BossBombingRunState() = default;
+        ~BossBombingRunState() override = default;
 
-	private:
-		float m_Timer{};
-		const float m_BombingTime{ 4.f };
-		glm::vec3 m_StartPos{};
-		bool m_Returning{ false };
+        void OnEnter(EnemyBoss& boss) override;
+        std::unique_ptr<BossState> Update(EnemyBoss& boss) override;
 
-		float m_ProjectileTimer{ 0.f };
-		float m_ProjectileSpeedRate{ 0.5f };
+    private:
+        float m_Timer{};
+        float m_AttackDuration{ 1.5f };
 
-	};
+        float m_ProjectileTimer{};
+        float m_ProjectileSpeedRate{ 0.5f };
+        const float radiusX = 300.f;
+        const float radiusY = 250.f;
+        const float fullCircle = 6.2831853f;
+    };
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BossState.h"
-#include <glm/glm.hpp>
+
 #include <memory>
 
 namespace dae
@@ -19,7 +19,8 @@ namespace dae
 
     private:
         float m_Timer{};
-        float m_BeamDuration{ 3.0f };
+        float m_BeamDelay{ 1.0f };
+        float m_BeamDuration{ 4.0f };
 
         bool m_BeamEnabled{ false };
     };

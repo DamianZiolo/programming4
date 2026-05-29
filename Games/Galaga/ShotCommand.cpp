@@ -6,39 +6,33 @@
 #include <ProjectileComponent.h>
 #include "SceneManager.h"
 #include "BoxCollider.h"
+#include "ProjectilePoolComponent.h"
 
-dae::ShotCommand::ShotCommand(GameObject* player)
-	: m_pTarget(player)
+dae::ShotCommand::ShotCommand(GameObject* player, ProjectilePoolComponent* projectilePool)
+	: m_pTarget(player),
+	m_pProjectilePool{ projectilePool }
 {
 }
 
 void dae::ShotCommand::Execute()
 {
-	if (!m_pTarget) return;
-	ServiceLocator::GetSoundSystem().Play(1, 1.f);\
+    if (!m_pTarget)
+        return;
 
-		auto projectile = std::make_unique<dae::GameObject>();
+    if (!m_pProjectilePool)
+        return;
 
-	auto renderComponent = projectile->AddComponent<dae::RenderComponent>("Bullet.png");
-	renderComponent->SetSize(10.f, 10.f);
-	projectile->AddComponent<dae::BoxCollider>(glm::vec2{ 10.f,10.f });
-	projectile->AddComponent<dae::ProjectileComponent>();
+    ServiceLocator::GetSoundSystem().Play(1, 1.f);
 
-	projectile->SetLocalPosition(
-		m_pTarget->GetWorldPosition().x,
-		m_pTarget->GetWorldPosition().y,
-		0.f
-	);
+    const auto targetPos = m_pTarget->GetWorldPosition();
 
-	auto& activeScene = dae::SceneManager::GetInstance().GetActiveScene();
-	activeScene.Add(std::move(projectile));
-	
-
-	/*auto health = m_pTarget->GetComponent<dae::HealthComponent>();
-
-	if (health)
-	{
-		health->DealDamage();
-		
-	}*/
+    m_pProjectilePool->SpawnProjectile(
+        glm::vec3{
+            targetPos.x,
+            targetPos.y,
+            0.f
+        },
+        -100.f,
+        dae::ProjectileOwner::Player
+    );
 }

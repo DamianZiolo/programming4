@@ -4,13 +4,15 @@
 namespace dae {
 
 	class GameObject;
+	class ProjectilePoolComponent;
 	class ShotCommand : public Command
 	{
 	public:
-		explicit ShotCommand(GameObject* player);
+		explicit ShotCommand(GameObject* player, ProjectilePoolComponent* projectilePool);
 		void Execute() override;
 	private:
 		GameObject* m_pTarget{};
+		ProjectilePoolComponent* m_pProjectilePool{};
 	};
 
 }

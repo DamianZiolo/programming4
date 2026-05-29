@@ -47,6 +47,7 @@
 #include <MenuComponent.h>
 #include <MenuMoveCommand.h>
 #include <ConfirmCommand.h>
+#include <ProjectilePoolComponent.h>
 
 namespace fs = std::filesystem;
 
@@ -65,7 +66,7 @@ void CreateLogo(dae::Scene& scene, const glm::vec3& screenCenter)
 	scene.Add(std::move(go));
 }
 
-dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
+dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenCenter, dae::ProjectilePoolComponent* projectilePool)
 {
 	auto player = std::make_unique<dae::GameObject>();
 
@@ -84,7 +85,7 @@ dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenC
 	auto& input = dae::InputManager::GetInstance();
 
 	input.BindKeyboardCommand(SDL_SCANCODE_SPACE, dae::InputState::Down,
-		std::make_unique<dae::ShotCommand>(player.get()));
+		std::make_unique<dae::ShotCommand>(player.get(), projectilePool));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Pressed,
 		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, player.get()));
@@ -205,7 +206,7 @@ std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene)
 
 
 
-dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter)
+dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter, dae::ProjectilePoolComponent* projectilePool)
 {
 	auto parent = std::make_unique<dae::GameObject>();
 
@@ -224,7 +225,7 @@ dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& scree
 	input.BindControllerCommand(
 		dae::ControllerButton::B,
 		dae::InputState::Down,
-		std::make_unique<dae::ShotCommand>(parent.get()),
+		std::make_unique<dae::ShotCommand>(parent.get(), projectilePool),
 		0);
 
 	input.BindControllerCommand(
@@ -353,6 +354,18 @@ void CreateControlsUI(
 	scene.Add(std::move(ui));
 }
 
+std::unique_ptr<dae::GameObject> CreatePooling(dae::Scene& scene)
+{
+	auto pooling = std::make_unique<dae::GameObject>();
+
+	pooling->AddComponent<dae::ProjectilePoolComponent>(
+		200,
+		scene
+	);
+
+	return pooling;
+}
+
 static void LoadGameScene(dae::Scene& mainScene)
 {
 	const glm::vec3 screenCenter{ 512.f,288.f,0.f };
@@ -360,12 +373,17 @@ static void LoadGameScene(dae::Scene& mainScene)
 
 	CreateBackground(mainScene);
 	//CreateLogo(scene, screenCenter);
+	auto bulletPooling = CreatePooling(mainScene);
+	auto* projectilePool =
+		bulletPooling->GetComponent<dae::ProjectilePoolComponent>();
 
-	auto player1 = CreateKeyboardPlayer(mainScene, screenCenter);
-	auto player2 = CreateControllerPlayer(mainScene, screenCenter);
-
+	mainScene.Add(std::move(bulletPooling));
+	
+	auto player1 = CreateKeyboardPlayer(mainScene, screenCenter, projectilePool);
+	auto player2 = CreateControllerPlayer(mainScene, screenCenter, projectilePool);
 	mainScene.Add(CreateFleet(mainScene));
 
+	
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 

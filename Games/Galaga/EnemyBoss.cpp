@@ -7,8 +7,9 @@
 #include "GameActor.h"
 #include <BossFormationState.h>
 #include <RenderComponent.h>
+#include "ProjectilePoolComponent.h"
 
-dae::EnemyBoss::EnemyBoss(GameObject* owner):Enemy(owner)
+dae::EnemyBoss::EnemyBoss(GameObject* owner, ProjectilePoolComponent& projectilePool):Enemy(owner, projectilePool)
 {
 	m_State = std::make_unique<BossFormationState>();
 	m_Health = 2;

@@ -6,8 +6,11 @@
 #include <ProjectileComponent.h>
 #include <Windows.h>
 #include <sstream>
+#include "ProjectilePoolComponent.h"
 
-dae::Enemy::Enemy(GameObject* owner):Component(owner)
+dae::Enemy::Enemy(GameObject* owner, ProjectilePoolComponent& projectilePool):Component(owner),
+m_pProjectilePool{projectilePool},
+m_pSlot{nullptr}
 {
 }
 

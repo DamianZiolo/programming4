@@ -110,7 +110,7 @@ dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenC
 	return actor;
 }
 
-std::unique_ptr<dae::GameObject> CreateFly()
+std::unique_ptr<dae::GameObject> CreateFly(dae::ProjectilePoolComponent* projectilePool)
 {
 	auto enemy = std::make_unique<dae::GameObject>();
 
@@ -120,12 +120,12 @@ std::unique_ptr<dae::GameObject> CreateFly()
 	auto collider = enemy->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
 	collider->SetDrawDebug(true);
 
-	enemy->AddComponent<dae::EnemyFly>();
+	enemy->AddComponent<dae::EnemyFly>(*projectilePool);
 
 	return enemy;
 }
 
-std::unique_ptr<dae::GameObject> CreateBoss()
+std::unique_ptr<dae::GameObject> CreateBoss(dae::ProjectilePoolComponent* projectilePool)
 {
 	auto boss = std::make_unique<dae::GameObject>();
 
@@ -135,12 +135,12 @@ std::unique_ptr<dae::GameObject> CreateBoss()
 	auto collider = boss->AddComponent<dae::BoxCollider>(glm::vec2(50, 50));
 	collider->SetDrawDebug(true);
 
-	boss->AddComponent<dae::EnemyBoss>();
+	boss->AddComponent<dae::EnemyBoss>(*projectilePool);
 
 	return boss;
 }
 
-std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene)
+std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene, dae::ProjectilePoolComponent* projectilePool)
 {
 	const int rows = 4;
 	const int cols = 10;
@@ -180,7 +180,7 @@ std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene)
 
 			if (row == 0)
 			{
-				auto boss = CreateBoss();
+				auto boss = CreateBoss(projectilePool);
 
 				boss->SetParent(slotRaw, false);
 				auto enemyComponent = boss->GetComponent<dae::Enemy>();
@@ -190,7 +190,7 @@ std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene)
 			}
 			else
 			{
-				auto enemy = CreateFly();
+				auto enemy = CreateFly(projectilePool);
 
 				enemy->SetParent(slotRaw, false);
 				auto enemyComponent = enemy->GetComponent<dae::Enemy>();
@@ -381,7 +381,7 @@ static void LoadGameScene(dae::Scene& mainScene)
 	
 	auto player1 = CreateKeyboardPlayer(mainScene, screenCenter, projectilePool);
 	auto player2 = CreateControllerPlayer(mainScene, screenCenter, projectilePool);
-	mainScene.Add(CreateFleet(mainScene));
+	mainScene.Add(CreateFleet(mainScene, projectilePool));
 
 	
 

@@ -8,7 +8,7 @@ namespace dae
 	class EnemyFly final : public Enemy
 	{
 	public:
-		explicit EnemyFly(GameObject* owner);
+		explicit EnemyFly(GameObject* owner, ProjectilePoolComponent& projectilePool);
 		~EnemyFly() override = default;
 
 		void Update() override;

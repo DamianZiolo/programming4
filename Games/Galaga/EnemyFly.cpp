@@ -8,7 +8,7 @@
 #include "ServiceLocator.h"
 #include <ProjectileComponent.h>
 
-dae::EnemyFly::EnemyFly(GameObject* owner):Enemy(owner)
+dae::EnemyFly::EnemyFly(GameObject* owner, ProjectilePoolComponent& projectilePool):Enemy(owner, projectilePool)
 {
 	m_Health = 1;
 }

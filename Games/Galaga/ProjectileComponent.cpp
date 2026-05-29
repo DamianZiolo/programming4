@@ -84,6 +84,14 @@ void dae::ProjectileComponent::Activate(const glm::vec3& position, float velocit
 	}
 	if (auto* render = GetOwner()->GetComponent<RenderComponent>())
 	{
+		if (m_OwnerType == dae::ProjectileOwner::Player)
+		{
+			render->SetTexture("Bullet.png");
+		}
+		else 
+		{
+			render->SetTexture("EnemyBullet.png");
+		}
 		render->SetActive(true);
 	}
 		

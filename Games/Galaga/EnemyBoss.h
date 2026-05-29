@@ -12,7 +12,7 @@ namespace dae
 	class EnemyBoss final : public Enemy
 	{
 	public:
-		explicit EnemyBoss(GameObject* owner);
+		explicit EnemyBoss(GameObject* owner, ProjectilePoolComponent& projectilePool);
 		~EnemyBoss() override = default;
 		void TakeDamage() override;
 

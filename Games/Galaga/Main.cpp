@@ -48,6 +48,8 @@
 #include <MenuMoveCommand.h>
 #include <ConfirmCommand.h>
 #include <ProjectilePoolComponent.h>
+#include <ctime>
+#include <cstdlib>
 
 namespace fs = std::filesystem;
 
@@ -530,6 +532,7 @@ int main(int, char*[]) {
 	dae::Minigin engine(data_location);
 	engine.Run(load);
 	dae::SteamManager::Shutdown();
+	srand(static_cast<unsigned>(time(nullptr)));
     return 0;
 }
 

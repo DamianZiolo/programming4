@@ -2,43 +2,53 @@
 
 #include "EnemyBoss.h"
 #include "BossFormationState.h"
-
-#include <iostream>
-#include <memory>
+#include "GameObject.h"
+#include "GameTime.h"
+#include "BossReturnState.h"
 
 namespace dae
 {
     void BossTractorBeamState::OnEnter(EnemyBoss& boss)
     {
         (void)boss;
+
         m_Timer = 0.f;
+        m_BeamEnabled = true;
 
         // TODO:
-        // - set sprite animation
-        // - stop boss in the middle of the screen
-        // - Turn on collision for beam
-        // boss.EnableTractorBeam(true);
+        // turn on sprite beam
+        // turn on collider beam
     }
 
     void BossTractorBeamState::OnExit(EnemyBoss& boss)
     {
         (void)boss;
+
+        m_BeamEnabled = false;
+
         // TODO:
-        // - turn off beam
-        // - turn off beam collider and animation
-        // boss.EnableTractorBeam(false);
+       // turn off sprite beam
+       // turn off collider beam
     }
 
     std::unique_ptr<BossState> BossTractorBeamState::Update(EnemyBoss& boss)
     {
         (void)boss;
-        // TODO: 
-        // m_Timer += Time::GetDeltaTime();
-        // boss.UpdateTractorBeam();
+        const auto dt = GameTime::GetIntance().GetDeltaTime();
+        m_Timer += dt;
+
+        // Boss stay in the sam place
+        // Draw beam using:
+        //
+        // auto bossPos = boss.GetOwner()->GetWorldPosition();
+        //
+        // beamX = bossPos.x
+        // beamY = bossPos.y + offset
+        //don't draw beam imediatly, wait 1 second first!
 
         if (m_Timer >= m_BeamDuration)
         {
-            return std::make_unique<BossFormationState>();
+            return std::make_unique<BossReturnState>();
         }
 
         return nullptr;

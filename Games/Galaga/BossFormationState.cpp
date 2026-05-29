@@ -4,6 +4,8 @@
 #include <BossBombingRunState.h>
 #include "GameObject.h"
 #include <RenderComponent.h>
+#include <cstdlib>
+#include "BossTractorLoopState.h"
 //#include "BossBombingRunState.h"
 //#include "BossTractorBeamState.h"
 
@@ -20,16 +22,20 @@ namespace dae
     std::unique_ptr<dae::BossState> BossFormationState::Update(EnemyBoss& boss)
     {
         (void)boss;
+
         m_Timer += GameTime::GetIntance().GetDeltaTime();
+
         if (m_Timer >= m_TimeUntilAttack)
         {
-            //later here do rand which state we're going into:
-            return std::make_unique<BossBombingRunState>();
-        }
+            const auto randomAttack = rand() % 2;
 
-        // reminder: add timer here and after time randomly pick one of the attacks
-        // return new BossBombingRunState();
-        // return new BossTractorBeamState();
+            if (randomAttack == 0)
+            {
+                return std::make_unique<BossBombingRunState>();
+            }
+
+            return std::make_unique<BossTractorLoopState>();
+        }
 
         return nullptr;
     }

@@ -20,13 +20,11 @@ namespace dae
         m_Timer = 0.f;
 
         m_StartPos = owner->GetWorldPosition();
-
-        constexpr float screenHeight = 576.f;
         constexpr float bossDistanceFromBottom = 320.f;
 
         m_TargetPos = glm::vec3{
             m_StartPos.x,
-            screenHeight - bossDistanceFromBottom,
+            ScreenHeight - bossDistanceFromBottom,
             0.f
         };
     }

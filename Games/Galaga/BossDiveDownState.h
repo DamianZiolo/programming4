@@ -18,5 +18,6 @@ namespace dae
     private:
         float m_DownSpeed{ 180.f };
         float m_HorizontalSpeed{};
+        static constexpr float topOffset = 50.f;
     };
 }

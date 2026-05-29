@@ -29,10 +29,7 @@ namespace dae
 
         owner->SetWorldPosition(pos);
 
-        constexpr float screenHeight = 576.f;
-        constexpr float topOffset = 50.f;
-
-        if (pos.y > screenHeight + 20.f)
+        if (pos.y > ScreenHeight + 20.f)
         {
             owner->SetWorldPosition(pos.x, -topOffset, pos.z);
             return std::make_unique<BossReturnState>();

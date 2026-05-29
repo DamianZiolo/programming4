@@ -1,5 +1,4 @@
 #include "BossAttackMoveState.h"
-
 #include "BossBombingRunState.h"
 #include "BossTractorBeamState.h"
 #include "EnemyBoss.h"
@@ -18,11 +17,8 @@ namespace dae
         m_Timer = 0.f;
         m_StartPos = owner->GetWorldPosition();
 
-        constexpr float screenWidth = 1024.f;
-        constexpr float screenHeight = 576.f;
-
         constexpr float minX = 100.f;
-        constexpr float maxX = screenWidth - 100.f;
+        constexpr float maxX = ScreenWidth - 100.f;
         constexpr float targetDistanceFromBottom = 300.f;
 
         const auto randomX =
@@ -30,7 +26,7 @@ namespace dae
 
         m_TargetPos = glm::vec3{
             randomX,
-            screenHeight - targetDistanceFromBottom,
+            ScreenHeight - targetDistanceFromBottom,
             0.f
         };
     }

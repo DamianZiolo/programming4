@@ -71,6 +71,9 @@ Games/Galaga/Main.cpp
   Games/Galaga/BossTractorLoopState.cpp
   Games/Galaga/BossAttackMoveState.cpp
   Games/Galaga/BossDiveDownState.cpp
+  Games/Galaga/EnemyFlyFormationState.cpp
+  Games/Galaga/EnemyFlyBombingState.cpp
+  Games/Galaga/EnemyFlyReturnState.cpp
 )
 
 # enable c++20 features

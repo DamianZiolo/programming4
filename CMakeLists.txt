@@ -185,7 +185,21 @@ endif()
 
 if (WIN32)
   # Add VLD (Visual Leak Detector) for memory leak detection on Windows
-  find_package(VLD CONFIG)
+  find_package(VLD CONFIG QUIET)
+
+  # Fallback for standard VLD installer location
+  if(NOT VLD_FOUND)
+    set(VLD_ROOT "C:/Program Files (x86)/Visual Leak Detector")
+
+    if(EXISTS "${VLD_ROOT}/include/vld.h")
+      message(STATUS "VLD found manually in: ${VLD_ROOT}")
+
+      set(VLD_INCLUDE_DIR "${VLD_ROOT}/include")
+      set(VLD_LIBRARIES "${VLD_ROOT}/lib/Win64/vld.lib")
+    else()
+      message(STATUS "VLD not found")
+    endif()
+  endif()
 endif()
 
 # Add steam if available

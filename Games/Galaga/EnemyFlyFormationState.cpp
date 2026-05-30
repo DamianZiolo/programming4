@@ -16,7 +16,7 @@ namespace dae
 		if (enemy.IsAttackRequested())
 		{
 			enemy.ClearAttackRequest();
-			enemy.SetAttacking(true);
+			enemy.StartAttack();
 			return std::make_unique<EnemyFlyBombingState>();
 		}
 

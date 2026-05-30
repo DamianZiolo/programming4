@@ -50,6 +50,7 @@
 #include <ProjectilePoolComponent.h>
 #include <ctime>
 #include <cstdlib>
+#include "EnemyButterfly.h"
 
 namespace fs = std::filesystem;
 
@@ -126,6 +127,22 @@ std::unique_ptr<dae::GameObject> CreateFly(dae::ProjectilePoolComponent* project
 
 	return enemy;
 }
+std::unique_ptr<dae::GameObject> CreateButterfly(
+	dae::ProjectilePoolComponent* projectilePool)
+{
+	auto enemy = std::make_unique<dae::GameObject>();
+
+	enemy->AddComponent<dae::RenderComponent>("Enemy2.png");
+	enemy->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
+
+	auto collider = enemy->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
+	collider->SetDrawDebug(true);
+
+	enemy->AddComponent<dae::EnemyButterfly>(*projectilePool);
+
+	return enemy;
+}
+
 
 std::unique_ptr<dae::GameObject> CreateBoss(dae::ProjectilePoolComponent* projectilePool)
 {
@@ -142,9 +159,11 @@ std::unique_ptr<dae::GameObject> CreateBoss(dae::ProjectilePoolComponent* projec
 	return boss;
 }
 
-std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene, dae::ProjectilePoolComponent* projectilePool)
+std::unique_ptr<dae::GameObject> CreateFleet(
+	dae::Scene& scene,
+	dae::ProjectilePoolComponent* projectilePool)
 {
-	const int rows = 4;
+	const int rows = 5;
 	const int cols = 10;
 
 	float spacingX = 100.f;
@@ -156,10 +175,10 @@ std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene, dae::ProjectileP
 	auto* fleetRaw = fleet.get();
 
 	auto fleetComponent = fleet->AddComponent<dae::FleetComponent>(
-			rows,
-			cols,
-			spacingX,
-			spacingY);
+		rows,
+		cols,
+		spacingX,
+		spacingY);
 
 	for (int row = 0; row < rows; ++row)
 	{
@@ -185,16 +204,29 @@ std::unique_ptr<dae::GameObject> CreateFleet(dae::Scene& scene, dae::ProjectileP
 				auto boss = CreateBoss(projectilePool);
 
 				boss->SetParent(slotRaw, false);
+
 				auto enemyComponent = boss->GetComponent<dae::Enemy>();
 				enemyComponent->SetSlot(fleetComponent->GetSlot(row, col));
 
 				scene.Add(std::move(boss));
+			}
+			else if (row == 1 || row == 2)
+			{
+				auto butterfly = CreateButterfly(projectilePool);
+
+				butterfly->SetParent(slotRaw, false);
+
+				auto enemyComponent = butterfly->GetComponent<dae::Enemy>();
+				enemyComponent->SetSlot(fleetComponent->GetSlot(row, col));
+
+				scene.Add(std::move(butterfly));
 			}
 			else
 			{
 				auto enemy = CreateFly(projectilePool);
 
 				enemy->SetParent(slotRaw, false);
+
 				auto enemyComponent = enemy->GetComponent<dae::Enemy>();
 				enemyComponent->SetSlot(fleetComponent->GetSlot(row, col));
 

@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <sstream>
 #include "EnemyFly.h"
+#include "EnemyButterfly.h"
 #include <algorithm>
 #include <cstdlib>
 #include <cmath>
@@ -38,7 +39,7 @@ void dae::FleetComponent::Update()
 	m_AttackTimer = 0.f;
 
 	int currentAttackers = 0;
-	std::vector<EnemyFly*> availableEnemies{};
+	std::vector<Enemy*> availableEnemies{};
 
 	for (auto& slot : m_Slots)
 	{
@@ -48,13 +49,19 @@ void dae::FleetComponent::Update()
 		for (auto* child : slot.object->GetChildren())
 		{
 			auto* fly = child->GetComponent<EnemyFly>();
+			auto* butterfly = child->GetComponent<EnemyButterfly>();
 
-			if (!fly)
+			if (!fly && !butterfly)
 				continue;
 
-			if (!fly->IsAttackRequested())
+			auto* enemy = child->GetComponent<Enemy>();
+
+			if (!enemy)
+				continue;
+
+			if (!enemy->IsAttackRequested())
 			{
-				availableEnemies.push_back(fly);
+				availableEnemies.push_back(enemy);
 			}
 		}
 	}
@@ -64,8 +71,7 @@ void dae::FleetComponent::Update()
 	if (freeAttackSlots <= 0)
 		return;
 
-	const int attackCount =
-		std::min(freeAttackSlots, static_cast<int>(availableEnemies.size()));
+	const int attackCount = std::min(m_MaxAttackers, static_cast<int>(availableEnemies.size()));
 
 	for (int i = 0; i < attackCount; ++i)
 	{

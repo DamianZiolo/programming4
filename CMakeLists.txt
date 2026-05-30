@@ -74,6 +74,12 @@ Games/Galaga/Main.cpp
   Games/Galaga/EnemyFlyFormationState.cpp
   Games/Galaga/EnemyFlyBombingState.cpp
   Games/Galaga/EnemyFlyReturnState.cpp
+  Games/Galaga/EnemyButterfly.cpp
+  Games/Galaga/EnemyButterflyFormationState.cpp
+  Games/Galaga/EnemyButterflyBombingState.cpp
+  Games/Galaga/EnemyButterflyDiveDownState.cpp
+  Games/Galaga/EnemyButterflyLoopDiveState.cpp
+  Games/Galaga/EnemyButterflyReturnState.cpp
 )
 
 # enable c++20 features

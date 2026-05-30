@@ -40,12 +40,15 @@ namespace dae
 		if (!m_HasShot && pos.y >= shootLine)
 		{
 			m_HasShot = true;
-
-			enemy.GetProjectilePool().SpawnProjectile(
-				glm::vec3{ pos.x, pos.y + 20.f, 0.f },
-				100.f,
-				ProjectileOwner::Enemy
-			);
+			for (int i{}; i < 3;++i)
+			{
+				enemy.GetProjectilePool().SpawnProjectile(
+					glm::vec3{ pos.x, pos.y + 20.f, 0.f },
+					100.f,
+					ProjectileOwner::Enemy
+				);
+			}
+			
 		}
 
 		if (pos.y > ScreenHeight + 30.f)

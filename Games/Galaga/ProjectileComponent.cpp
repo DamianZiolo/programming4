@@ -66,7 +66,12 @@ void dae::ProjectileComponent::Update()
 
 void dae::ProjectileComponent::SetVelocity(float velocity)
 {
-	m_Velocity = glm::vec3(0.f, velocity, 0.f);
+	float randomX = 0;
+	if (m_OwnerType == dae::ProjectileOwner::Enemy)
+	{
+		randomX = static_cast<float>((rand() % 201) - 100);
+	}
+	m_Velocity = glm::vec3(randomX, velocity, 0.f);
 }
 
 void dae::ProjectileComponent::Activate(const glm::vec3& position, float velocity, ProjectileOwner ownerType)

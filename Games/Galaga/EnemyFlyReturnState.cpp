@@ -45,6 +45,7 @@ namespace dae
 		{
 			owner->SetParent(slot, false);
 			owner->SetLocalPosition(0.f, 0.f, 0.f);
+			enemy.SetAttacking(false);
 
 			return std::make_unique<EnemyFlyFormationState>();
 		}

@@ -5,6 +5,7 @@
 
 namespace dae
 {
+	class EnemyFly;
 	class FleetComponent final : public Component
 	{
 	public:
@@ -43,5 +44,9 @@ namespace dae
 
 		glm::vec3 m_StartPos{};
 		float m_Time{};
+
+		float m_AttackTimer{};
+		float m_AttackInterval{ 3.f };
+		int m_MaxAttackers{ 2 };
 	};
 }

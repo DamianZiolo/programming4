@@ -9,15 +9,14 @@ namespace dae
 	void EnemyFlyFormationState::OnEnter(EnemyFly&)
 	{
 		m_Timer = 0.f;
-		m_TimeUntilAttack = 3.f;
 	}
 
-	std::unique_ptr<EnemyFlyState> EnemyFlyFormationState::Update(EnemyFly&)
+	std::unique_ptr<EnemyFlyState> EnemyFlyFormationState::Update(EnemyFly& enemy)
 	{
-		m_Timer += GameTime::GetIntance().GetDeltaTime();
-
-		if (m_Timer >= m_TimeUntilAttack)
+		if (enemy.IsAttackRequested())
 		{
+			enemy.ClearAttackRequest();
+			enemy.SetAttacking(true);
 			return std::make_unique<EnemyFlyBombingState>();
 		}
 

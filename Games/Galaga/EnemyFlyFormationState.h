@@ -14,6 +14,6 @@ namespace dae
 
 	private:
 		float m_Timer{};
-		float m_TimeUntilAttack{ 3.f };
+
 	};
 }

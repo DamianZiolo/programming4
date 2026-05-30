@@ -21,7 +21,7 @@ namespace dae
         m_BeamEnabled = false;
 
         // TODO:
-        // boss.EnableTractorBeam(false);
+        boss.EnableTractorBeam(false);
     }
 
     std::unique_ptr<BossState> BossTractorBeamState::Update(EnemyBoss& boss)
@@ -36,7 +36,7 @@ namespace dae
             m_BeamEnabled = true;
 
             // TODO:
-            // boss.EnableTractorBeam(true);
+            boss.EnableTractorBeam(true);
         }
 
         if (m_Timer >= m_BeamDuration)

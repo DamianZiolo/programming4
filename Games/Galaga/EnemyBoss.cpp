@@ -8,6 +8,8 @@
 #include <BossFormationState.h>
 #include <RenderComponent.h>
 #include "ProjectilePoolComponent.h"
+#include "RenderComponent.h"
+#include "SceneManager.h"
 
 dae::EnemyBoss::EnemyBoss(GameObject* owner, ProjectilePoolComponent& projectilePool):Enemy(owner, projectilePool)
 {
@@ -55,4 +57,38 @@ void dae::EnemyBoss::ChangeState(std::unique_ptr<BossState> newState)
 	{
 		m_State->OnEnter(*this);
 	}
+}
+
+void dae::EnemyBoss::CreateTractorBeam(Scene& scene)
+{
+	auto beam = std::make_unique<GameObject>();
+
+	beam->SetParent(GetOwner(), false);
+	beam->SetLocalPosition(-85.f, 45.f, 0.f);
+
+	auto* render = beam->AddComponent<RenderComponent>("beam.png");
+	render->SetSize(195.f, 250.f);
+	render->SetActive(false);
+
+	auto* collider = beam->AddComponent<BoxCollider>(glm::vec2{ 195.f, 250.f });
+	collider->SetActive(false);
+	collider->SetDrawDebug(true);
+
+	m_pTractorBeam = beam.get();
+
+	scene.Add(std::move(beam));
+}
+
+void dae::EnemyBoss::EnableTractorBeam(bool enabled)
+{
+	m_BeamEnabled = enabled;
+
+	if (!m_pTractorBeam)
+		return;
+
+	if (auto* render = m_pTractorBeam->GetComponent<RenderComponent>())
+		render->SetActive(enabled);
+
+	if (auto* collider = m_pTractorBeam->GetComponent<BoxCollider>())
+		collider->SetActive(enabled);
 }

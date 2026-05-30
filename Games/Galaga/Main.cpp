@@ -144,17 +144,20 @@ std::unique_ptr<dae::GameObject> CreateButterfly(
 }
 
 
-std::unique_ptr<dae::GameObject> CreateBoss(dae::ProjectilePoolComponent* projectilePool)
+std::unique_ptr<dae::GameObject> CreateBoss(
+	dae::Scene& scene,
+	dae::ProjectilePoolComponent* projectilePool)
 {
 	auto boss = std::make_unique<dae::GameObject>();
 
-	boss->AddComponent<dae::RenderComponent>("Boss.png");
-	boss->GetComponent<dae::RenderComponent>()->SetSize(50, 50);
+	auto* render = boss->AddComponent<dae::RenderComponent>("Boss.png");
+	render->SetSize(50, 50);
 
 	auto collider = boss->AddComponent<dae::BoxCollider>(glm::vec2(50, 50));
 	collider->SetDrawDebug(true);
 
-	boss->AddComponent<dae::EnemyBoss>(*projectilePool);
+	auto* bossComponent = boss->AddComponent<dae::EnemyBoss>(*projectilePool);
+	bossComponent->CreateTractorBeam(scene);
 
 	return boss;
 }
@@ -201,7 +204,7 @@ std::unique_ptr<dae::GameObject> CreateFleet(
 
 			if (row == 0)
 			{
-				auto boss = CreateBoss(projectilePool);
+				auto boss = CreateBoss(scene, projectilePool);
 
 				boss->SetParent(slotRaw, false);
 

@@ -8,6 +8,8 @@ namespace dae
 {
 	class BoxCollider;
 	class BossState;
+	class RenderComponent;
+	class Scene;
 
 	class EnemyBoss final : public Enemy
 	{
@@ -25,9 +27,16 @@ namespace dae
 		int GetHealth() { return m_Health; }
 		void ChangeState(std::unique_ptr<BossState> newState);
 
+		void CreateTractorBeam(Scene& scene);
+		void EnableTractorBeam(bool enabled);
+		bool IsTractorBeamEnabled() const { return m_BeamEnabled; }
+
 	private:
 		std::unique_ptr<BossState> m_State;
 		bool m_IsDamaged{ false };
+
+		GameObject* m_pTractorBeam{};
+		bool m_BeamEnabled{ false };
 	};
 
 }

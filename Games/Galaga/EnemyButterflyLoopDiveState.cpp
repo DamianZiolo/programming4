@@ -15,8 +15,11 @@ namespace dae
 	{
 		m_Timer = 0.f;
 		m_IsLooping = false;
+		m_HasFinishedLoop = false;
 
-		m_HorizontalSpeed = static_cast<float>((rand() % 2 == 0) ? -80.f : 80.f);
+		m_HorizontalSpeed =
+			static_cast<float>((rand() % 2 == 0) ? -35.f : 35.f);
+
 		m_LoopCenter = enemy.GetOwner()->GetWorldPosition();
 	}
 
@@ -28,8 +31,7 @@ namespace dae
 
 		auto pos = owner->GetWorldPosition();
 
-		
-		if (!m_IsLooping && pos.y >= loopStartLine)
+		if (!m_IsLooping && !m_HasFinishedLoop && pos.y >= loopStartLine)
 		{
 			m_IsLooping = true;
 			m_Timer = 0.f;
@@ -40,7 +42,9 @@ namespace dae
 		{
 			m_Timer += dt;
 
-			const auto progress = std::clamp(m_Timer / m_LoopDuration, 0.f, 1.f);
+			const auto progress =
+				std::clamp(m_Timer / m_LoopDuration, 0.f, 1.f);
+
 			const auto angle = progress * fullCircle;
 
 			pos.x = m_LoopCenter.x + std::sin(angle) * radiusX;
@@ -49,6 +53,9 @@ namespace dae
 			if (progress >= 1.f)
 			{
 				m_IsLooping = false;
+				m_HasFinishedLoop = true;
+
+				pos = m_LoopCenter;
 			}
 		}
 		else

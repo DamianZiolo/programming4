@@ -15,14 +15,18 @@ namespace dae
 		glm::vec3 m_LoopCenter{};
 
 		float m_Timer{};
-		float m_LoopDuration{ 1.0f };
-		static constexpr float loopStartLine = ScreenHeight - 20.f;
-		float m_DownSpeed{ 160.f };
+		float m_LoopDuration{ 2.0f };
+
+		static constexpr float loopStartLine = ScreenHeight - 100.f;
+
+		float m_DownSpeed{ 120.f };
 		float m_HorizontalSpeed{};
 
 		bool m_IsLooping{ false };
-		static constexpr float radiusX = 45.f;
-		static constexpr float radiusY = 35.f;
+		bool m_HasFinishedLoop{ false };
+
+		static constexpr float radiusX = 150.f;
+		static constexpr float radiusY = 150.f;
 		static constexpr float fullCircle = 6.2831853f;
 	};
 }

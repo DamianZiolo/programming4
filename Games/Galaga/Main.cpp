@@ -368,7 +368,7 @@ static void LoadMenuScene(dae::Scene& menuScene)
 	auto* menu = menuController->AddComponent<dae::MenuComponent>();
 
 	auto single = std::make_unique<dae::GameObject>();
-	single->SetLocalPosition(420.f, 260.f, 0.f);
+	single->SetLocalPosition(420.f, 220.f, 0.f);
 	auto* singleText = single->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Single mode",
@@ -378,7 +378,7 @@ static void LoadMenuScene(dae::Scene& menuScene)
 	menuScene.Add(std::move(single));
 
 	auto coop = std::make_unique<dae::GameObject>();
-	coop->SetLocalPosition(420.f, 320.f, 0.f);
+	coop->SetLocalPosition(420.f, 280.f, 0.f);
 	auto* coopText = coop->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Co-op mode",
@@ -388,7 +388,7 @@ static void LoadMenuScene(dae::Scene& menuScene)
 	menuScene.Add(std::move(coop));
 
 	auto versus = std::make_unique<dae::GameObject>();
-	versus->SetLocalPosition(420.f, 380.f, 0.f);
+	versus->SetLocalPosition(420.f, 340.f, 0.f);
 	auto* versusText = versus->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Versus mode",
@@ -397,19 +397,75 @@ static void LoadMenuScene(dae::Scene& menuScene)
 	menu->AddOption(versusText);
 	menuScene.Add(std::move(versus));
 
+	auto nameLabel = std::make_unique<dae::GameObject>();
+	nameLabel->SetLocalPosition(420.f, 430.f, 0.f);
+	nameLabel->AddComponent<dae::TextComponent>(
+		fontMenu,
+		"Name:",
+		SDL_Color{ 255,255,255,255 });
+
+	menuScene.Add(std::move(nameLabel));
+
+	for (int i = 0; i < 4; ++i)
+	{
+		auto letter = std::make_unique<dae::GameObject>();
+
+		letter->SetLocalPosition(
+			530.f + i * 40.f,
+			430.f,
+			0.f);
+
+		auto* letterText = letter->AddComponent<dae::TextComponent>(
+			fontMenu,
+			"A",
+			SDL_Color{ 255,255,255,255 });
+
+		menu->AddNameSlot(letterText);
+
+		menuScene.Add(std::move(letter));
+	}
+
 	auto& input = dae::InputManager::GetInstance();
 
 	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Down,
-		std::make_unique<dae::MenuMoveCommand>(menu, -1));
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Up));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_S, dae::InputState::Down,
-		std::make_unique<dae::MenuMoveCommand>(menu, 1));
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Down));
+
+	input.BindKeyboardCommand(SDL_SCANCODE_A, dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Left));
+
+	input.BindKeyboardCommand(SDL_SCANCODE_D, dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Right));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_UP, dae::InputState::Down,
-		std::make_unique<dae::MenuMoveCommand>(menu, -1));
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Up));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_DOWN, dae::InputState::Down,
-		std::make_unique<dae::MenuMoveCommand>(menu, 1));
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Down));
+
+	input.BindKeyboardCommand(SDL_SCANCODE_LEFT, dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Left));
+
+	input.BindKeyboardCommand(SDL_SCANCODE_RIGHT, dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Right));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_RETURN, dae::InputState::Down,
 		std::make_unique<dae::ConfirmCommand>(menu));
@@ -417,13 +473,33 @@ static void LoadMenuScene(dae::Scene& menuScene)
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadUp,
 		dae::InputState::Down,
-		std::make_unique<dae::MenuMoveCommand>(menu, -1),
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Up),
 		0);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadDown,
 		dae::InputState::Down,
-		std::make_unique<dae::MenuMoveCommand>(menu, 1),
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Down),
+		0);
+
+	input.BindControllerCommand(
+		dae::ControllerButton::DPadLeft,
+		dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Left),
+		0);
+
+	input.BindControllerCommand(
+		dae::ControllerButton::DPadRight,
+		dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(
+			menu,
+			dae::MenuMoveDirection::Right),
 		0);
 
 	input.BindControllerCommand(

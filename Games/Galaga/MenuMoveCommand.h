@@ -7,14 +7,22 @@ namespace dae {
 	class GameObject;
 	class MenuComponent;
 
+	enum class MenuMoveDirection
+	{
+		Up,
+		Down,
+		Left,
+		Right
+	};
+
 	class MenuMoveCommand : public Command
 	{
 	public:
-		explicit MenuMoveCommand(MenuComponent* menu, int direction);
+		explicit MenuMoveCommand(MenuComponent* menu, MenuMoveDirection direction);
 		void Execute() override;
 	private:
 		dae::MenuComponent* m_pMenu{};
-		int m_Direction{};
+		MenuMoveDirection m_Direction{};
 	};
 
 }

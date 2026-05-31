@@ -7,7 +7,7 @@ namespace dae
     class HealthComponent final : public Component
     {
     public:
-        explicit HealthComponent(GameObject* owner, int startHealth = 3);
+        explicit HealthComponent(GameObject* owner, int startHealth = 4);
         void Update() override;
 		void DealDamage();
         int GetHealth() const;

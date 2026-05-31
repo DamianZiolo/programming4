@@ -75,7 +75,7 @@ dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenC
 	player->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
 	auto actor = player->AddComponent<dae::GameActor>();
 	player->AddComponent<dae::ScoreComponent>();
-	player->AddComponent<dae::HealthComponent>(3);
+	player->AddComponent<dae::HealthComponent>(4);
 	auto playerCollider = player->AddComponent<dae::BoxCollider>(glm::vec2(30,30));
 	playerCollider->SetDrawDebug(true);
 	
@@ -123,7 +123,7 @@ dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& scree
 	auto playerCollider = parent->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
 	playerCollider->SetDrawDebug(true);
 	
-	parent->AddComponent<dae::HealthComponent>(3);
+	parent->AddComponent<dae::HealthComponent>(4);
 
 	auto& input = dae::InputManager::GetInstance();
 
@@ -171,20 +171,16 @@ dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& scree
 void CreateLivesUI(
 	dae::Scene& scene,
 	dae::GameActor* actor,
-	std::shared_ptr<dae::Font> font,
-	const glm::vec3& position,
-	const std::string& label)
+	const glm::vec3& position)
 {
 	auto ui = std::make_unique<dae::GameObject>();
 
 	ui->SetLocalPosition(position);
 
-	ui->AddComponent<dae::TextComponent>(
-		font,
-		label + "3",
-		SDL_Color{ 255,255,255,255 });
-
-	ui->AddComponent<dae::HealthDisplayComponent>(actor);
+	ui->AddComponent<dae::HealthDisplayComponent>(
+		actor,
+		scene,
+		4);
 
 	scene.Add(std::move(ui));
 }
@@ -299,9 +295,12 @@ static void LoadGameScene(dae::Scene& mainScene)
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
-	CreateLivesUI(mainScene, player1, font, { 20,20,0 }, "Health: ");
+	CreateLivesUI(
+		mainScene,
+		player1,
+		{ 20.f, 520.f, 0.f });
 	CreateScoreUI(mainScene, player1, font, { 20,60,0 }, "Score: ");
-	CreateLivesUI(mainScene, player2, font, { 20,100,0 }, "Health: ");
+	//Ui player2 if exist
 	CreateScoreUI(mainScene, player2, font, { 20,140,0 }, "Score: ");
 	CreateControlsUI(
 		mainScene,

@@ -1,19 +1,18 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#if _DEBUG && __has_include(<vld.h>) //If we're in debug mode and leak detector is available(File vlh.h exist), include it
+#if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
 #endif
 
 #if _DEBUG
-	#if __has_include(<vld.h>)
-	#pragma message(">>> VLD HEADER FOUND - including vld.h")
-	#include <vld.h>
-	#else
-	#pragma message(">>> VLD HEADER NOT FOUND")
-	#endif
+#if __has_include(<vld.h>)
+#pragma message(">>> VLD HEADER FOUND - including vld.h")
+#include <vld.h>
+#else
+#pragma message(">>> VLD HEADER NOT FOUND")
 #endif
-
+#endif
 
 #include "Minigin.h"
 #include "SceneManager.h"
@@ -22,8 +21,6 @@
 #include "FPSComponent.h"
 #include "Scene.h"
 #include "RenderComponent.h"
-#include "RotationComponent.h"
-#include "TrashcacheComponent.h"
 #include "InputManager.h"
 #include "MoveCommand.h"
 #include "HealthComponent.h"
@@ -34,20 +31,22 @@
 #include "CollectedPointsCommand.h"
 #include "SteamManager.h"
 #include "AchievementSystemComponent.h"
-
-
-#include <filesystem>
 #include "ControllerButton.h"
 #include "GameActor.h"
 #include "BoxCollider.h"
-#include <ServiceLocator.h>
-#include <MenuComponent.h>
-#include <MenuMoveCommand.h>
-#include <ConfirmCommand.h>
-#include <ProjectilePoolComponent.h>
+#include "ServiceLocator.h"
+#include "MenuComponent.h"
+#include "MenuMoveCommand.h"
+#include "ConfirmCommand.h"
+#include "ProjectilePoolComponent.h"
+#include "LevelManagerComponent.h"
+#include "GameSettings.h"
+#include "GameMode.h"
+#include "Component.h"
+
+#include <filesystem>
 #include <ctime>
 #include <cstdlib>
-#include <LevelManagerComponent.h>
 
 namespace fs = std::filesystem;
 
@@ -58,112 +57,111 @@ void CreateBackground(dae::Scene& scene)
 	scene.Add(std::move(go));
 }
 
-void CreateLogo(dae::Scene& scene, const glm::vec3& screenCenter)
+void BindKeyboardControls(
+	dae::GameObject* player,
+	dae::ProjectilePoolComponent* projectilePool)
 {
-	auto go = std::make_unique<dae::GameObject>();
-	go->SetLocalPosition(screenCenter);
-	go->AddComponent<dae::RenderComponent>("logo.png");
-	scene.Add(std::move(go));
-}
-
-dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenCenter, dae::ProjectilePoolComponent* projectilePool)
-{
-	auto player = std::make_unique<dae::GameObject>();
-
-	player->SetLocalPosition(screenCenter);
-	player->AddComponent<dae::RenderComponent>("Player.png");
-	player->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
-	auto actor = player->AddComponent<dae::GameActor>();
-	player->AddComponent<dae::ScoreComponent>();
-	player->AddComponent<dae::HealthComponent>(4);
-	auto playerCollider = player->AddComponent<dae::BoxCollider>(glm::vec2(30,30));
-	playerCollider->SetDrawDebug(true);
-	
-	//turn on debug 
-
-
 	auto& input = dae::InputManager::GetInstance();
 
 	input.BindKeyboardCommand(SDL_SCANCODE_SPACE, dae::InputState::Down,
-		std::make_unique<dae::ShotCommand>(player.get(), projectilePool));
+		std::make_unique<dae::ShotCommand>(player, projectilePool));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, player.get()));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, player));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_S, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,1,0 }, player.get()));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,1,0 }, player));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_A, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ -1,0,0 }, player.get()));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ -1,0,0 }, player));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_D, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, player.get()));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, player));
 
-	input.BindKeyboardCommand(
-		SDL_SCANCODE_P,
-		dae::InputState::Down,
-		std::make_unique<dae::CollectedPointsCommand>(player.get(), 100)
-	);
-
-	scene.Add(std::move(player));
-
-	return actor;
+	input.BindKeyboardCommand(SDL_SCANCODE_P, dae::InputState::Down,
+		std::make_unique<dae::CollectedPointsCommand>(player, 100));
 }
 
-
-dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter, dae::ProjectilePoolComponent* projectilePool)
+void BindControllerControls(
+	dae::GameObject* player,
+	dae::ProjectilePoolComponent* projectilePool,
+	int controllerIndex)
 {
-	auto parent = std::make_unique<dae::GameObject>();
-
-	parent->SetLocalPosition(screenCenter);
-	parent->AddComponent<dae::RenderComponent>("Player.png");
-	parent->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
-	auto actor = parent->AddComponent<dae::GameActor>();
-	parent->AddComponent<dae::ScoreComponent>();
-	auto playerCollider = parent->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
-	playerCollider->SetDrawDebug(true);
-	
-	parent->AddComponent<dae::HealthComponent>(4);
-
 	auto& input = dae::InputManager::GetInstance();
 
 	input.BindControllerCommand(
 		dae::ControllerButton::B,
 		dae::InputState::Down,
-		std::make_unique<dae::ShotCommand>(parent.get(), projectilePool),
-		0);
+		std::make_unique<dae::ShotCommand>(player, projectilePool),
+		controllerIndex);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadUp,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, parent.get()),
-		0);
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, player),
+		controllerIndex);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadDown,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,1,0 }, parent.get()),
-		0);
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,1,0 }, player),
+		controllerIndex);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadLeft,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ -1,0,0 }, parent.get()),
-		0);
+		std::make_unique<dae::MoveCommand>(glm::vec3{ -1,0,0 }, player),
+		controllerIndex);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadRight,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, parent.get()),
-		0);
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, player),
+		controllerIndex);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::A,
 		dae::InputState::Down,
-		std::make_unique<dae::CollectedPointsCommand>(parent.get(), 100)
-	);
+		std::make_unique<dae::CollectedPointsCommand>(player, 100),
+		controllerIndex);
+}
 
-	scene.Add(std::move(parent));
+dae::GameActor* CreatePlayer(
+	dae::Scene& scene,
+	const glm::vec3& position,
+	dae::ProjectilePoolComponent* projectilePool,
+	bool useKeyboard,
+	bool useController,
+	int controllerIndex)
+{
+	auto player = std::make_unique<dae::GameObject>();
+
+	player->SetLocalPosition(position);
+
+	auto* render = player->AddComponent<dae::RenderComponent>("Player.png");
+	render->SetSize(30.f, 30.f);
+
+	auto* actor = player->AddComponent<dae::GameActor>();
+
+	player->AddComponent<dae::ScoreComponent>();
+	player->AddComponent<dae::HealthComponent>(4);
+
+	auto* collider = player->AddComponent<dae::BoxCollider>(glm::vec2{ 30.f, 30.f });
+	collider->SetDrawDebug(true);
+
+	auto* playerRaw = player.get();
+
+	if (useKeyboard)
+	{
+		BindKeyboardControls(playerRaw, projectilePool);
+	}
+
+	if (useController)
+	{
+		BindControllerControls(playerRaw, projectilePool, controllerIndex);
+	}
+
+	scene.Add(std::move(player));
 
 	return actor;
 }
@@ -206,32 +204,6 @@ void CreateScoreUI(
 	scene.Add(std::move(ui));
 }
 
-void CreateTexts(dae::Scene& scene, std::shared_ptr<dae::Font> font)
-{
-	auto goText = std::make_unique<dae::GameObject>();
-
-	goText->SetLocalPosition(292, 20);
-	goText->AddComponent<dae::TextComponent>(
-		font,
-		"Programming 4 Assignment",
-		SDL_Color{ 255,255,0,255 });
-
-	scene.Add(std::move(goText));
-
-
-	goText = std::make_unique<dae::GameObject>();
-
-	goText->SetLocalPosition(292, 80);
-	goText->AddComponent<dae::TextComponent>(
-		font,
-		"0 FPS",
-		SDL_Color{ 255,255,0,255 });
-
-	goText->AddComponent<dae::FPSComponent>();
-
-	scene.Add(std::move(goText));
-}
-
 void CreateControlsUI(
 	dae::Scene& scene,
 	std::shared_ptr<dae::Font> font,
@@ -242,15 +214,12 @@ void CreateControlsUI(
 	ui->SetLocalPosition(position);
 
 	std::string controlsText =
-		"Keyboard:"
-		"SPACE - Shoot (THIS PLAY SOUND)"
-		;
+		"Keyboard: WASD - Move, SPACE - Shoot";
 
 	ui->AddComponent<dae::TextComponent>(
 		font,
 		controlsText,
-		SDL_Color{ 255,255,255,255 }
-	);
+		SDL_Color{ 255,255,255,255 });
 
 	scene.Add(std::move(ui));
 }
@@ -261,78 +230,146 @@ std::unique_ptr<dae::GameObject> CreatePooling(dae::Scene& scene)
 
 	pooling->AddComponent<dae::ProjectilePoolComponent>(
 		200,
-		scene
-	);
+		scene);
 
 	return pooling;
 }
 
 static void LoadGameScene(dae::Scene& mainScene)
 {
-	const glm::vec3 screenCenter{ 512.f,288.f,0.f };
+	const auto mode = dae::GameSettings::GetInstance().GetGameMode();
+
 	dae::ServiceLocator::GetSoundSystem().RegisterSound(1, "Data/sound1.mp3");
 
 	CreateBackground(mainScene);
-	//CreateLogo(scene, screenCenter);
+
 	auto bulletPooling = CreatePooling(mainScene);
 	auto* projectilePool =
 		bulletPooling->GetComponent<dae::ProjectilePoolComponent>();
 
 	mainScene.Add(std::move(bulletPooling));
-	
-	auto player1 = CreateKeyboardPlayer(mainScene, screenCenter, projectilePool);
-	auto player2 = CreateControllerPlayer(mainScene, screenCenter, projectilePool);
+
+	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+
+	dae::GameActor* player1{};
+	dae::GameActor* player2{};
+
+	if (mode == dae::GameMode::Solo)
+	{
+		player1 = CreatePlayer(
+			mainScene,
+			glm::vec3{ 512.f, 520.f, 0.f },
+			projectilePool,
+			true,
+			true,
+			0);
+
+		CreateLivesUI(mainScene, player1, { 20.f, 520.f, 0.f });
+		CreateScoreUI(mainScene, player1, font, { 20.f, 60.f, 0.f }, "Score: ");
+	}
+	else if (mode == dae::GameMode::Duo)
+	{
+		player1 = CreatePlayer(
+			mainScene,
+			glm::vec3{ 470.f, 520.f, 0.f },
+			projectilePool,
+			true,
+			true,
+			0);
+
+		player2 = CreatePlayer(
+			mainScene,
+			glm::vec3{ 550.f, 520.f, 0.f },
+			projectilePool,
+			false,
+			true,
+			1);
+
+		CreateLivesUI(mainScene, player1, { 20.f, 520.f, 0.f });
+		CreateLivesUI(mainScene, player2, { 880.f, 520.f, 0.f });
+
+		CreateScoreUI(mainScene, player1, font, { 20.f, 60.f, 0.f }, "P1 Score: ");
+		CreateScoreUI(mainScene, player2, font, { 760.f, 60.f, 0.f }, "P2 Score: ");
+	}
+	else
+	{
+		player1 = CreatePlayer(
+			mainScene,
+			glm::vec3{ 512.f, 520.f, 0.f },
+			projectilePool,
+			true,
+			true,
+			0);
+
+		CreateLivesUI(mainScene, player1, { 20.f, 520.f, 0.f });
+		CreateScoreUI(mainScene, player1, font, { 20.f, 60.f, 0.f }, "Score: ");
+	}
+
 	auto levelManager = std::make_unique<dae::GameObject>();
 
 	levelManager->AddComponent<dae::LevelManagerComponent>(
 		mainScene,
-		*projectilePool
-	);
+		*projectilePool);
 
 	mainScene.Add(std::move(levelManager));
 
-	
-
-	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-
-	CreateLivesUI(
-		mainScene,
-		player1,
-		{ 20.f, 520.f, 0.f });
-	CreateScoreUI(mainScene, player1, font, { 20,60,0 }, "Score: ");
-	//Ui player2 if exist
-	CreateScoreUI(mainScene, player2, font, { 20,140,0 }, "Score: ");
 	CreateControlsUI(
 		mainScene,
 		font,
-		glm::vec3{ 20.f, 400.f, 0.f }
-	);
-
+		glm::vec3{ 20.f, 400.f, 0.f });
 
 	auto achievementGO = std::make_unique<dae::GameObject>();
-	auto achievement = achievementGO->AddComponent<dae::AchievementSystemComponent>();
+	auto* achievement = achievementGO->AddComponent<dae::AchievementSystemComponent>();
 
-	achievement->AddActor(player1);
-	achievement->AddActor(player2);
+	if (player1)
+	{
+		achievement->AddActor(player1);
+	}
+
+	if (player2)
+	{
+		achievement->AddActor(player2);
+	}
 
 	mainScene.Add(std::move(achievementGO));
-
-	//dae::ServiceLocator::GetSoundSystem().Play(1, 1.0f);
-
 }
+
+class GameSceneLoaderComponent final : public dae::Component
+{
+public:
+	GameSceneLoaderComponent(dae::GameObject* owner, dae::Scene& scene)
+		: Component(owner)
+		, m_Scene{ scene }
+	{
+	}
+
+	void Update() override
+	{
+		if (m_HasLoaded)
+			return;
+
+		m_HasLoaded = true;
+
+		LoadGameScene(m_Scene);
+
+		GetOwner()->MarkForRemoval();
+	}
+
+private:
+	dae::Scene& m_Scene;
+	bool m_HasLoaded{ false };
+};
 
 static void LoadMenuScene(dae::Scene& menuScene)
 {
-	auto fontTitle = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 64);
 	auto fontMenu = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	
+
 	auto menuController = std::make_unique<dae::GameObject>();
 	auto* menu = menuController->AddComponent<dae::MenuComponent>();
-	//CreateLogo(menuScene, glm::vec3{ 512.f, 120.f, 0.f });
 
 	auto single = std::make_unique<dae::GameObject>();
 	single->SetLocalPosition(420.f, 260.f, 0.f);
-	auto singleText = single->AddComponent<dae::TextComponent>(
+	auto* singleText = single->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Single mode",
 		SDL_Color{ 255,255,0,255 });
@@ -342,106 +379,115 @@ static void LoadMenuScene(dae::Scene& menuScene)
 
 	auto coop = std::make_unique<dae::GameObject>();
 	coop->SetLocalPosition(420.f, 320.f, 0.f);
-	auto coopText = coop->AddComponent<dae::TextComponent>(
+	auto* coopText = coop->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Co-op mode",
 		SDL_Color{ 255,255,255,255 });
+
 	menu->AddOption(coopText);
 	menuScene.Add(std::move(coop));
 
 	auto versus = std::make_unique<dae::GameObject>();
 	versus->SetLocalPosition(420.f, 380.f, 0.f);
-	auto versusText = versus->AddComponent<dae::TextComponent>(
+	auto* versusText = versus->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Versus mode",
 		SDL_Color{ 255,255,255,255 });
+
 	menu->AddOption(versusText);
+	menuScene.Add(std::move(versus));
 
 	auto& input = dae::InputManager::GetInstance();
-	//W and S
-	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Down, 
+
+	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Down,
 		std::make_unique<dae::MenuMoveCommand>(menu, -1));
+
 	input.BindKeyboardCommand(SDL_SCANCODE_S, dae::InputState::Down,
 		std::make_unique<dae::MenuMoveCommand>(menu, 1));
 
-	//Arrows
 	input.BindKeyboardCommand(SDL_SCANCODE_UP, dae::InputState::Down,
 		std::make_unique<dae::MenuMoveCommand>(menu, -1));
+
 	input.BindKeyboardCommand(SDL_SCANCODE_DOWN, dae::InputState::Down,
 		std::make_unique<dae::MenuMoveCommand>(menu, 1));
 
-	//keyboard cofirmation
 	input.BindKeyboardCommand(SDL_SCANCODE_RETURN, dae::InputState::Down,
 		std::make_unique<dae::ConfirmCommand>(menu));
 
-	//Pad
-	input.BindControllerCommand(dae::ControllerButton::DPadUp, dae::InputState::Down,
-		std::make_unique<dae::MenuMoveCommand>(menu, -1), 0);
+	input.BindControllerCommand(
+		dae::ControllerButton::DPadUp,
+		dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(menu, -1),
+		0);
 
-	input.BindControllerCommand(dae::ControllerButton::DPadDown, dae::InputState::Down,
-		std::make_unique<dae::MenuMoveCommand>(menu, 1), 0);
+	input.BindControllerCommand(
+		dae::ControllerButton::DPadDown,
+		dae::InputState::Down,
+		std::make_unique<dae::MenuMoveCommand>(menu, 1),
+		0);
 
-	input.BindControllerCommand(dae::ControllerButton::A, dae::InputState::Down,
-		std::make_unique<dae::ConfirmCommand>(menu), 0);
+	input.BindControllerCommand(
+		dae::ControllerButton::A,
+		dae::InputState::Down,
+		std::make_unique<dae::ConfirmCommand>(menu),
+		0);
 
-
-	menuScene.Add(std::move(versus));
 	menuScene.Add(std::move(menuController));
 }
 
 static void LoadScoreScene(dae::Scene& scoreScene)
 {
-	auto fontTitle = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 64);
 	auto fontMenu = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
-	auto single = std::make_unique<dae::GameObject>();
-	single->SetLocalPosition(420.f, 260.f, 0.f);
-	single->AddComponent<dae::TextComponent>(
+	auto scoreText = std::make_unique<dae::GameObject>();
+	scoreText->SetLocalPosition(420.f, 260.f, 0.f);
+
+	scoreText->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Score",
 		SDL_Color{ 255,255,0,255 });
-	scoreScene.Add(std::move(single));
 
-	
+	scoreScene.Add(std::move(scoreText));
 }
 
 static void load()
 {
 	auto& menuScene = dae::SceneManager::GetInstance().CreateScene();
 	auto& mainScene = dae::SceneManager::GetInstance().CreateScene();
-	auto& ScoreScene = dae::SceneManager::GetInstance().CreateScene();
-	
-	//0 menu
-	//1 main
-	//2 score
+	auto& scoreScene = dae::SceneManager::GetInstance().CreateScene();
+
+	// 0 menu
+	// 1 main
+	// 2 score
 
 	dae::SceneManager::GetInstance().SetActiveScene(0);
-	
 
-	LoadGameScene(mainScene);
 	LoadMenuScene(menuScene);
-	LoadScoreScene(ScoreScene);
-	
+	LoadScoreScene(scoreScene);
 
+	auto gameLoader = std::make_unique<dae::GameObject>();
+	gameLoader->AddComponent<GameSceneLoaderComponent>(mainScene);
+	mainScene.Add(std::move(gameLoader));
 }
 
-int main(int, char*[]) {
-	/*int* leak = new int[100];
-	leak[0] = 123;  */ 
-	// leak on purpose to check if vld is working
-
+int main(int, char* [])
+{
 #if __EMSCRIPTEN__
 	fs::path data_location = "";
 #else
 	fs::path data_location = "./Data/";
-	if(!fs::exists(data_location))
+	if (!fs::exists(data_location))
 		data_location = "../Data/";
 #endif
+
 	dae::SteamManager::Init();
+
 	srand(static_cast<unsigned>(time(nullptr)));
+
 	dae::Minigin engine(data_location);
 	engine.Run(load);
-	dae::SteamManager::Shutdown();
-    return 0;
-}
 
+	dae::SteamManager::Shutdown();
+
+	return 0;
+}

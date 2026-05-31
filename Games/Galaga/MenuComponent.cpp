@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "TextComponent.h"
 #include <SceneManager.h>
+#include "GameSettings.h"
+#include "GameMode.h"
 
 dae::MenuComponent::MenuComponent(GameObject* owner):Component(owner)
 {
@@ -58,16 +60,19 @@ void dae::MenuComponent::Confirm()
 	{
 	case 0:
 		// Single mode
+		GameSettings::GetInstance().SetGameMode(GameMode::Solo);
 		sceneManager.SetActiveScene(1);
 		break;
 
 	case 1:
 		// Co-op mode
+		GameSettings::GetInstance().SetGameMode(GameMode::Duo);
 		sceneManager.SetActiveScene(1);
 		break;
 
 	case 2:
 		// Versus mode
+		GameSettings::GetInstance().SetGameMode(GameMode::Versus);
 		sceneManager.SetActiveScene(1);
 		break;
 

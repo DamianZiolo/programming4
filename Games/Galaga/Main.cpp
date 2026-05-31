@@ -47,6 +47,7 @@
 #include <filesystem>
 #include <ctime>
 #include <cstdlib>
+#include <GameFlowController.h>
 
 namespace fs = std::filesystem;
 
@@ -304,14 +305,28 @@ static void LoadGameScene(dae::Scene& mainScene)
 		CreateLivesUI(mainScene, player1, { 20.f, 520.f, 0.f });
 		CreateScoreUI(mainScene, player1, font, { 20.f, 60.f, 0.f }, "Score: ");
 	}
+	auto levelManagerGO = std::make_unique<dae::GameObject>();
 
-	auto levelManager = std::make_unique<dae::GameObject>();
+	auto* levelManagerComponent =
+		levelManagerGO->AddComponent<dae::LevelManagerComponent>(
+			mainScene,
+			*projectilePool);
 
-	levelManager->AddComponent<dae::LevelManagerComponent>(
-		mainScene,
-		*projectilePool);
+	mainScene.Add(std::move(levelManagerGO));
 
-	mainScene.Add(std::move(levelManager));
+	auto flowGO = std::make_unique<dae::GameObject>();
+
+	auto* flow = flowGO->AddComponent<dae::GameFlowController>(
+		levelManagerComponent);
+
+	flow->AddPlayer(player1);
+
+	if (player2)
+	{
+		flow->AddPlayer(player2);
+	}
+
+	mainScene.Add(std::move(flowGO));
 
 	CreateControlsUI(
 		mainScene,

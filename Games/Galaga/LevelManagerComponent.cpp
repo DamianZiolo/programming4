@@ -87,6 +87,7 @@ void dae::LevelManagerComponent::LoadNextLevel()
 	if (m_CurrentLevelIndex >= static_cast<int>(m_LevelFiles.size()))
 	{
 		m_pCurrentFleet = nullptr;
+		m_AllLevelsCompleted = true;
 		Log("[LevelManager] Finished all levels");
 		return;
 	}

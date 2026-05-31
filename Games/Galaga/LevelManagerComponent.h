@@ -21,7 +21,7 @@ namespace dae
 			ProjectilePoolComponent& projectilePool);
 
 		void Update() override;
-
+		bool AreAllLevelsCompleted() const { return m_AllLevelsCompleted; }
 	private:
 		void LoadCurrentLevel();
 		void LoadNextLevel();
@@ -44,5 +44,6 @@ namespace dae
 
 		int m_CurrentLevelIndex{};
 		GameObject* m_pCurrentFleet{};
+		bool m_AllLevelsCompleted{ false };
 	};
 }

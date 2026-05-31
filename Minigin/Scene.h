@@ -22,10 +22,16 @@ namespace dae
 		Scene& operator=(const Scene& other) = delete;
 		Scene& operator=(Scene&& other) = delete;
 
+		const std::vector<std::unique_ptr<GameObject>>& GetObjects() const
+		{
+			return m_objects;
+		}
+
 	private:
 		friend class SceneManager;
 		explicit Scene() = default;
-
+		bool m_IsUpdating{ false };
+		std::vector<std::unique_ptr<GameObject>> m_PendingObjects{};
 		std::vector < std::unique_ptr<GameObject>> m_objects{};
 	};
 

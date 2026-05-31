@@ -40,17 +40,14 @@
 #include "ControllerButton.h"
 #include "GameActor.h"
 #include "BoxCollider.h"
-#include <EnemyFly.h>
 #include <ServiceLocator.h>
-#include "EnemyBoss.h"
-#include "FleetComponent.h"
 #include <MenuComponent.h>
 #include <MenuMoveCommand.h>
 #include <ConfirmCommand.h>
 #include <ProjectilePoolComponent.h>
 #include <ctime>
 #include <cstdlib>
-#include "EnemyButterfly.h"
+#include <LevelManagerComponent.h>
 
 namespace fs = std::filesystem;
 
@@ -112,135 +109,6 @@ dae::GameActor* CreateKeyboardPlayer(dae::Scene& scene, const glm::vec3& screenC
 
 	return actor;
 }
-
-std::unique_ptr<dae::GameObject> CreateFly(dae::ProjectilePoolComponent* projectilePool)
-{
-	auto enemy = std::make_unique<dae::GameObject>();
-
-	enemy->AddComponent<dae::RenderComponent>("Enemy1.png");
-	enemy->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
-
-	auto collider = enemy->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
-	collider->SetDrawDebug(true);
-
-	enemy->AddComponent<dae::EnemyFly>(*projectilePool);
-
-	return enemy;
-}
-std::unique_ptr<dae::GameObject> CreateButterfly(
-	dae::ProjectilePoolComponent* projectilePool)
-{
-	auto enemy = std::make_unique<dae::GameObject>();
-
-	enemy->AddComponent<dae::RenderComponent>("Enemy2.png");
-	enemy->GetComponent<dae::RenderComponent>()->SetSize(30, 30);
-
-	auto collider = enemy->AddComponent<dae::BoxCollider>(glm::vec2(30, 30));
-	collider->SetDrawDebug(true);
-
-	enemy->AddComponent<dae::EnemyButterfly>(*projectilePool);
-
-	return enemy;
-}
-
-
-std::unique_ptr<dae::GameObject> CreateBoss(
-	dae::Scene& scene,
-	dae::ProjectilePoolComponent* projectilePool)
-{
-	auto boss = std::make_unique<dae::GameObject>();
-
-	auto* render = boss->AddComponent<dae::RenderComponent>("Boss.png");
-	render->SetSize(50, 50);
-
-	auto collider = boss->AddComponent<dae::BoxCollider>(glm::vec2(50, 50));
-	collider->SetDrawDebug(true);
-
-	auto* bossComponent = boss->AddComponent<dae::EnemyBoss>(*projectilePool);
-	bossComponent->CreateTractorBeam(scene);
-
-	return boss;
-}
-
-std::unique_ptr<dae::GameObject> CreateFleet(
-	dae::Scene& scene,
-	dae::ProjectilePoolComponent* projectilePool)
-{
-	const int rows = 5;
-	const int cols = 10;
-
-	float spacingX = 100.f;
-	float spacingY = 50.f;
-
-	auto fleet = std::make_unique<dae::GameObject>();
-	fleet->SetLocalPosition(glm::vec3(50.f, 0.f, 0.f));
-
-	auto* fleetRaw = fleet.get();
-
-	auto fleetComponent = fleet->AddComponent<dae::FleetComponent>(
-		rows,
-		cols,
-		spacingX,
-		spacingY);
-
-	for (int row = 0; row < rows; ++row)
-	{
-		for (int col = 0; col < cols; ++col)
-		{
-			auto slot = std::make_unique<dae::GameObject>();
-
-			slot->SetParent(fleetRaw, false);
-
-			slot->SetLocalPosition(
-				col * spacingX,
-				row * spacingY,
-				0.f);
-
-			auto* slotRaw = slot.get();
-
-			scene.Add(std::move(slot));
-
-			fleetComponent->SetSlot(row, col, slotRaw);
-
-			if (row == 0)
-			{
-				auto boss = CreateBoss(scene, projectilePool);
-
-				boss->SetParent(slotRaw, false);
-
-				auto enemyComponent = boss->GetComponent<dae::Enemy>();
-				enemyComponent->SetSlot(fleetComponent->GetSlot(row, col));
-
-				scene.Add(std::move(boss));
-			}
-			else if (row == 1 || row == 2)
-			{
-				auto butterfly = CreateButterfly(projectilePool);
-
-				butterfly->SetParent(slotRaw, false);
-
-				auto enemyComponent = butterfly->GetComponent<dae::Enemy>();
-				enemyComponent->SetSlot(fleetComponent->GetSlot(row, col));
-
-				scene.Add(std::move(butterfly));
-			}
-			else
-			{
-				auto enemy = CreateFly(projectilePool);
-
-				enemy->SetParent(slotRaw, false);
-
-				auto enemyComponent = enemy->GetComponent<dae::Enemy>();
-				enemyComponent->SetSlot(fleetComponent->GetSlot(row, col));
-
-				scene.Add(std::move(enemy));
-			}
-		}
-	}
-
-	return fleet;
-}
-
 
 
 dae::GameActor* CreateControllerPlayer(dae::Scene& scene, const glm::vec3& screenCenter, dae::ProjectilePoolComponent* projectilePool)
@@ -418,7 +286,14 @@ static void LoadGameScene(dae::Scene& mainScene)
 	
 	auto player1 = CreateKeyboardPlayer(mainScene, screenCenter, projectilePool);
 	auto player2 = CreateControllerPlayer(mainScene, screenCenter, projectilePool);
-	mainScene.Add(CreateFleet(mainScene, projectilePool));
+	auto levelManager = std::make_unique<dae::GameObject>();
+
+	levelManager->AddComponent<dae::LevelManagerComponent>(
+		mainScene,
+		*projectilePool
+	);
+
+	mainScene.Add(std::move(levelManager));
 
 	
 
@@ -564,10 +439,10 @@ int main(int, char*[]) {
 		data_location = "../Data/";
 #endif
 	dae::SteamManager::Init();
+	srand(static_cast<unsigned>(time(nullptr)));
 	dae::Minigin engine(data_location);
 	engine.Run(load);
 	dae::SteamManager::Shutdown();
-	srand(static_cast<unsigned>(time(nullptr)));
     return 0;
 }
 

@@ -80,6 +80,7 @@ Games/Galaga/Main.cpp
   Games/Galaga/EnemyButterflyDiveDownState.cpp
   Games/Galaga/EnemyButterflyLoopDiveState.cpp
   Games/Galaga/EnemyButterflyReturnState.cpp
+  Games/Galaga/LevelManagerComponent.cpp
 )
 
 # enable c++20 features

@@ -19,6 +19,7 @@ namespace dae
 		float m_Speed{};
 		glm::vec3 m_Direction{};
 		GameObject* m_pTarget{};
+		float m_PlayerWidth{};
 
 	};
 

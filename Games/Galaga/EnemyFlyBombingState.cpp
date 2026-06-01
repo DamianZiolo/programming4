@@ -6,6 +6,7 @@
 #include "GameTime.h"
 #include "ProjectilePoolComponent.h"
 #include "ProjectileComponent.h"
+#include "GameSettings.h"
 
 #include <cstdlib>
 
@@ -51,7 +52,7 @@ namespace dae
 			
 		}
 
-		if (pos.y > ScreenHeight + 30.f)
+		if (pos.y > GameSettings::ScreenHeight + 30.f)
 		{
 			constexpr float topOffset = 50.f;
 

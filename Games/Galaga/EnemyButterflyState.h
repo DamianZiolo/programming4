@@ -16,6 +16,6 @@ namespace dae
 		virtual std::unique_ptr<EnemyButterflyState> Update(EnemyButterfly& enemy) = 0;
 
 	protected:
-		static constexpr float ScreenHeight{ 576.f };
+		
 	};
 }

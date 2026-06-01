@@ -7,7 +7,7 @@
 #include "GameTime.h"
 #include "ProjectilePoolComponent.h"
 #include "ProjectileComponent.h"
-
+#include "GameSettings.h"
 #include <cstdlib>
 
 namespace dae
@@ -31,7 +31,7 @@ namespace dae
 
 		owner->SetWorldPosition(pos);
 
-		constexpr float shootLine = ScreenHeight - 300.f;
+		constexpr float shootLine = GameSettings::ScreenHeight - 300.f;
 
 		if (!m_HasShot && pos.y >= shootLine)
 		{

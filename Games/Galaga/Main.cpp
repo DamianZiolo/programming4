@@ -43,19 +43,39 @@
 #include "GameSettings.h"
 #include "GameMode.h"
 #include "Component.h"
+#include "GameFlowController.h"
+#include "PlayerDeathComponent.h"
 
 #include <filesystem>
 #include <ctime>
 #include <cstdlib>
-#include <GameFlowController.h>
-#include <PlayerDeathComponent.h>
 
 namespace fs = std::filesystem;
+
+namespace
+{
+	constexpr float PlayerSize{ 30.f };
+	constexpr float PlayerYFromBottom{ 80.f };
+
+	constexpr float LifeIconMarginX{ 10.f };
+	constexpr float LifeIconMarginBottom{ 10.f };
+
+	constexpr float ScoreMarginY{ 20.f };
+	constexpr float ControlsMarginBottom{ 90.f };
+
+	constexpr float MenuOptionSpacing{ 60.f };
+	constexpr float MenuNameSpacing{ 40.f };
+}
 
 void CreateBackground(dae::Scene& scene)
 {
 	auto go = std::make_unique<dae::GameObject>();
-	go->AddComponent<dae::RenderComponent>("background.png");
+
+	auto* render = go->AddComponent<dae::RenderComponent>("background.png");
+	render->SetSize(
+		dae::GameSettings::ScreenWidth,
+		dae::GameSettings::ScreenHeight);
+
 	scene.Add(std::move(go));
 }
 
@@ -69,16 +89,16 @@ void BindKeyboardControls(
 		std::make_unique<dae::ShotCommand>(player, projectilePool));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, player));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, -1.f, 0.f }, player));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_S, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,1,0 }, player));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, 1.f, 0.f }, player));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_A, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ -1,0,0 }, player));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ -1.f, 0.f, 0.f }, player));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_D, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, player));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 1.f, 0.f, 0.f }, player));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_P, dae::InputState::Down,
 		std::make_unique<dae::CollectedPointsCommand>(player, 100));
@@ -100,25 +120,25 @@ void BindControllerControls(
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadUp,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,-1,0 }, player),
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, -1.f, 0.f }, player),
 		controllerIndex);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadDown,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0,1,0 }, player),
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, 1.f, 0.f }, player),
 		controllerIndex);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadLeft,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ -1,0,0 }, player),
+		std::make_unique<dae::MoveCommand>(glm::vec3{ -1.f, 0.f, 0.f }, player),
 		controllerIndex);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadRight,
 		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 1,0,0 }, player),
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 1.f, 0.f, 0.f }, player),
 		controllerIndex);
 
 	input.BindControllerCommand(
@@ -141,14 +161,15 @@ dae::GameActor* CreatePlayer(
 	player->SetLocalPosition(position);
 
 	auto* render = player->AddComponent<dae::RenderComponent>("Player.png");
-	render->SetSize(30.f, 30.f);
+	render->SetSize(PlayerSize, PlayerSize);
 
 	auto* actor = player->AddComponent<dae::GameActor>();
 	player->AddComponent<dae::PlayerDeathComponent>(actor);
 	player->AddComponent<dae::ScoreComponent>();
 	player->AddComponent<dae::HealthComponent>(4);
 
-	auto* collider = player->AddComponent<dae::BoxCollider>(glm::vec2{ 30.f, 30.f });
+	auto* collider = player->AddComponent<dae::BoxCollider>(
+		glm::vec2{ PlayerSize, PlayerSize });
 	collider->SetDrawDebug(true);
 
 	auto* playerRaw = player.get();
@@ -241,6 +262,11 @@ static void LoadGameScene(dae::Scene& mainScene)
 {
 	const auto mode = dae::GameSettings::GetInstance().GetGameMode();
 
+	constexpr float screenWidth = dae::GameSettings::ScreenWidth;
+	constexpr float screenHeight = dae::GameSettings::ScreenHeight;
+
+	const float playerY = screenHeight - PlayerYFromBottom;
+
 	dae::ServiceLocator::GetSoundSystem().RegisterSound(1, "Data/sound1.mp3");
 
 	CreateBackground(mainScene);
@@ -260,20 +286,29 @@ static void LoadGameScene(dae::Scene& mainScene)
 	{
 		player1 = CreatePlayer(
 			mainScene,
-			glm::vec3{ 512.f, 520.f, 0.f },
+			glm::vec3{ screenWidth * 0.5f, playerY, 0.f },
 			projectilePool,
 			true,
 			true,
 			0);
 
-		CreateLivesUI(mainScene, player1, { 20.f, 520.f, 0.f });
-		CreateScoreUI(mainScene, player1, font, { 20.f, 60.f, 0.f }, "Score: ");
+		CreateLivesUI(
+			mainScene,
+			player1,
+			{ LifeIconMarginX, screenHeight - LifeIconMarginBottom - PlayerSize, 0.f });
+
+		CreateScoreUI(
+			mainScene,
+			player1,
+			font,
+			{ screenWidth * 0.5f - 80.f, ScoreMarginY, 0.f },
+			"Score: ");
 	}
 	else if (mode == dae::GameMode::Duo)
 	{
 		player1 = CreatePlayer(
 			mainScene,
-			glm::vec3{ 470.f, 520.f, 0.f },
+			glm::vec3{ screenWidth * 0.45f, playerY, 0.f },
 			projectilePool,
 			true,
 			true,
@@ -281,31 +316,59 @@ static void LoadGameScene(dae::Scene& mainScene)
 
 		player2 = CreatePlayer(
 			mainScene,
-			glm::vec3{ 550.f, 520.f, 0.f },
+			glm::vec3{ screenWidth * 0.55f, playerY, 0.f },
 			projectilePool,
 			false,
 			true,
 			1);
 
-		CreateLivesUI(mainScene, player1, { 20.f, 520.f, 0.f });
-		CreateLivesUI(mainScene, player2, { 880.f, 520.f, 0.f });
+		CreateLivesUI(
+			mainScene,
+			player1,
+			{ LifeIconMarginX, screenHeight - LifeIconMarginBottom - PlayerSize, 0.f });
 
-		CreateScoreUI(mainScene, player1, font, { 20.f, 60.f, 0.f }, "P1 Score: ");
-		CreateScoreUI(mainScene, player2, font, { 760.f, 60.f, 0.f }, "P2 Score: ");
+		CreateLivesUI(
+			mainScene,
+			player2,
+			{ screenWidth - 120.f, screenHeight - LifeIconMarginBottom - PlayerSize, 0.f });
+
+		CreateScoreUI(
+			mainScene,
+			player1,
+			font,
+			{ screenWidth * 0.25f - 80.f, ScoreMarginY, 0.f },
+			"P1 Score: ");
+
+		CreateScoreUI(
+			mainScene,
+			player2,
+			font,
+			{ screenWidth * 0.75f - 80.f, ScoreMarginY, 0.f },
+			"P2 Score: ");
 	}
 	else
 	{
 		player1 = CreatePlayer(
 			mainScene,
-			glm::vec3{ 512.f, 520.f, 0.f },
+			glm::vec3{ screenWidth * 0.5f, playerY, 0.f },
 			projectilePool,
 			true,
 			true,
 			0);
 
-		CreateLivesUI(mainScene, player1, { 20.f, 520.f, 0.f });
-		CreateScoreUI(mainScene, player1, font, { 20.f, 60.f, 0.f }, "Score: ");
+		CreateLivesUI(
+			mainScene,
+			player1,
+			{ LifeIconMarginX, screenHeight - LifeIconMarginBottom - PlayerSize, 0.f });
+
+		CreateScoreUI(
+			mainScene,
+			player1,
+			font,
+			{ screenWidth * 0.5f - 80.f, ScoreMarginY, 0.f },
+			"Score: ");
 	}
+
 	auto levelManagerGO = std::make_unique<dae::GameObject>();
 
 	auto* levelManagerComponent =
@@ -332,7 +395,7 @@ static void LoadGameScene(dae::Scene& mainScene)
 	CreateControlsUI(
 		mainScene,
 		font,
-		glm::vec3{ 20.f, 400.f, 0.f });
+		glm::vec3{ 20.f, screenHeight - ControlsMarginBottom, 0.f });
 
 	auto achievementGO = std::make_unique<dae::GameObject>();
 	auto* achievement = achievementGO->AddComponent<dae::AchievementSystemComponent>();
@@ -378,13 +441,19 @@ private:
 
 static void LoadMenuScene(dae::Scene& menuScene)
 {
+	constexpr float screenWidth = dae::GameSettings::ScreenWidth;
+	constexpr float screenHeight = dae::GameSettings::ScreenHeight;
+
 	auto fontMenu = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+
+	const float menuX = screenWidth * 0.5f - 90.f;
+	const float firstOptionY = screenHeight * 0.28f;
 
 	auto menuController = std::make_unique<dae::GameObject>();
 	auto* menu = menuController->AddComponent<dae::MenuComponent>();
 
 	auto single = std::make_unique<dae::GameObject>();
-	single->SetLocalPosition(420.f, 220.f, 0.f);
+	single->SetLocalPosition(menuX, firstOptionY, 0.f);
 	auto* singleText = single->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Single mode",
@@ -394,7 +463,7 @@ static void LoadMenuScene(dae::Scene& menuScene)
 	menuScene.Add(std::move(single));
 
 	auto coop = std::make_unique<dae::GameObject>();
-	coop->SetLocalPosition(420.f, 280.f, 0.f);
+	coop->SetLocalPosition(menuX, firstOptionY + MenuOptionSpacing, 0.f);
 	auto* coopText = coop->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Co-op mode",
@@ -404,7 +473,7 @@ static void LoadMenuScene(dae::Scene& menuScene)
 	menuScene.Add(std::move(coop));
 
 	auto versus = std::make_unique<dae::GameObject>();
-	versus->SetLocalPosition(420.f, 340.f, 0.f);
+	versus->SetLocalPosition(menuX, firstOptionY + MenuOptionSpacing * 2.f, 0.f);
 	auto* versusText = versus->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Versus mode",
@@ -413,8 +482,12 @@ static void LoadMenuScene(dae::Scene& menuScene)
 	menu->AddOption(versusText);
 	menuScene.Add(std::move(versus));
 
+	const float nameY = firstOptionY + MenuOptionSpacing * 3.5f;
+	const float nameLabelX = screenWidth * 0.5f - 120.f;
+	const float firstLetterX = screenWidth * 0.5f;
+
 	auto nameLabel = std::make_unique<dae::GameObject>();
-	nameLabel->SetLocalPosition(420.f, 430.f, 0.f);
+	nameLabel->SetLocalPosition(nameLabelX, nameY, 0.f);
 	nameLabel->AddComponent<dae::TextComponent>(
 		fontMenu,
 		"Name:",
@@ -427,8 +500,8 @@ static void LoadMenuScene(dae::Scene& menuScene)
 		auto letter = std::make_unique<dae::GameObject>();
 
 		letter->SetLocalPosition(
-			530.f + i * 40.f,
-			430.f,
+			firstLetterX + i * MenuNameSpacing,
+			nameY,
 			0.f);
 
 		auto* letterText = letter->AddComponent<dae::TextComponent>(
@@ -529,10 +602,16 @@ static void LoadMenuScene(dae::Scene& menuScene)
 
 static void LoadScoreScene(dae::Scene& scoreScene)
 {
+	constexpr float screenWidth = dae::GameSettings::ScreenWidth;
+	constexpr float screenHeight = dae::GameSettings::ScreenHeight;
+
 	auto fontMenu = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
 	auto scoreText = std::make_unique<dae::GameObject>();
-	scoreText->SetLocalPosition(420.f, 260.f, 0.f);
+	scoreText->SetLocalPosition(
+		screenWidth * 0.5f - 45.f,
+		screenHeight * 0.5f,
+		0.f);
 
 	scoreText->AddComponent<dae::TextComponent>(
 		fontMenu,
@@ -547,10 +626,6 @@ static void load()
 	auto& menuScene = dae::SceneManager::GetInstance().CreateScene();
 	auto& mainScene = dae::SceneManager::GetInstance().CreateScene();
 	auto& scoreScene = dae::SceneManager::GetInstance().CreateScene();
-
-	// 0 menu
-	// 1 main
-	// 2 score
 
 	dae::SceneManager::GetInstance().SetActiveScene(0);
 

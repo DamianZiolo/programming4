@@ -11,7 +11,7 @@
 #include "EnemyButterfly.h"
 #include "ProjectilePoolComponent.h"
 #include "ResourceManager.h"
-
+#include "GameSettings.h"
 #include <fstream>
 #include <sstream>
 
@@ -153,11 +153,18 @@ void dae::LevelManagerComponent::CreateFleetFromLayout(
 		return;
 	}
 
-	const float spacingX = 100.f;
-	const float spacingY = 50.f;
+	const float spacingX = 60.f;
+	const float spacingY = 45.f;
+
+	const float formationWidth = (cols - 1) * spacingX;
+
+	const float startX =
+		(dae::GameSettings::ScreenWidth - formationWidth) * 0.5f;
+
+	const float startY = 80.f;
 
 	auto fleet = std::make_unique<GameObject>();
-	fleet->SetLocalPosition(glm::vec3{ 50.f, 0.f, 0.f });
+	fleet->SetLocalPosition(glm::vec3{ startX, startY, 0.f });
 
 	auto* fleetRaw = fleet.get();
 
@@ -195,7 +202,6 @@ void dae::LevelManagerComponent::CreateFleetFromLayout(
 
 			switch (enemyType)
 			{
-				//boss
 			case 'B':
 			{
 				enemy = std::make_unique<GameObject>();
@@ -212,7 +218,7 @@ void dae::LevelManagerComponent::CreateFleetFromLayout(
 				Log("[LevelManager] Spawn Boss");
 				break;
 			}
-			//fly
+
 			case 'F':
 			{
 				enemy = std::make_unique<GameObject>();
@@ -228,7 +234,7 @@ void dae::LevelManagerComponent::CreateFleetFromLayout(
 				Log("[LevelManager] Spawn Fly");
 				break;
 			}
-			//buterfly
+
 			case 'T':
 			{
 				enemy = std::make_unique<GameObject>();

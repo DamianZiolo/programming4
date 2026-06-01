@@ -1,6 +1,6 @@
 #pragma once
 #include "EnemyFlyState.h"
-
+#include "GameSettings.h"
 namespace dae
 {
 	class EnemyFlyBombingState final : public EnemyFlyState
@@ -15,7 +15,7 @@ namespace dae
 	private:
 		float m_DownSpeed{ 180.f };
 		float m_HorizontalSpeed{};
-		static constexpr float shootLine = ScreenHeight - 300.f;
+		static constexpr float shootLine = GameSettings::ScreenHeight - 300.f;
 
 		bool m_HasShot{ false };
 	};

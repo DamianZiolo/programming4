@@ -4,7 +4,7 @@
 #include "EnemyBoss.h"
 #include "GameObject.h"
 #include "GameTime.h"
-
+#include "GameSettings.h"
 #include <cstdlib>
 
 namespace dae
@@ -29,7 +29,7 @@ namespace dae
 
         owner->SetWorldPosition(pos);
 
-        if (pos.y > ScreenHeight + 20.f)
+        if (pos.y > GameSettings::ScreenHeight + 20.f)
         {
             owner->SetWorldPosition(pos.x, -topOffset, pos.z);
             return std::make_unique<BossReturnState>();

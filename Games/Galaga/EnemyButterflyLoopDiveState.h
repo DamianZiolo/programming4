@@ -1,6 +1,6 @@
 #pragma once
 #include "EnemyButterflyState.h"
-
+#include "GameSettings.h"
 #include <glm/glm.hpp>
 
 namespace dae
@@ -17,7 +17,7 @@ namespace dae
 		float m_Timer{};
 		float m_LoopDuration{ 2.0f };
 
-		static constexpr float loopStartLine = ScreenHeight - 100.f;
+		static constexpr float loopStartLine = GameSettings::ScreenHeight - 100.f;
 
 		float m_DownSpeed{ 120.f };
 		float m_HorizontalSpeed{};

@@ -4,7 +4,7 @@
 #include "EnemyBoss.h"
 #include "GameObject.h"
 #include "GameTime.h"
-
+#include "GameSettings.h"
 #include <algorithm>
 
 namespace dae
@@ -24,7 +24,7 @@ namespace dae
 
         m_TargetPos = glm::vec3{
             m_StartPos.x,
-            ScreenHeight - bossDistanceFromBottom,
+            GameSettings::ScreenHeight - bossDistanceFromBottom,
             0.f
         };
     }

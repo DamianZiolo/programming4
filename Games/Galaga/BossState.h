@@ -15,8 +15,6 @@ namespace dae
 
 		virtual std::unique_ptr<BossState> Update(EnemyBoss& boss) = 0;
 	protected:
-		static constexpr float ScreenWidth{ 1024.f };
-		static constexpr float ScreenHeight{ 576.f };
 
 	};
 

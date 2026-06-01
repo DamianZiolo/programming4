@@ -4,6 +4,7 @@
 #include "EnemyBoss.h"
 #include "GameObject.h"
 #include "GameTime.h"
+#include "GameSettings.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -18,7 +19,7 @@ namespace dae
         m_StartPos = owner->GetWorldPosition();
 
         constexpr float minX = 100.f;
-        constexpr float maxX = ScreenWidth - 100.f;
+        constexpr float maxX = GameSettings::ScreenWidth - 100.f;
         constexpr float targetDistanceFromBottom = 300.f;
 
         const auto randomX =
@@ -26,7 +27,7 @@ namespace dae
 
         m_TargetPos = glm::vec3{
             randomX,
-            ScreenHeight - targetDistanceFromBottom,
+            GameSettings::ScreenHeight - targetDistanceFromBottom,
             0.f
         };
     }

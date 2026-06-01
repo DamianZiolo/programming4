@@ -34,8 +34,7 @@ namespace dae
 
 		
 		ProjectileOwner m_OwnerType{ ProjectileOwner::None };
-		float m_LifeTime{ 0.f };
-		float m_MaxLifeTime{ 10.f };
+
 
 	};
 }

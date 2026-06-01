@@ -50,6 +50,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <PlayerInvulnerabilityComponent.h>
+#include <PlayerShootingComponent.h>
 
 namespace fs = std::filesystem;
 
@@ -81,13 +82,12 @@ void CreateBackground(dae::Scene& scene)
 }
 
 void BindKeyboardControls(
-	dae::GameObject* player,
-	dae::ProjectilePoolComponent* projectilePool)
+	dae::GameObject* player)
 {
 	auto& input = dae::InputManager::GetInstance();
 
 	input.BindKeyboardCommand(SDL_SCANCODE_SPACE, dae::InputState::Down,
-		std::make_unique<dae::ShotCommand>(player, projectilePool));
+		std::make_unique<dae::ShotCommand>(player));
 
 	/*input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Pressed,
 		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, -1.f, 0.f }, player));
@@ -107,7 +107,6 @@ void BindKeyboardControls(
 
 void BindControllerControls(
 	dae::GameObject* player,
-	dae::ProjectilePoolComponent* projectilePool,
 	int controllerIndex)
 {
 	auto& input = dae::InputManager::GetInstance();
@@ -115,7 +114,7 @@ void BindControllerControls(
 	input.BindControllerCommand(
 		dae::ControllerButton::B,
 		dae::InputState::Down,
-		std::make_unique<dae::ShotCommand>(player, projectilePool),
+		std::make_unique<dae::ShotCommand>(player),
 		controllerIndex);
 
 	//input.BindControllerCommand(
@@ -169,6 +168,7 @@ dae::GameActor* CreatePlayer(
 	player->AddComponent<dae::PlayerInvulnerabilityComponent>(actor);
 	player->AddComponent<dae::ScoreComponent>();
 	player->AddComponent<dae::HealthComponent>(4);
+	player->AddComponent<dae::PlayerShootingComponent>(projectilePool);
 
 	auto* collider = player->AddComponent<dae::BoxCollider>(
 		glm::vec2{ PlayerSize, PlayerSize });
@@ -178,12 +178,12 @@ dae::GameActor* CreatePlayer(
 
 	if (useKeyboard)
 	{
-		BindKeyboardControls(playerRaw, projectilePool);
+		BindKeyboardControls(playerRaw);
 	}
 
 	if (useController)
 	{
-		BindControllerControls(playerRaw, projectilePool, controllerIndex);
+		BindControllerControls(playerRaw, controllerIndex);
 	}
 
 	scene.Add(std::move(player));

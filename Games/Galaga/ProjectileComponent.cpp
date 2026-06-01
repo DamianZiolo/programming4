@@ -9,6 +9,7 @@
 #include <RenderComponent.h>
 #include <GameActor.h>
 #include <HealthComponent.h>
+#include "GameSettings.h"
 
 dae::ProjectileComponent::ProjectileComponent(GameObject* owner):
 	Component(owner),
@@ -57,11 +58,15 @@ void dae::ProjectileComponent::Update()
 
 	position += m_Velocity *
 		dae::GameTime::GetIntance().GetDeltaTime();
+
 	m_pOwner->SetLocalPosition(position);
 
-	m_LifeTime += dae::GameTime::GetIntance().GetDeltaTime();
-	if (m_LifeTime >= m_MaxLifeTime)
+	if (position.y < 0.f ||
+		position.y > GameSettings::ScreenHeight)
+	{
 		Deactivate();
+		return;
+	}
 }
 
 void dae::ProjectileComponent::SetVelocity(float velocity)
@@ -79,7 +84,6 @@ void dae::ProjectileComponent::Activate(const glm::vec3& position, float velocit
 	m_IsInUse = true;
 	m_HasHit = false;
 	m_OwnerType = ownerType;
-	m_LifeTime = 0.f;
 	SetVelocity(velocity);
 	GetOwner()->SetLocalPosition(position);
 

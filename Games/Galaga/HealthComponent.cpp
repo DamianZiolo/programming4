@@ -3,6 +3,7 @@
 #include "GameActor.h"
 #include "Event.h"
 #include <stdexcept>
+#include "PlayerInvulnerabilityComponent.h"
 
 dae::HealthComponent::HealthComponent(GameObject* owner, int startHealth) : Component(owner)
 	,m_MaxHealth(startHealth)
@@ -22,14 +23,23 @@ void dae::HealthComponent::Update()
 
 void dae::HealthComponent::DealDamage()
 {
+	auto* invulnerabilititi = GetOwner()->GetComponent<PlayerInvulnerabilityComponent>();
+
+	if (invulnerabilititi->IsInvulnerable())
+		return;
+
 	m_CurrentHealth -= 1;
-	GetOwner()->GetComponent<dae::GameActor>()->NotifyObservers(Event::PlayerDamaged);
 
 	if (m_CurrentHealth <= 0)
 	{
 		m_CurrentHealth = 0;
 		GetOwner()->GetComponent<dae::GameActor>()->NotifyObservers(Event::PlayerDied);
+		return;
 	}
+
+	GetOwner()->GetComponent<dae::GameActor>()->NotifyObservers(Event::PlayerDamaged);
+
+	
 		
 }
 

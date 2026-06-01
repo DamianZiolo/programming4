@@ -83,6 +83,7 @@ Games/Galaga/Main.cpp
   Games/Galaga/LevelManagerComponent.cpp
   Games/Galaga/GameFlowController.cpp
   Games/Galaga/PlayerDeathComponent.cpp
+  Games/Galaga/PlayerInvulnerabilityComponent.cpp
 )
 
 # enable c++20 features

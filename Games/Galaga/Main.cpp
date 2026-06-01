@@ -49,6 +49,7 @@
 #include <filesystem>
 #include <ctime>
 #include <cstdlib>
+#include <PlayerInvulnerabilityComponent.h>
 
 namespace fs = std::filesystem;
 
@@ -61,7 +62,7 @@ namespace
 	constexpr float LifeIconMarginBottom{ 10.f };
 
 	constexpr float ScoreMarginY{ 20.f };
-	constexpr float ControlsMarginBottom{ 90.f };
+	constexpr float ControlsMarginBottom{ 400.f };
 
 	constexpr float MenuOptionSpacing{ 60.f };
 	constexpr float MenuNameSpacing{ 40.f };
@@ -88,11 +89,11 @@ void BindKeyboardControls(
 	input.BindKeyboardCommand(SDL_SCANCODE_SPACE, dae::InputState::Down,
 		std::make_unique<dae::ShotCommand>(player, projectilePool));
 
-	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Pressed,
+	/*input.BindKeyboardCommand(SDL_SCANCODE_W, dae::InputState::Pressed,
 		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, -1.f, 0.f }, player));
 
 	input.BindKeyboardCommand(SDL_SCANCODE_S, dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, 1.f, 0.f }, player));
+		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, 1.f, 0.f }, player));*/
 
 	input.BindKeyboardCommand(SDL_SCANCODE_A, dae::InputState::Pressed,
 		std::make_unique<dae::MoveCommand>(glm::vec3{ -1.f, 0.f, 0.f }, player));
@@ -117,17 +118,17 @@ void BindControllerControls(
 		std::make_unique<dae::ShotCommand>(player, projectilePool),
 		controllerIndex);
 
-	input.BindControllerCommand(
-		dae::ControllerButton::DPadUp,
-		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, -1.f, 0.f }, player),
-		controllerIndex);
+	//input.BindControllerCommand(
+	//	dae::ControllerButton::DPadUp,
+	//	dae::InputState::Pressed,
+	//	std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, -1.f, 0.f }, player),
+	//	controllerIndex);
 
-	input.BindControllerCommand(
-		dae::ControllerButton::DPadDown,
-		dae::InputState::Pressed,
-		std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, 1.f, 0.f }, player),
-		controllerIndex);
+	//input.BindControllerCommand(
+	//	dae::ControllerButton::DPadDown,
+	//	dae::InputState::Pressed,
+	//	std::make_unique<dae::MoveCommand>(glm::vec3{ 0.f, 1.f, 0.f }, player),
+	//	controllerIndex);
 
 	input.BindControllerCommand(
 		dae::ControllerButton::DPadLeft,
@@ -165,6 +166,7 @@ dae::GameActor* CreatePlayer(
 
 	auto* actor = player->AddComponent<dae::GameActor>();
 	player->AddComponent<dae::PlayerDeathComponent>(actor);
+	player->AddComponent<dae::PlayerInvulnerabilityComponent>(actor);
 	player->AddComponent<dae::ScoreComponent>();
 	player->AddComponent<dae::HealthComponent>(4);
 

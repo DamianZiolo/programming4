@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "GameTime.h"
 #include "ProjectilePoolComponent.h"
+#include "GameSettings.h"
 
 #include <Windows.h>
 #include <sstream>
@@ -62,7 +63,7 @@ bool dae::Enemy::TeleportToTopIfBelowScreen()
 
 	auto pos = owner->GetWorldPosition();
 
-	if (pos.y > ScreenHeight)
+	if (pos.y > GameSettings::ScreenHeight)
 	{
 		pos.y = -TopOffset;
 		owner->SetWorldPosition(pos);

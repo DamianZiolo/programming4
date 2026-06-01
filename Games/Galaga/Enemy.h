@@ -49,8 +49,6 @@ namespace dae
 
 		bool m_AttackRequested{ false };
 		bool m_IsAttacking{ false };
-
-		static constexpr float ScreenHeight{ 576.f };
 		static constexpr float TopOffset{ 50.f };
 	};
 }

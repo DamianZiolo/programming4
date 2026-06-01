@@ -45,6 +45,7 @@
 #include "Component.h"
 #include "GameFlowController.h"
 #include "PlayerDeathComponent.h"
+#include "PlayerCollisionDamageComponent.h"
 
 #include <filesystem>
 #include <ctime>
@@ -169,6 +170,7 @@ dae::GameActor* CreatePlayer(
 	player->AddComponent<dae::ScoreComponent>();
 	player->AddComponent<dae::HealthComponent>(4);
 	player->AddComponent<dae::PlayerShootingComponent>(projectilePool);
+	player->AddComponent<dae::PlayerCollisionDamageComponent>();
 
 	auto* collider = player->AddComponent<dae::BoxCollider>(
 		glm::vec2{ PlayerSize, PlayerSize });

@@ -85,6 +85,7 @@ Games/Galaga/Main.cpp
   Games/Galaga/PlayerDeathComponent.cpp
   Games/Galaga/PlayerInvulnerabilityComponent.cpp
   Games/Galaga/PlayerShootingComponent.cpp
+  Games/Galaga/PlayerCollisionDamageComponent.cpp
 )
 
 # enable c++20 features

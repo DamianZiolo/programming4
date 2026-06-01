@@ -10,6 +10,7 @@
 #include "ProjectilePoolComponent.h"
 #include "RenderComponent.h"
 #include "SceneManager.h"
+#include "TractorBeamComponent.h"
 
 dae::EnemyBoss::EnemyBoss(GameObject* owner, ProjectilePoolComponent& projectilePool):Enemy(owner, projectilePool)
 {
@@ -65,6 +66,7 @@ void dae::EnemyBoss::CreateTractorBeam(Scene& scene)
 
 	beam->SetParent(GetOwner(), false);
 	beam->SetLocalPosition(-85.f, 45.f, 0.f);
+	beam->AddComponent<TractorBeamComponent>();
 
 	auto* render = beam->AddComponent<RenderComponent>("beam.png");
 	render->SetSize(195.f, 250.f);

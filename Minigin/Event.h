@@ -6,6 +6,7 @@ namespace dae
         PlayerDamaged,
         PlayerDied,
         ScoreChanged,
-        ScoreReached500
+        ScoreReached500,
+        EnemyDied
     };
 }

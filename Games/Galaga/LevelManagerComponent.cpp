@@ -19,6 +19,8 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
+#include <GameActor.h>
+#include <ScoreComponent.h>
 //I hate this very much wrrr
 static void Log(const std::string& message)
 {
@@ -28,10 +30,12 @@ static void Log(const std::string& message)
 dae::LevelManagerComponent::LevelManagerComponent(
 	GameObject* owner,
 	Scene& scene,
-	ProjectilePoolComponent& projectilePool)
+	ProjectilePoolComponent& projectilePool,
+	ScoreComponent* scoreComponent)
 	: Component(owner)
 	, m_Scene{ scene }
-	, m_ProjectilePool{ projectilePool }
+	, m_ProjectilePool{ projectilePool },
+	m_pScoreComponent{ scoreComponent }
 {
 	Log("[LevelManager] Created");
 	LoadCurrentLevel();
@@ -241,12 +245,19 @@ void dae::LevelManagerComponent::CreateFleetFromLayout(
 			case 'B':
 			{
 				enemy = std::make_unique<GameObject>();
+				auto* enemyActor = enemy->AddComponent<GameActor>();
 
+				if (m_pScoreComponent)
+				{
+					enemyActor->AddObserver(m_pScoreComponent);
+				}
 				auto* render = enemy->AddComponent<RenderComponent>("Boss.png");
 				render->SetSize(50.f, 50.f);
 
 				auto* collider = enemy->AddComponent<BoxCollider>(glm::vec2{ 50.f, 50.f });
 				collider->SetDrawDebug(true);
+
+				enemy->AddComponent<GameActor>();
 
 				auto* boss = enemy->AddComponent<EnemyBoss>(m_ProjectilePool);
 				boss->CreateTractorBeam(m_Scene);
@@ -258,13 +269,18 @@ void dae::LevelManagerComponent::CreateFleetFromLayout(
 			case 'F':
 			{
 				enemy = std::make_unique<GameObject>();
+				auto* enemyActor = enemy->AddComponent<GameActor>();
 
+				if (m_pScoreComponent)
+				{
+					enemyActor->AddObserver(m_pScoreComponent);
+				}
 				auto* render = enemy->AddComponent<RenderComponent>("Enemy1.png");
 				render->SetSize(30.f, 30.f);
 
 				auto* collider = enemy->AddComponent<BoxCollider>(glm::vec2{ 30.f, 30.f });
 				collider->SetDrawDebug(true);
-
+				enemy->AddComponent<GameActor>();
 				enemy->AddComponent<EnemyFly>(m_ProjectilePool);
 
 				Log("[LevelManager] Spawn Fly");
@@ -274,13 +290,18 @@ void dae::LevelManagerComponent::CreateFleetFromLayout(
 			case 'T':
 			{
 				enemy = std::make_unique<GameObject>();
+				auto* enemyActor = enemy->AddComponent<GameActor>();
 
+				if (m_pScoreComponent)
+				{
+					enemyActor->AddObserver(m_pScoreComponent);
+				}
 				auto* render = enemy->AddComponent<RenderComponent>("Enemy2.png");
 				render->SetSize(30.f, 30.f);
 
 				auto* collider = enemy->AddComponent<BoxCollider>(glm::vec2{ 30.f, 30.f });
 				collider->SetDrawDebug(true);
-
+				enemy->AddComponent<GameActor>();
 				enemy->AddComponent<EnemyButterfly>(m_ProjectilePool);
 
 				Log("[LevelManager] Spawn Butterfly");

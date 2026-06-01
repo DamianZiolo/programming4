@@ -7,9 +7,9 @@
 #include <Windows.h>
 #include <GameTime.h>
 #include <RenderComponent.h>
-#include <GameActor.h>
 #include <HealthComponent.h>
 #include "GameSettings.h"
+#include <PlayerShootingComponent.h>
 
 dae::ProjectileComponent::ProjectileComponent(GameObject* owner):
 	Component(owner),
@@ -36,7 +36,7 @@ void dae::ProjectileComponent::OnCollisionEnter(BoxCollider* other)
 	}
 	else if (m_OwnerType == ProjectileOwner::Enemy)
 	{
-		auto* player = otherOwner->GetComponent<GameActor>();
+		auto* player = otherOwner->GetComponent<PlayerShootingComponent>();
 		if (!player)
 			return;
 
@@ -61,8 +61,10 @@ void dae::ProjectileComponent::Update()
 
 	m_pOwner->SetLocalPosition(position);
 
-	if (position.y < 0.f ||
-		position.y > GameSettings::ScreenHeight)
+	const auto worldPosition = m_pOwner->GetWorldPosition();
+
+	if (worldPosition.y < -20.f ||
+		worldPosition.y > GameSettings::ScreenHeight + 20.f)
 	{
 		Deactivate();
 		return;

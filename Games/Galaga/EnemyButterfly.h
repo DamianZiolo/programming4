@@ -21,6 +21,8 @@ namespace dae
 		EnemyButterfly(EnemyButterfly&&) = delete;
 		EnemyButterfly& operator=(const EnemyButterfly&) = delete;
 		EnemyButterfly& operator=(EnemyButterfly&&) = delete;
+		EnemyType GetEnemyType() const override { return EnemyType::Butterfly; }
+		bool IsInFormation() const override { return !IsAttacking(); }
 
 	private:
 		std::unique_ptr<EnemyButterflyState> m_State{};

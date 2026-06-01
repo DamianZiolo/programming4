@@ -12,6 +12,7 @@ namespace dae
 	class Scene;
 	class GameObject;
 	class ProjectilePoolComponent;
+	class ScoreComponent;
 
 	class LevelManagerComponent final : public Component
 	{
@@ -19,7 +20,8 @@ namespace dae
 		LevelManagerComponent(
 			GameObject* owner,
 			Scene& scene,
-			ProjectilePoolComponent& projectilePool);
+			ProjectilePoolComponent& projectilePool,
+			ScoreComponent* scoreComponent);
 
 		void Update() override;
 		bool AreAllLevelsCompleted() const { return m_AllLevelsCompleted; }
@@ -47,5 +49,6 @@ namespace dae
 		int m_CurrentLevelIndex{};
 		GameObject* m_pCurrentFleet{};
 		bool m_AllLevelsCompleted{ false };
+		ScoreComponent* m_pScoreComponent{};
 	};
 }

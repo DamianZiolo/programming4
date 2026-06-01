@@ -35,7 +35,8 @@ namespace dae
 
 		bool IsAttacking() const { return m_IsAttacking; }
 		void SetAttacking(bool attacking) { m_IsAttacking = attacking; }
-
+		EnemyType GetEnemyType() const override { return EnemyType::Boss; }
+		bool IsInFormation() const override { return !IsAttacking(); }
 	private:
 		std::unique_ptr<BossState> m_State;
 		bool m_IsDamaged{ false };

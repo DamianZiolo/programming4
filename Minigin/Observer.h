@@ -10,5 +10,6 @@ namespace dae
 		virtual ~Observer() = default;
 
 		virtual void Notify(dae::Event event) = 0;
+		virtual void Notify(Event, GameObject*) {};
 	};
 }

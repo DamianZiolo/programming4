@@ -11,6 +11,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/geometric.hpp>
+#include <GameActor.h>
 
 dae::Enemy::Enemy(GameObject* owner, ProjectilePoolComponent& projectilePool)
 	: Component(owner)
@@ -35,6 +36,11 @@ void dae::Enemy::TakeDamage()
 
 void dae::Enemy::Die()
 {
+	if (auto* actor = GetOwner()->GetComponent<GameActor>())
+	{
+		actor->NotifyObservers(Event::EnemyDied, GetOwner());
+	}
+
 	GetOwner()->MarkForRemoval();
 }
 

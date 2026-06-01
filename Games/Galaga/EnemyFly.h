@@ -23,6 +23,8 @@ namespace dae
 		EnemyFly(EnemyFly&&) = delete;
 		EnemyFly& operator=(const EnemyFly&) = delete;
 		EnemyFly& operator=(EnemyFly&&) = delete;
+		EnemyType GetEnemyType() const override { return EnemyType::Fly; }
+		bool IsInFormation() const override { return !IsAttacking(); }
 
 	private:
 		std::unique_ptr<EnemyFlyState> m_State{};

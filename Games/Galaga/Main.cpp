@@ -168,7 +168,6 @@ dae::GameActor* CreatePlayer(
 	auto* actor = player->AddComponent<dae::GameActor>();
 	player->AddComponent<dae::PlayerDeathComponent>(actor);
 	player->AddComponent<dae::PlayerInvulnerabilityComponent>(actor);
-	player->AddComponent<dae::ScoreComponent>();
 	player->AddComponent<dae::HealthComponent>(4);
 	player->AddComponent<dae::PlayerShootingComponent>(projectilePool);
 	player->AddComponent<dae::PlayerCollisionDamageComponent>();
@@ -284,6 +283,13 @@ static void LoadGameScene(dae::Scene& mainScene)
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
+	auto scoreGO = std::make_unique<dae::GameObject>();
+
+	auto* scoreActor = scoreGO->AddComponent<dae::GameActor>();
+	auto* scoreComponent = scoreGO->AddComponent<dae::ScoreComponent>();
+
+	mainScene.Add(std::move(scoreGO));
+
 	dae::GameActor* player1{};
 	dae::GameActor* player2{};
 
@@ -304,7 +310,7 @@ static void LoadGameScene(dae::Scene& mainScene)
 
 		CreateScoreUI(
 			mainScene,
-			player1,
+			scoreActor,
 			font,
 			{ screenWidth * 0.5f - 80.f, ScoreMarginY, 0.f },
 			"Score: ");
@@ -339,17 +345,10 @@ static void LoadGameScene(dae::Scene& mainScene)
 
 		CreateScoreUI(
 			mainScene,
-			player1,
+			scoreActor,
 			font,
-			{ screenWidth * 0.25f - 80.f, ScoreMarginY, 0.f },
-			"P1 Score: ");
-
-		CreateScoreUI(
-			mainScene,
-			player2,
-			font,
-			{ screenWidth * 0.75f - 80.f, ScoreMarginY, 0.f },
-			"P2 Score: ");
+			{ screenWidth * 0.5f - 80.f, ScoreMarginY, 0.f },
+			"Score: ");
 	}
 	else
 	{
@@ -368,7 +367,7 @@ static void LoadGameScene(dae::Scene& mainScene)
 
 		CreateScoreUI(
 			mainScene,
-			player1,
+			scoreActor,
 			font,
 			{ screenWidth * 0.5f - 80.f, ScoreMarginY, 0.f },
 			"Score: ");
@@ -379,7 +378,8 @@ static void LoadGameScene(dae::Scene& mainScene)
 	auto* levelManagerComponent =
 		levelManagerGO->AddComponent<dae::LevelManagerComponent>(
 			mainScene,
-			*projectilePool);
+			*projectilePool,
+			scoreComponent);
 
 	mainScene.Add(std::move(levelManagerGO));
 

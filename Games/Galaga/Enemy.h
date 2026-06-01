@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Component.h"
-
+#include "EnemyType.h"
 namespace dae
 {
 	class BoxCollider;
@@ -39,6 +39,9 @@ namespace dae
 		bool TeleportToTopIfBelowScreen();
 
 		bool ReturnToSlot(float speed);
+
+		virtual EnemyType GetEnemyType() const = 0;
+		virtual bool IsInFormation() const = 0;
 
 	protected:
 		int m_Health{};

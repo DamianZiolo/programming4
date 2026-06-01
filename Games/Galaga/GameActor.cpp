@@ -28,4 +28,13 @@ void dae::GameActor::NotifyObservers(Event event)
 	}
 }
 
-
+void dae::GameActor::NotifyObservers(Event event, GameObject* gameObject)
+{
+	for (auto* observer : m_observers)
+	{
+		if (observer)
+		{
+			observer->Notify(event, gameObject);
+		}
+	}
+}

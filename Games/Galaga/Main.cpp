@@ -48,6 +48,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <GameFlowController.h>
+#include <PlayerDeathComponent.h>
 
 namespace fs = std::filesystem;
 
@@ -143,7 +144,7 @@ dae::GameActor* CreatePlayer(
 	render->SetSize(30.f, 30.f);
 
 	auto* actor = player->AddComponent<dae::GameActor>();
-
+	player->AddComponent<dae::PlayerDeathComponent>(actor);
 	player->AddComponent<dae::ScoreComponent>();
 	player->AddComponent<dae::HealthComponent>(4);
 

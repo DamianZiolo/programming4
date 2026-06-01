@@ -21,6 +21,9 @@ void dae::ShotCommand::Execute()
 
     if (!m_pProjectilePool)
         return;
+    auto* health = m_pTarget->GetComponent<HealthComponent>();
+    if (health->GetHealth() <= 0)
+        return;
 
     ServiceLocator::GetSoundSystem().Play(1, 1.f);
 

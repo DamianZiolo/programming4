@@ -82,6 +82,7 @@ Games/Galaga/Main.cpp
   Games/Galaga/EnemyButterflyReturnState.cpp
   Games/Galaga/LevelManagerComponent.cpp
   Games/Galaga/GameFlowController.cpp
+  Games/Galaga/PlayerDeathComponent.cpp
 )
 
 # enable c++20 features

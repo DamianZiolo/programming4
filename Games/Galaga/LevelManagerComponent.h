@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "BossAttackType.h"
 
 namespace dae
 {
@@ -22,6 +23,7 @@ namespace dae
 
 		void Update() override;
 		bool AreAllLevelsCompleted() const { return m_AllLevelsCompleted; }
+		void SendRandomBossAttack(BossAttackType attackType);
 	private:
 		void LoadCurrentLevel();
 		void LoadNextLevel();

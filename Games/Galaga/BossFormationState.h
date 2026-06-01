@@ -6,8 +6,8 @@ namespace dae
     class BossFormationState final : public BossState
     {
     public:
-        void OnEnter(EnemyBoss& boss) override;
-        std::unique_ptr<dae::BossState> Update(EnemyBoss& boss) override;
+        void OnEnter(EnemyBoss&) override;
+        std::unique_ptr<dae::BossState> Update(EnemyBoss&) override;
         
 
     private:

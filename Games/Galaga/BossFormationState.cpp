@@ -7,31 +7,35 @@
 #include <cstdlib>
 #include "BossTractorLoopState.h"
 #include <BossAttackMoveState.h>
+#include "GameSettings.h"
+#include "GameMode.h"
 //#include "BossBombingRunState.h"
 //#include "BossTractorBeamState.h"
 
 namespace dae
 {
-    void BossFormationState::OnEnter(EnemyBoss& boss)
+    void BossFormationState::OnEnter(EnemyBoss&)
     {
-        (void)boss;
-        //reminder: Later here set sprite if you add animations!
         m_Timer = 0.f;
         m_TimeUntilAttack = 3.0f;
     }
 
-    std::unique_ptr<dae::BossState> BossFormationState::Update(EnemyBoss& boss)
+    std::unique_ptr<dae::BossState> BossFormationState::Update(EnemyBoss&)
     {
-        (void)boss;
+		if (GameSettings::GetInstance().GetGameMode() == GameMode::Versus)
+		{
+			return nullptr;
+		}
 
-        m_Timer += GameTime::GetIntance().GetDeltaTime();
+		m_Timer += GameTime::GetIntance().GetDeltaTime();
 
-        if (m_Timer >= m_TimeUntilAttack)
-        {
-            return std::make_unique<BossAttackMoveState>();
-        }
+		if (m_Timer >= m_TimeUntilAttack)
+		{
+			return std::make_unique<BossAttackMoveState>(
+				BossAttackType::Random);
+		}
 
-        return nullptr;
+		return nullptr;
     }
 
 }

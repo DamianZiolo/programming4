@@ -3,6 +3,7 @@
 #include <memory>
 #include "BossState.h"
 #include <EnemyBoss.h>
+#include "BossAttackType.h"
 
 namespace dae
 {
@@ -30,6 +31,10 @@ namespace dae
 		void CreateTractorBeam(Scene& scene);
 		void EnableTractorBeam(bool enabled);
 		bool IsTractorBeamEnabled() const { return m_BeamEnabled; }
+		void RequestAttack(BossAttackType attackType);
+
+		bool IsAttacking() const { return m_IsAttacking; }
+		void SetAttacking(bool attacking) { m_IsAttacking = attacking; }
 
 	private:
 		std::unique_ptr<BossState> m_State;
@@ -37,6 +42,7 @@ namespace dae
 
 		GameObject* m_pTractorBeam{};
 		bool m_BeamEnabled{ false };
+		bool m_IsAttacking{ false };
 	};
 
 }

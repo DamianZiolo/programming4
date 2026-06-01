@@ -11,10 +11,14 @@
 
 namespace dae
 {
+    BossAttackMoveState::BossAttackMoveState(BossAttackType attackType): m_AttackType{attackType}
+    {
+
+    }
     void BossAttackMoveState::OnEnter(EnemyBoss& boss)
     {
         auto* owner = boss.GetOwner();
-
+        boss.SetAttacking(true);
         m_Timer = 0.f;
         m_StartPos = owner->GetWorldPosition();
 
@@ -46,6 +50,16 @@ namespace dae
 
         if (progress >= 1.f)
         {
+            if (m_AttackType == BossAttackType::Bombing)
+            {
+                return std::make_unique<BossBombingRunState>();
+            }
+
+            if (m_AttackType == BossAttackType::Beam)
+            {
+                return std::make_unique<BossTractorBeamState>();
+            }
+
             if (rand() % 2 == 0)
             {
                 return std::make_unique<BossBombingRunState>();

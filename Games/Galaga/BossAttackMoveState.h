@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BossState.h"
-
+#include "BossAttackType.h"
 #include <glm/glm.hpp>
 #include <memory>
 
@@ -10,7 +10,8 @@ namespace dae
     class BossAttackMoveState final : public BossState
     {
     public:
-        BossAttackMoveState() = default;
+        explicit BossAttackMoveState(BossAttackType attackType = BossAttackType::Random);
+
         ~BossAttackMoveState() override = default;
 
         void OnEnter(EnemyBoss& boss) override;
@@ -24,5 +25,6 @@ namespace dae
 
         float m_Timer{};
         float m_MoveDuration{ 1.0f };
+        BossAttackType m_AttackType{ BossAttackType::Random };
     };
 }

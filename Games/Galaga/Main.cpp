@@ -46,6 +46,7 @@
 #include "GameFlowController.h"
 #include "PlayerDeathComponent.h"
 #include "PlayerCollisionDamageComponent.h"
+#include "TriggerBossAttackCommand.h"
 
 #include <filesystem>
 #include <ctime>
@@ -381,6 +382,39 @@ static void LoadGameScene(dae::Scene& mainScene)
 			*projectilePool);
 
 	mainScene.Add(std::move(levelManagerGO));
+
+	auto& input = dae::InputManager::GetInstance();
+
+	input.BindControllerCommand(
+		dae::ControllerButton::B,
+		dae::InputState::Down,
+		std::make_unique<dae::TriggerBossAttackCommand>(
+			levelManagerComponent,
+			dae::BossAttackType::Bombing),
+		1);
+
+	input.BindControllerCommand(
+		dae::ControllerButton::A,
+		dae::InputState::Down,
+		std::make_unique<dae::TriggerBossAttackCommand>(
+			levelManagerComponent,
+			dae::BossAttackType::Beam),
+		1);
+
+	input.BindKeyboardCommand(
+		SDL_SCANCODE_J,
+		dae::InputState::Down,
+		std::make_unique<dae::TriggerBossAttackCommand>(
+			levelManagerComponent,
+			dae::BossAttackType::Bombing));
+
+	input.BindKeyboardCommand(
+		SDL_SCANCODE_K,
+		dae::InputState::Down,
+		std::make_unique<dae::TriggerBossAttackCommand>(
+			levelManagerComponent,
+			dae::BossAttackType::Beam));
+
 
 	auto flowGO = std::make_unique<dae::GameObject>();
 

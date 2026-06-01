@@ -11,6 +11,7 @@
 #include "RenderComponent.h"
 #include "SceneManager.h"
 #include "TractorBeamComponent.h"
+#include "BossAttackMoveState.h"
 
 dae::EnemyBoss::EnemyBoss(GameObject* owner, ProjectilePoolComponent& projectilePool):Enemy(owner, projectilePool)
 {
@@ -93,4 +94,14 @@ void dae::EnemyBoss::EnableTractorBeam(bool enabled)
 
 	if (auto* collider = m_pTractorBeam->GetComponent<BoxCollider>())
 		collider->SetActive(enabled);
+}
+
+void dae::EnemyBoss::RequestAttack(BossAttackType attackType)
+{
+	if (m_IsAttacking)
+		return;
+
+	m_IsAttacking = true;
+
+	ChangeState(std::make_unique<BossAttackMoveState>(attackType));
 }

@@ -11,6 +11,7 @@
 #include "EnemyButterfly.h"
 #include "ProjectilePoolComponent.h"
 #include "ResourceManager.h"
+#include "EnemyBoss.h"
 #include "GameSettings.h"
 #include <fstream>
 #include <sstream>
@@ -45,6 +46,41 @@ void dae::LevelManagerComponent::Update()
 	{
 		LoadNextLevel();
 	}
+}
+
+void dae::LevelManagerComponent::SendRandomBossAttack(BossAttackType attackType)
+{
+	if (!m_pCurrentFleet)
+		return;
+
+	std::vector<EnemyBoss*> availableBosses{};
+
+	for (auto* slot : m_pCurrentFleet->GetChildren())
+	{
+		if (!slot)
+			continue;
+
+		for (auto* child : slot->GetChildren())
+		{
+			if (!child)
+				continue;
+
+			auto* boss = child->GetComponent<EnemyBoss>();
+
+			if (boss && !boss->IsAttacking())
+			{
+				availableBosses.push_back(boss);
+			}
+		}
+	}
+
+	if (availableBosses.empty())
+		return;
+
+	const int randomIndex =
+		rand() % static_cast<int>(availableBosses.size());
+
+	availableBosses[randomIndex]->RequestAttack(attackType);
 }
 
 void dae::LevelManagerComponent::LoadCurrentLevel()

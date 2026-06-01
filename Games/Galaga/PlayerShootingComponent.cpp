@@ -62,7 +62,9 @@ void dae::PlayerShootingComponent::RemoveInactiveProjectiles()
 	{
 		auto* projectile = *it;
 
-		if (projectile == nullptr || !projectile->IsInUse())
+		if (projectile == nullptr ||
+			!projectile->IsInUse() ||
+			projectile->IsOutsideScreen())
 		{
 			it = m_ActiveProjectiles.erase(it);
 		}

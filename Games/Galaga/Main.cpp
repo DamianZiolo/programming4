@@ -47,12 +47,14 @@
 #include "PlayerDeathComponent.h"
 #include "PlayerCollisionDamageComponent.h"
 #include "TriggerBossAttackCommand.h"
+#include "HighScoreManager.h"
 
 #include <filesystem>
 #include <ctime>
 #include <cstdlib>
 #include <PlayerInvulnerabilityComponent.h>
 #include <PlayerShootingComponent.h>
+#include <HighScoreDisplayComponent.h>
 
 namespace fs = std::filesystem;
 
@@ -419,7 +421,8 @@ static void LoadGameScene(dae::Scene& mainScene)
 	auto flowGO = std::make_unique<dae::GameObject>();
 
 	auto* flow = flowGO->AddComponent<dae::GameFlowController>(
-		levelManagerComponent);
+		levelManagerComponent,
+		scoreComponent);
 
 	flow->AddPlayer(player1);
 
@@ -645,18 +648,43 @@ static void LoadScoreScene(dae::Scene& scoreScene)
 
 	auto fontMenu = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
-	auto scoreText = std::make_unique<dae::GameObject>();
-	scoreText->SetLocalPosition(
-		screenWidth * 0.5f - 45.f,
-		screenHeight * 0.5f,
+	auto title = std::make_unique<dae::GameObject>();
+	title->SetLocalPosition(
+		screenWidth * 0.5f - 110.f,
+		screenHeight * 0.18f,
 		0.f);
 
-	scoreText->AddComponent<dae::TextComponent>(
+	title->AddComponent<dae::TextComponent>(
 		fontMenu,
-		"Score",
+		"High Scores",
 		SDL_Color{ 255,255,0,255 });
 
-	scoreScene.Add(std::move(scoreText));
+	scoreScene.Add(std::move(title));
+
+	auto controller = std::make_unique<dae::GameObject>();
+	auto* highScoreDisplay =
+		controller->AddComponent<dae::HighScoreDisplayComponent>();
+
+	for (int i = 0; i < 5; ++i)
+	{
+		auto row = std::make_unique<dae::GameObject>();
+
+		row->SetLocalPosition(
+			screenWidth * 0.5f - 120.f,
+			screenHeight * 0.32f + i * 50.f,
+			0.f);
+
+		auto* text = row->AddComponent<dae::TextComponent>(
+			fontMenu,
+			"-----",
+			SDL_Color{ 255,255,255,255 });
+
+		highScoreDisplay->AddText(text);
+
+		scoreScene.Add(std::move(row));
+	}
+
+	scoreScene.Add(std::move(controller));
 }
 
 static void load()

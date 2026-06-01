@@ -5,12 +5,17 @@
 #include "HealthComponent.h"
 #include "LevelManagerComponent.h"
 #include "SceneManager.h"
+#include "ScoreComponent.h"
+#include "HighScoreManager.h"
+#include "GameSettings.h"
 
 dae::GameFlowController::GameFlowController(
 	GameObject* owner,
-	LevelManagerComponent* levelManager)
+	LevelManagerComponent* levelManager,
+	ScoreComponent* scoreComponent)
 	: Component(owner)
 	, m_pLevelManager{ levelManager }
+	, m_pScoreComponent{ scoreComponent }
 {
 }
 
@@ -82,6 +87,13 @@ bool dae::GameFlowController::AreAllPlayersDead() const
 void dae::GameFlowController::GoToEndScreen()
 {
 	m_HasEnded = true;
+
+	const int score =
+		m_pScoreComponent
+		? m_pScoreComponent->GetScore()
+		: 0;
+
+	HighScoreManager::GetInstance().SaveScore(GameSettings::GetInstance().GetPlayerName(),score);
 
 	dae::SceneManager::GetInstance().SetActiveScene(2);
 }

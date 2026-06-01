@@ -87,6 +87,8 @@ Games/Galaga/Main.cpp
   Games/Galaga/PlayerShootingComponent.cpp
   Games/Galaga/PlayerCollisionDamageComponent.cpp
   Games/Galaga/TriggerBossAttackCommand.cpp
+  Games/Galaga/HighScoreManager.cpp
+  Games/Galaga/HighScoreDisplayComponent.cpp
 )
 
 # enable c++20 features

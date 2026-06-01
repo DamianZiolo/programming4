@@ -25,12 +25,14 @@ namespace dae
 		void Activate(const glm::vec3& position, float velocity, ProjectileOwner ownerType);
 		void Deactivate();
 		bool IsInUse() const;
+		bool IsOutsideScreen() const;
 		ProjectileOwner GetProjectileOwner() const;
 	private:
 		GameObject* m_pOwner;
 		glm::vec3 m_Velocity{ 0.f, -100.f, 0.f };
 		bool m_HasHit{ false };
 		bool m_IsInUse{ false };
+		float m_Timer{ 0.f };
 
 		
 		ProjectileOwner m_OwnerType{ ProjectileOwner::None };

@@ -10,13 +10,15 @@ namespace dae
 {
 	class GameActor;
 	class LevelManagerComponent;
+	class ScoreComponent;
 
 	class GameFlowController final : public Component, public Observer
 	{
 	public:
 		GameFlowController(
 			GameObject* owner,
-			LevelManagerComponent* levelManager);
+			LevelManagerComponent* levelManager,
+			ScoreComponent* scoreComponent);
 
 		void Update() override;
 		void Notify(Event event) override;
@@ -33,5 +35,6 @@ namespace dae
 		std::vector<bool> m_PlayerDead{};
 
 		bool m_HasEnded{ false };
+		ScoreComponent* m_pScoreComponent{};
 	};
 }

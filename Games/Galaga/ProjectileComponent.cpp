@@ -54,17 +54,23 @@ void dae::ProjectileComponent::Update()
 	if (!m_IsInUse)
 		return;
 
+	const float dt = GameTime::GetIntance().GetDeltaTime();
+
+	m_Timer += dt;
+
+	if (m_Timer > 7.f)
+	{
+		Deactivate();
+		return;
+	}
+
 	auto position = m_pOwner->GetLocalPosition();
 
-	position += m_Velocity *
-		dae::GameTime::GetIntance().GetDeltaTime();
+	position += m_Velocity * dt;
 
 	m_pOwner->SetLocalPosition(position);
 
-	const auto worldPosition = m_pOwner->GetWorldPosition();
-
-	if (worldPosition.y < -20.f ||
-		worldPosition.y > GameSettings::ScreenHeight + 20.f)
+	if (IsOutsideScreen())
 	{
 		Deactivate();
 		return;
@@ -89,6 +95,8 @@ void dae::ProjectileComponent::Activate(const glm::vec3& position, float velocit
 	SetVelocity(velocity);
 	GetOwner()->SetLocalPosition(position);
 
+	m_Timer = 0.f;
+
 	if (auto* colider = GetOwner()->GetComponent<BoxCollider>())
 	{
 		colider->SetActive(true);
@@ -111,6 +119,9 @@ void dae::ProjectileComponent::Activate(const glm::vec3& position, float velocit
 void dae::ProjectileComponent::Deactivate()
 {
 	m_IsInUse = false;
+	m_HasHit = false;
+	m_Timer = 0.f;
+	m_Velocity = glm::vec3{ 0.f, 0.f, 0.f };
 
 	if (auto* col = GetOwner()->GetComponent<BoxCollider>())
 		col->SetActive(false);
@@ -127,4 +138,16 @@ bool dae::ProjectileComponent::IsInUse() const
 dae::ProjectileOwner dae::ProjectileComponent::GetProjectileOwner() const
 {
 	return m_OwnerType;
+}
+
+bool dae::ProjectileComponent::IsOutsideScreen() const
+{
+	const auto worldPosition = GetOwner()->GetWorldPosition();
+
+	constexpr float margin = 30.f;
+
+	return worldPosition.y < -margin ||
+		worldPosition.y > GameSettings::ScreenHeight + margin ||
+		worldPosition.x < -margin ||
+		worldPosition.x > GameSettings::ScreenWidth + margin;
 }

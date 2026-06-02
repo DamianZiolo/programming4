@@ -90,6 +90,7 @@ Games/Galaga/Main.cpp
   Games/Galaga/HighScoreManager.cpp
   Games/Galaga/HighScoreDisplayComponent.cpp
   Games/Galaga/ToggleMuteCommand.cpp
+   Games/Galaga/SkipLevelCommand.cpp
 )
 
 # enable c++20 features

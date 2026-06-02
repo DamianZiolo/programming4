@@ -43,8 +43,11 @@ void dae::PlayerCollisionDamageComponent::OnCollisionEnter(BoxCollider* other)
 	{
 		if (m_BeamSoundCooldown <= 0.f)
 		{
-			ServiceLocator::GetSoundSystem().Play(7, 0.1f);
-			m_BeamSoundCooldown = 3.f;
+			if (ServiceLocator::GetSoundSystem().IsMuted() != true)
+			{
+				ServiceLocator::GetSoundSystem().Play(7, 0.1f);
+				m_BeamSoundCooldown = 3.f;
+			}
 		}
 	}
 

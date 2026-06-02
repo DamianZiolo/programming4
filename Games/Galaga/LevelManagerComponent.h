@@ -26,6 +26,7 @@ namespace dae
 		void Update() override;
 		bool AreAllLevelsCompleted() const { return m_AllLevelsCompleted; }
 		void SendRandomBossAttack(BossAttackType attackType);
+		void SkipLevel();
 	private:
 		void LoadCurrentLevel();
 		void LoadNextLevel();

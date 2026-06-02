@@ -49,6 +49,7 @@
 #include "TriggerBossAttackCommand.h"
 #include "HighScoreManager.h"
 #include "ToggleMuteCommand.h"
+#include "SkipLevelCommand.h"
 
 #include <filesystem>
 #include <ctime>
@@ -394,36 +395,43 @@ static void LoadGameScene(dae::Scene& mainScene)
 
 	auto& input = dae::InputManager::GetInstance();
 
-	input.BindControllerCommand(
-		dae::ControllerButton::B,
-		dae::InputState::Down,
-		std::make_unique<dae::TriggerBossAttackCommand>(
-			levelManagerComponent,
-			dae::BossAttackType::Bombing),
-		1);
-
-	input.BindControllerCommand(
-		dae::ControllerButton::A,
-		dae::InputState::Down,
-		std::make_unique<dae::TriggerBossAttackCommand>(
-			levelManagerComponent,
-			dae::BossAttackType::Beam),
-		1);
-
 	input.BindKeyboardCommand(
-		SDL_SCANCODE_J,
+		SDL_SCANCODE_F1,
 		dae::InputState::Down,
-		std::make_unique<dae::TriggerBossAttackCommand>(
-			levelManagerComponent,
-			dae::BossAttackType::Bombing));
+		std::make_unique<dae::SkipLevelCommand>(levelManagerComponent));
 
-	input.BindKeyboardCommand(
-		SDL_SCANCODE_K,
-		dae::InputState::Down,
-		std::make_unique<dae::TriggerBossAttackCommand>(
-			levelManagerComponent,
-			dae::BossAttackType::Beam));
+	if (mode == dae::GameMode::Versus)
+	{
+		input.BindControllerCommand(
+			dae::ControllerButton::B,
+			dae::InputState::Down,
+			std::make_unique<dae::TriggerBossAttackCommand>(
+				levelManagerComponent,
+				dae::BossAttackType::Bombing),
+			1);
 
+		input.BindControllerCommand(
+			dae::ControllerButton::A,
+			dae::InputState::Down,
+			std::make_unique<dae::TriggerBossAttackCommand>(
+				levelManagerComponent,
+				dae::BossAttackType::Beam),
+			1);
+
+		input.BindKeyboardCommand(
+			SDL_SCANCODE_J,
+			dae::InputState::Down,
+			std::make_unique<dae::TriggerBossAttackCommand>(
+				levelManagerComponent,
+				dae::BossAttackType::Bombing));
+
+		input.BindKeyboardCommand(
+			SDL_SCANCODE_K,
+			dae::InputState::Down,
+			std::make_unique<dae::TriggerBossAttackCommand>(
+				levelManagerComponent,
+				dae::BossAttackType::Beam));
+	}
 
 	auto flowGO = std::make_unique<dae::GameObject>();
 
@@ -712,6 +720,7 @@ static void load()
 		SDL_SCANCODE_F2,
 		dae::InputState::Down,
 		std::make_unique<dae::ToggleMuteCommand>());
+
 
 	LoadScoreScene(scoreScene);
 

@@ -372,3 +372,24 @@ bool dae::LevelManagerComponent::IsCurrentLevelCleared() const
 
 	return true;
 }
+
+void dae::LevelManagerComponent::SkipLevel()
+{
+	Log("[LevelManager] Level skipped");
+
+	for (const auto& object : m_Scene.GetObjects())
+	{
+		if (!object)
+			continue;
+
+		if (object->IsMarkedForRemoval())
+			continue;
+
+		if (object->GetComponent<Enemy>())
+		{
+			object->MarkForRemoval();
+		}
+	}
+
+	LoadNextLevel();
+}

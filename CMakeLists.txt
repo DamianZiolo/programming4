@@ -257,10 +257,13 @@ target_link_libraries(${TARGET_NAME} PRIVATE
 
 
 if(MSVC)
-  # compile at warning level 4 + treat warnings as errors
+  # Compile at warning level 4 and treat warnings as errors.
+  target_compile_options(MiniginEngine PRIVATE /W4 /WX)
   target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
 else()
-  target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Werror)
+  # GCC/Clang equivalent of strict warning settings.
+  target_compile_options(MiniginEngine PRIVATE -Wall -Wextra -Wpedantic -Werror)
+  target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
 if(EMSCRIPTEN)

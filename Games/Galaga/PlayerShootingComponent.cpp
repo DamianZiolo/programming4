@@ -36,7 +36,11 @@ void dae::PlayerShootingComponent::Shoot()
 	if (static_cast<int>(m_ActiveProjectiles.size()) >= m_MaxProjectiles)
 		return;
 
-	ServiceLocator::GetSoundSystem().Play(1, 1.f);
+	if (ServiceLocator::GetSoundSystem().IsMuted() != true)
+	{
+		ServiceLocator::GetSoundSystem().Play(1, 1.f);
+	}
+	
 
 	const auto ownerPos = owner->GetWorldPosition();
 
@@ -46,7 +50,7 @@ void dae::PlayerShootingComponent::Shoot()
 			ownerPos.y,
 			0.f
 		},
-		-150.f,
+		-250.f,
 		ProjectileOwner::Player
 	);
 
@@ -64,7 +68,8 @@ void dae::PlayerShootingComponent::RemoveInactiveProjectiles()
 
 		if (projectile == nullptr ||
 			!projectile->IsInUse() ||
-			projectile->IsOutsideScreen())
+			projectile->IsOutsideScreen() ||
+			projectile->GetProjectileOwner() != ProjectileOwner::Player)
 		{
 			it = m_ActiveProjectiles.erase(it);
 		}

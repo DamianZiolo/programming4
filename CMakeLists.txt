@@ -89,6 +89,7 @@ Games/Galaga/Main.cpp
   Games/Galaga/TriggerBossAttackCommand.cpp
   Games/Galaga/HighScoreManager.cpp
   Games/Galaga/HighScoreDisplayComponent.cpp
+  Games/Galaga/ToggleMuteCommand.cpp
 )
 
 # enable c++20 features

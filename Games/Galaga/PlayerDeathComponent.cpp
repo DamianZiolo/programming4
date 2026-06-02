@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "RenderComponent.h"
 #include "BoxCollider.h"
+#include "ServiceLocator.h"
 
 dae::PlayerDeathComponent::PlayerDeathComponent(
 	GameObject* owner,
@@ -26,6 +27,10 @@ void dae::PlayerDeathComponent::Notify(Event event)
 		return;
 
 	m_IsDead = true;
+	if (ServiceLocator::GetSoundSystem().IsMuted() != true)
+	{
+		ServiceLocator::GetSoundSystem().Play(2, 1.f);
+	}
 
 	DisablePlayer();
 }

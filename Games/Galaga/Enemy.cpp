@@ -5,7 +5,7 @@
 #include "GameTime.h"
 #include "ProjectilePoolComponent.h"
 #include "GameSettings.h"
-
+#include "ServiceLocator.h"
 #include <Windows.h>
 #include <sstream>
 
@@ -39,6 +39,20 @@ void dae::Enemy::Die()
 	if (auto* actor = GetOwner()->GetComponent<GameActor>())
 	{
 		actor->NotifyObservers(Event::EnemyDied, GetOwner());
+		if (ServiceLocator::GetSoundSystem().IsMuted() != true)
+		{
+			auto type = GetEnemyType();
+
+			if (type == EnemyType::Boss)
+			{
+				ServiceLocator::GetSoundSystem().Play(6, 1.f);
+			}
+			else 
+			{
+				ServiceLocator::GetSoundSystem().Play(5, 1.f);
+			}
+			
+		}
 	}
 
 	GetOwner()->MarkForRemoval();

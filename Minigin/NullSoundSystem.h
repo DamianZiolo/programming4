@@ -7,6 +7,8 @@ namespace dae
 	public:
 		void Play(sound_id, float) override {}
 		void RegisterSound(sound_id , const std::string& ) override {};
+		void ToggleMute() override {}
+		bool IsMuted() const override { return true; }
 	};
 
 }

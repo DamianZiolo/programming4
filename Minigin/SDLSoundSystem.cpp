@@ -1,16 +1,18 @@
 #include "SDLSoundSystem.h"
 
-#include <chrono>
+#include <condition_variable>
+#include <queue>
 #include <sstream>
+#include <thread>
+#include <unordered_map>
 
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
 
 #if WIN32
-#define WIN32_LEAN_AND_MEAN  //note: this mean we load less stuff
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
-#include <unordered_map>
 
 namespace dae
 {
@@ -27,7 +29,10 @@ namespace dae
 				return;
 			}
 
-			m_Mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
+			m_Mixer = MIX_CreateMixerDevice(
+				SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK,
+				nullptr);
+
 			if (m_Mixer == nullptr)
 			{
 #if WIN32
@@ -41,10 +46,19 @@ namespace dae
 
 		~Impl()
 		{
-			m_IsRunning = false;
+			{
+				// protect shared state before stopping worker thread
+				std::lock_guard<std::mutex> lock(m_Mutex);
+
+				m_IsRunning = false;
+			}
+
+			// wake up worker thread so it can exit
+			m_ConditionVariable.notify_one();
 
 			if (m_WorkerThread.joinable())
 			{
+				// wait until worker thread finishes
 				m_WorkerThread.join();
 			}
 
@@ -70,43 +84,68 @@ namespace dae
 
 		void RegisterSound(sound_id id, const std::string& filePath)
 		{
+			//like above, I'm protecting shared sound path because multiple threads may acces the sound registry and Lock prevetns data races. FOr example main thread wants to save and worker thread want to read
 			std::lock_guard<std::mutex> lock(m_Mutex);
 			m_SoundPaths[id] = filePath;
 		}
 
 		void Play(sound_id id, float volume)
 		{
+			{
+				// protect queue while adding a new request
+				std::lock_guard<std::mutex> lock(m_Mutex);
+				//const float finalVolume = m_IsMuted ? 0.f : volume * m_MasterVolume;
+				m_Queue.push(SoundRequest{ id, volume });
+			}
+
+			// wake up worker thread immediately
+			m_ConditionVariable.notify_one();
+		}
+
+		void ToggleMute()
+		{
 			std::lock_guard<std::mutex> lock(m_Mutex);
-			m_Queue.push(SoundRequest{ id, volume });
+			m_IsMuted = !m_IsMuted;
+		}
+
+		bool IsMuted() const
+		{
+			std::lock_guard<std::mutex> lock(m_Mutex);
+			return m_IsMuted;
 		}
 
 	private:
-		void ProcessQueue() 
+		void ProcessQueue()
 		{
-			while (m_IsRunning) //use condition variable instead
+			while (true)
 			{
 				SoundRequest request{};
-				bool hasRequest = false;
 
 				{
-					std::lock_guard<std::mutex> lock(m_Mutex);
+					std::unique_lock<std::mutex> lock(m_Mutex);
 
-					if (!m_Queue.empty())
+					// sleep until new work arrives, this is moore efficient than polling with sleep_for
+					m_ConditionVariable.wait(
+						lock,
+						[this]()
+						{
+							return !m_Queue.empty() || !m_IsRunning;
+						});
+
+					// Exit thread when shutting down
+					if (!m_IsRunning && m_Queue.empty())
 					{
-						request = m_Queue.front();
-						m_Queue.pop();
-						hasRequest = true;
+						return;
 					}
+
+					// Remove next request from queue
+					request = m_Queue.front();
+					m_Queue.pop();
 				}
 
-				if (hasRequest)
-				{
-					PlaySound(request);
-				}
-				else
-				{
-					std::this_thread::sleep_for(std::chrono::milliseconds(1)); //That much precision is not required
-				}
+				// do not hold mutex while playing/loading audio - note from classes by Alex
+				// Audio operations may be slow and would block other threads.
+				PlaySound(request);
 			}
 		}
 
@@ -129,6 +168,9 @@ namespace dae
 
 		MIX_Audio* GetAudio(sound_id id)
 		{
+			// Protect shared audio cache
+			std::lock_guard<std::mutex> lock(m_Mutex);
+
 			auto audioIt = m_AudioClips.find(id);
 			if (audioIt != m_AudioClips.end())
 			{
@@ -144,30 +186,40 @@ namespace dae
 				return nullptr;
 			}
 
-			MIX_Audio* audio = MIX_LoadAudio(m_Mixer, pathIt->second.c_str(), true);
+			MIX_Audio* audio =
+				MIX_LoadAudio(m_Mixer, pathIt->second.c_str(), true);
+
 			if (audio == nullptr)
 			{
 #if WIN32
 				std::stringstream ss;
-				ss << "Could not load sound: " << pathIt->second << "\n";
+				ss << "Could not load sound: "
+					<< pathIt->second
+					<< "\n";
+
 				OutputDebugStringA(ss.str().c_str());
 #endif
 				return nullptr;
 			}
 
 			m_AudioClips[id] = audio;
+
 			return audio;
 		}
 
 		MIX_Mixer* m_Mixer{ nullptr };
 
-		std::queue<SoundRequest> m_Queue;
-		std::unordered_map<sound_id, std::string> m_SoundPaths;
-		std::unordered_map<sound_id, MIX_Audio*> m_AudioClips;
+		std::queue<SoundRequest> m_Queue{};
+		std::unordered_map<sound_id, std::string> m_SoundPaths{};
+		std::unordered_map<sound_id, MIX_Audio*> m_AudioClips{};
+		//I know I know, Mutable but change of the mutex is not changing logic state of sound system so we can change it in const
+		mutable std::mutex m_Mutex{};
+		std::condition_variable m_ConditionVariable{};
+		std::thread m_WorkerThread{};
 
-		std::mutex m_Mutex;
-		std::thread m_WorkerThread;
-		std::atomic_bool m_IsRunning{ true };
+		bool m_IsRunning{ true };
+		float m_MasterVolume{ 1.f };
+		bool m_IsMuted{ false };
 	};
 
 	SDLSoundSystem::SDLSoundSystem()
@@ -184,8 +236,21 @@ namespace dae
 
 	void SDLSoundSystem::Play(sound_id id, float volume)
 	{
+
 		m_Impl->Play(id, volume);
 	}
+
+	void dae::SDLSoundSystem::ToggleMute()
+	{
+		m_Impl->ToggleMute();
+	}
+
+	bool dae::SDLSoundSystem::IsMuted() const
+	{
+		return m_Impl->IsMuted();
+	}
+
+
 }
 //IMPORTANT NOTE THREADING ON THE EXAM
 // PLAYING THE SOUND WHILE THE LOCK IS STILL ACTIVE

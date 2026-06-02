@@ -5,10 +5,20 @@
 #include "Enemy.h"
 #include "HealthComponent.h"
 #include "TractorBeamComponent.h"
+#include "ServiceLocator.h"
+#include "GameTime.h"
 
 dae::PlayerCollisionDamageComponent::PlayerCollisionDamageComponent(GameObject* owner)
 	: Component(owner)
 {
+}
+
+void dae::PlayerCollisionDamageComponent::Update()
+{
+	if (m_BeamSoundCooldown > 0.f)
+	{
+		m_BeamSoundCooldown -= GameTime::GetIntance().GetDeltaTime();
+	}
 }
 
 void dae::PlayerCollisionDamageComponent::OnCollisionEnter(BoxCollider* other)
@@ -29,6 +39,14 @@ void dae::PlayerCollisionDamageComponent::OnCollisionEnter(BoxCollider* other)
 
 	if (!hitEnemy && !hitTractorBeam)
 		return;
+	if (hitTractorBeam)
+	{
+		if (m_BeamSoundCooldown <= 0.f)
+		{
+			ServiceLocator::GetSoundSystem().Play(7, 0.1f);
+			m_BeamSoundCooldown = 3.f;
+		}
+	}
 
 	auto* health = GetOwner()->GetComponent<HealthComponent>();
 

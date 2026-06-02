@@ -48,6 +48,7 @@
 #include "PlayerCollisionDamageComponent.h"
 #include "TriggerBossAttackCommand.h"
 #include "HighScoreManager.h"
+#include "ToggleMuteCommand.h"
 
 #include <filesystem>
 #include <ctime>
@@ -273,7 +274,13 @@ static void LoadGameScene(dae::Scene& mainScene)
 
 	const float playerY = screenHeight - PlayerYFromBottom;
 
-	dae::ServiceLocator::GetSoundSystem().RegisterSound(1, "Data/sound1.mp3");
+	dae::ServiceLocator::GetSoundSystem().RegisterSound(1, "Data/Sounds/PlayerShoot.mp3");
+	dae::ServiceLocator::GetSoundSystem().RegisterSound(2, "Data/Sounds/PlayerDies.mp3");
+	dae::ServiceLocator::GetSoundSystem().RegisterSound(3, "Data/Sounds/Start.mp3");
+	dae::ServiceLocator::GetSoundSystem().RegisterSound(4, "Data/Sounds/TractorBeam.mp3");
+	dae::ServiceLocator::GetSoundSystem().RegisterSound(5, "Data/Sounds/EnemyDies.mp3");
+	dae::ServiceLocator::GetSoundSystem().RegisterSound(6, "Data/Sounds/BossDeath.mp3");
+	dae::ServiceLocator::GetSoundSystem().RegisterSound(7, "Data/Sounds/CapturedShip.mp3");
 
 	CreateBackground(mainScene);
 
@@ -471,6 +478,10 @@ public:
 		m_HasLoaded = true;
 
 		LoadGameScene(m_Scene);
+		if (dae::ServiceLocator::GetSoundSystem().IsMuted() != true) {
+			dae::ServiceLocator::GetSoundSystem().Play(3, 1.f);
+		}
+		
 
 		GetOwner()->MarkForRemoval();
 	}
@@ -696,6 +707,12 @@ static void load()
 	dae::SceneManager::GetInstance().SetActiveScene(0);
 
 	LoadMenuScene(menuScene);
+	auto& input = dae::InputManager::GetInstance();
+	input.BindKeyboardCommand(
+		SDL_SCANCODE_F2,
+		dae::InputState::Down,
+		std::make_unique<dae::ToggleMuteCommand>());
+
 	LoadScoreScene(scoreScene);
 
 	auto gameLoader = std::make_unique<dae::GameObject>();

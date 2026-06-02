@@ -12,7 +12,8 @@
 #include "SceneManager.h"
 #include "TractorBeamComponent.h"
 #include "BossAttackMoveState.h"
-
+#include "ServiceLocator.h"
+#include "GameTime.h"
 dae::EnemyBoss::EnemyBoss(GameObject* owner, ProjectilePoolComponent& projectilePool):Enemy(owner, projectilePool)
 {
 	m_State = std::make_unique<BossFormationState>();
@@ -94,6 +95,11 @@ void dae::EnemyBoss::EnableTractorBeam(bool enabled)
 
 	if (auto* collider = m_pTractorBeam->GetComponent<BoxCollider>())
 		collider->SetActive(enabled);
+
+	if (ServiceLocator::GetSoundSystem().IsMuted() != true)
+	{
+		ServiceLocator::GetSoundSystem().Play(4, 1.f);
+	}
 }
 
 void dae::EnemyBoss::RequestAttack(BossAttackType attackType)

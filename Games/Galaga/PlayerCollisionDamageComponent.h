@@ -11,7 +11,8 @@ namespace dae
 	public:
 		explicit PlayerCollisionDamageComponent(GameObject* owner);
 
-		void Update() override {}
+		void Update() override;
 		void OnCollisionEnter(BoxCollider* other) override;
+		float m_BeamSoundCooldown{};
 	};
 }

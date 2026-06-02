@@ -23,6 +23,11 @@ namespace dae
 		SDLSoundSystem& operator =(const SDLSoundSystem&) = delete;
 		SDLSoundSystem& operator=(SDLSoundSystem&&) = delete;
 
+		void SetMuted(bool muted);
+		void ToggleMute() override;
+		bool IsMuted() const override;
+		void SetVolume(float volume);
+
 	private:
 		void ProcessQueue();
 

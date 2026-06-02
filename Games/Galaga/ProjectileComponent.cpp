@@ -10,6 +10,7 @@
 #include <HealthComponent.h>
 #include "GameSettings.h"
 #include <PlayerShootingComponent.h>
+#include "GameSessionStats.h"
 
 dae::ProjectileComponent::ProjectileComponent(GameObject* owner):
 	Component(owner),
@@ -31,6 +32,9 @@ void dae::ProjectileComponent::OnCollisionEnter(BoxCollider* other)
 			return;
 
 		m_HasHit = true;
+
+		GameSessionStats::GetInstance().AddHit();
+
 		enemy->TakeDamage();
 		Deactivate();
 	}

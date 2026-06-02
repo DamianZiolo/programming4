@@ -93,6 +93,11 @@ void dae::GameFlowController::GoToEndScreen()
 		? m_pScoreComponent->GetScore()
 		: 0;
 
+	const auto& name =
+		GameSettings::GetInstance().GetPlayerName();
+
+	GameSessionStats::GetInstance().SetPlayerName(name);
+	GameSessionStats::GetInstance().SetFinalScore(score);
 	HighScoreManager::GetInstance().SaveScore(GameSettings::GetInstance().GetPlayerName(),score);
 
 	dae::SceneManager::GetInstance().SetActiveScene(2);

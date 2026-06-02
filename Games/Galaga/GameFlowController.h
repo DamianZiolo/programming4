@@ -3,7 +3,7 @@
 #include "Component.h"
 #include "Observer.h"
 #include "Event.h"
-
+#include "GameSessionStats.h"
 #include <vector>
 
 namespace dae

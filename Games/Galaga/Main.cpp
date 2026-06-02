@@ -50,7 +50,7 @@
 #include "HighScoreManager.h"
 #include "ToggleMuteCommand.h"
 #include "SkipLevelCommand.h"
-
+#include "GameSessionStats.h"
 #include <filesystem>
 #include <ctime>
 #include <cstdlib>
@@ -268,6 +268,10 @@ std::unique_ptr<dae::GameObject> CreatePooling(dae::Scene& scene)
 
 static void LoadGameScene(dae::Scene& mainScene)
 {
+	dae::GameSessionStats::GetInstance().Reset();
+	dae::GameSessionStats::GetInstance().SetPlayerName(
+	dae::GameSettings::GetInstance().GetPlayerName());
+
 	const auto mode = dae::GameSettings::GetInstance().GetGameMode();
 
 	constexpr float screenWidth = dae::GameSettings::ScreenWidth;
@@ -670,12 +674,12 @@ static void LoadScoreScene(dae::Scene& scoreScene)
 	auto title = std::make_unique<dae::GameObject>();
 	title->SetLocalPosition(
 		screenWidth * 0.5f - 110.f,
-		screenHeight * 0.18f,
+		screenHeight * 0.10f,
 		0.f);
 
 	title->AddComponent<dae::TextComponent>(
 		fontMenu,
-		"High Scores",
+		"Results",
 		SDL_Color{ 255,255,0,255 });
 
 	scoreScene.Add(std::move(title));
@@ -684,18 +688,54 @@ static void LoadScoreScene(dae::Scene& scoreScene)
 	auto* highScoreDisplay =
 		controller->AddComponent<dae::HighScoreDisplayComponent>();
 
+	const float startX = screenWidth * 0.5f - 150.f;
+	const float startY = screenHeight * 0.20f;
+	const float spacingY = 42.f;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		auto row = std::make_unique<dae::GameObject>();
+
+		row->SetLocalPosition(
+			startX,
+			startY + i * spacingY,
+			0.f);
+
+		auto* text = row->AddComponent<dae::TextComponent>(
+			fontMenu,
+			"----",
+			SDL_Color{ 255,255,255,255 });
+
+		highScoreDisplay->AddText(text);
+
+		scoreScene.Add(std::move(row));
+	}
+
+	auto topTitle = std::make_unique<dae::GameObject>();
+	topTitle->SetLocalPosition(
+		screenWidth * 0.5f - 90.f,
+		screenHeight * 0.48f,
+		0.f);
+
+	topTitle->AddComponent<dae::TextComponent>(
+		fontMenu,
+		"Top 5",
+		SDL_Color{ 255,255,0,255 });
+
+	scoreScene.Add(std::move(topTitle));
+
 	for (int i = 0; i < 5; ++i)
 	{
 		auto row = std::make_unique<dae::GameObject>();
 
 		row->SetLocalPosition(
-			screenWidth * 0.5f - 120.f,
-			screenHeight * 0.32f + i * 50.f,
+			startX,
+			screenHeight * 0.56f + i * spacingY,
 			0.f);
 
 		auto* text = row->AddComponent<dae::TextComponent>(
 			fontMenu,
-			"-----",
+			"----",
 			SDL_Color{ 255,255,255,255 });
 
 		highScoreDisplay->AddText(text);

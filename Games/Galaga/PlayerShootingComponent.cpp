@@ -5,6 +5,7 @@
 #include "ProjectilePoolComponent.h"
 #include "ProjectileComponent.h"
 #include "ServiceLocator.h"
+#include "GameSessionStats.h"
 
 #include <algorithm>
 
@@ -57,6 +58,7 @@ void dae::PlayerShootingComponent::Shoot()
 	if (projectile)
 	{
 		m_ActiveProjectiles.push_back(projectile);
+		GameSessionStats::GetInstance().AddShot();
 	}
 }
 

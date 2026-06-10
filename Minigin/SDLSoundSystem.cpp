@@ -218,7 +218,6 @@ namespace dae
 		std::thread m_WorkerThread{};
 
 		bool m_IsRunning{ true };
-		float m_MasterVolume{ 1.f };
 		bool m_IsMuted{ false };
 	};
 

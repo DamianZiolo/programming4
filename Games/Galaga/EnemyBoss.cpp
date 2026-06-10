@@ -76,7 +76,7 @@ void dae::EnemyBoss::CreateTractorBeam(Scene& scene)
 
 	auto* collider = beam->AddComponent<BoxCollider>(glm::vec2{ 195.f, 250.f });
 	collider->SetActive(false);
-	collider->SetDrawDebug(true);
+	//collider->SetDrawDebug(true);
 
 	m_pTractorBeam = beam.get();
 

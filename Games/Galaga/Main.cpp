@@ -175,10 +175,10 @@ dae::GameActor* CreatePlayer(
 	player->AddComponent<dae::HealthComponent>(4);
 	player->AddComponent<dae::PlayerShootingComponent>(projectilePool);
 	player->AddComponent<dae::PlayerCollisionDamageComponent>();
-
-	auto* collider = player->AddComponent<dae::BoxCollider>(
+	//auto* collider = 
+	player->AddComponent<dae::BoxCollider>(
 		glm::vec2{ PlayerSize, PlayerSize });
-	collider->SetDrawDebug(true);
+	//collider->SetDrawDebug(true);
 
 	auto* playerRaw = player.get();
 

@@ -253,9 +253,9 @@ void dae::LevelManagerComponent::CreateFleetFromLayout(
 				}
 				auto* render = enemy->AddComponent<RenderComponent>("Boss.png");
 				render->SetSize(50.f, 50.f);
-
-				auto* collider = enemy->AddComponent<BoxCollider>(glm::vec2{ 50.f, 50.f });
-				collider->SetDrawDebug(true);
+				//auto* collider =
+				enemy->AddComponent<BoxCollider>(glm::vec2{ 50.f, 50.f });
+				//collider->SetDrawDebug(true);
 
 				enemy->AddComponent<GameActor>();
 
@@ -277,9 +277,9 @@ void dae::LevelManagerComponent::CreateFleetFromLayout(
 				}
 				auto* render = enemy->AddComponent<RenderComponent>("Enemy1.png");
 				render->SetSize(30.f, 30.f);
-
-				auto* collider = enemy->AddComponent<BoxCollider>(glm::vec2{ 30.f, 30.f });
-				collider->SetDrawDebug(true);
+				//auto* collider = 
+				enemy->AddComponent<BoxCollider>(glm::vec2{ 30.f, 30.f });
+				//collider->SetDrawDebug(true);
 				enemy->AddComponent<GameActor>();
 				enemy->AddComponent<EnemyFly>(m_ProjectilePool);
 
@@ -298,9 +298,9 @@ void dae::LevelManagerComponent::CreateFleetFromLayout(
 				}
 				auto* render = enemy->AddComponent<RenderComponent>("Enemy2.png");
 				render->SetSize(30.f, 30.f);
-
-				auto* collider = enemy->AddComponent<BoxCollider>(glm::vec2{ 30.f, 30.f });
-				collider->SetDrawDebug(true);
+				//auto* collider = 
+				enemy->AddComponent<BoxCollider>(glm::vec2{ 30.f, 30.f });
+				//collider->SetDrawDebug(true);
 				enemy->AddComponent<GameActor>();
 				enemy->AddComponent<EnemyButterfly>(m_ProjectilePool);
 
